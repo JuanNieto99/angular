@@ -1,0 +1,202 @@
+<!-- <div>
+    <label for="countries">País:</label>
+    <select id="countries" [(ngModel)]="selectedCountry" (change)="getStates()">
+        <option>Seleccionar País</option>
+        <option *ngFor="let country of countries$" [value]="country.id">{{country.nombre}}</option>
+    </select>
+</div>
+<div>
+    <label for="states">Estado:</label>
+    <select id="states" [(ngModel)]="selectedState" (change)="getCities()">
+        <option>Seleccionar Departamento</option>
+        <option *ngFor="let state of states$" [value]="state.id">{{state.nombre}}</option>
+    </select>
+</div>
+<div>
+    <label for="cities">Ciudad:</label>
+    <select id="cities" [(ngModel)]="selectedCity">
+        <option>Seleccionar Ciudad</option>
+        <option *ngFor="let city of cities$" [value]="city.id">{{city.nombre}}</option>
+    </select>
+</div> -->
+<p-toast></p-toast>
+<div class="surface-section px-4 py-5 md:px-6 lg:px-8">
+    <div class="flex align-items-start flex-column lg:justify-content-between lg:flex-row">
+        <div>
+            <div class="font-medium text-3xl text-900">Hoteles</div>
+            <div class="flex align-items-center text-700 flex-wrap">
+                <div class="mr-5 flex align-items-center mt-3">
+                    <i class="pi pi-users mr-2"></i>
+                    <span>Hoteles Creados</span>
+                </div>
+            </div>
+        </div>
+        <div class="mt-3 lg:mt-0">
+            <button pButton pRipple label="Crear" (click)="modalNewHotel()" class="p-button-outlined mr-2" icon="pi pi-user-plus"></button>
+            <button pButton pRipple label="Exportar" icon="pi pi-check"></button>
+        </div>
+    </div>
+</div>
+<div class="grid mt-3">
+    <div class="col-12">
+        <div class="card px-3 py-3">
+            <p-table [value]="hotels" [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['usuario','email','superadmin','estado']" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Mostrando {first} de {totalRecords} Hoteles"  selectionMode="multiple" [rowHover]="true" dataKey="hotel">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0">Lista de Hoteles</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar..."  class="w-full sm:w-auto"/>
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 3rem">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Contacto</th>
+                        <th>Cel Contacto</th>
+                        <th>Nit</th>
+                        <th>Acciones</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-hotel>
+                    <tr>
+                        <td>
+                            <p-tableCheckbox [value]="hotels"></p-tableCheckbox>
+                        </td> 
+                        <td>{{ hotel.nombre }}</td>
+                        <td>{{ hotel.email }}</td>
+                        <td>{{ hotel.contacto }}</td>
+                        <td>{{ hotel.contacto_telefono }}</td>
+                        <td>{{ hotel.nit }}</td>
+                        <td class="flex gap-2">
+                            <p-button (click)="getHotel(hotel.id)" icon="pi pi-user-edit" severity="info"></p-button>
+                            <p-confirmDialog></p-confirmDialog>
+                            <p-button (click)="confirmDelete(hotel.id)" icon="pi pi-trash" severity="danger"></p-button>
+                            
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>
+<p-dialog header="Crear Hotel" [(visible)]="crearH" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+    <div class="col-12">
+        <h5>Completa el formulario</h5>
+        <form [formGroup]="formNewHotel" (ngSubmit)="createHotel()">
+            <div class="p-fluid p-formgrid grid">
+                <div class="field col-12 md:col-4">
+                    <label>Nombre del Hotel</label>
+                    <input type="text" placeholder="Hotel Brisas" pInputText class="w-full mb-3 border-round-3xl" formControlName="nombre">
+                </div>
+                <div class="field col-12 md:col-4">
+                    <label>Nit</label>
+                    <input type="text" placeholder="997869687-2" pInputText class="w-full mb-3 border-round-3xl" formControlName="nit">
+                </div>
+                <div class="field col-12 md:col-4">
+                    <label>Razon social</label>
+                    <input type="text" placeholder="Hotel Brisas S.A.S" pInputText class="w-full mb-3 border-round-3xl" formControlName="razon_social">
+                </div>
+                <div class="field col-12 md:col-4">
+                    <label>País</label>
+                    <p-dropdown [options]="countries$" [(ngModel)]="selectedCountry" [ngModelOptions]="{standalone: true}" optionLabel="nombre" (onChange)="getStates()"></p-dropdown>
+                </div>
+                <div class="field col-12 md:col-4">
+                    <label>Departamento</label>
+                    <p-dropdown [options]="states$" [(ngModel)]="selectedState" [ngModelOptions]="{standalone: true}" optionLabel="nombre" (onChange)="getCities()"></p-dropdown>
+                </div>
+                <div class="field col-12 md:col-4">
+                    <label>Ciudad</label>
+                    <p-dropdown [options]="cities$"  [(ngModel)]="selectedCity" [ngModelOptions]="{standalone: true}" optionLabel="nombre"></p-dropdown>
+                </div>
+               
+                <div class="field col-12 md:col-4">
+                    <label>Direccion</label>
+                    <input type="text" placeholder="Cra 50 #24-09" pInputText class="w-full mb-3 border-round-3xl" formControlName="direccion">
+                </div>
+                <div class="field col-12 md:col-4">
+                    <label>Telefono</label>
+                    <input type="text" placeholder="3003590987" pInputText class="w-full mb-3 border-round-3xl" formControlName="telefono">
+                </div>
+                <div class="field col-12 md:col-4">
+                    <label>No Habitaciones</label>
+                    <input type="number" placeholder="38" pInputText class="w-full mb-3 border-round-3xl" formControlName="cantidad_habitaciones">
+                </div>
+                <div class="field col-12 md:col-4">
+                    <label>Contacto</label>
+                    <input type="text" placeholder="Juan" pInputText class="w-full mb-3 border-round-3xl" formControlName="contacto">
+                </div>
+                <div class="field col-12 md:col-4">
+                    <label>Contacto Cargo</label>
+                    <input type="text" placeholder="Gerente" pInputText class="w-full mb-3 border-round-3xl" formControlName="contacto_cargo">
+                </div>
+                <div class="field col-12 md:col-4">
+                    <label>Contacto Telefono</label>
+                    <input type="text" placeholder="3149876543" pInputText class="w-full mb-3 border-round-3xl" formControlName="contacto_telefono">
+                </div>
+                <div class="field col-12 md:col-12">
+                    <label>Correo Electrónico</label>
+                    <input type="email" placeholder="info.email.com" pInputText class="w-full mb-3 border-round-3xl" formControlName="email">
+                </div>
+                <div class="field col-12 md:col-12">
+                    <button pButton pRipple label="Crear Usuario" icon="pi pi-user" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                </div>
+            </div>
+        </form>
+	</div>
+</p-dialog>
+<p-dialog id="editU" header="Editar Hotel" [(visible)]="editarH" [style]="{width: '500px'}" modal="modal" (onVisibleChange)="editarH = !editarH">
+    <form [formGroup]="formEditHotel" (ngSubmit)="updateHotel()">
+        <div class="p-fluid p-formgrid grid">
+            <div class="field col-12 md:col-6">
+                <label>Nombre</label>
+                <input *ngIf="editarH" type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="nombre">
+            </div>
+            <div class="field col-12 md:col-6">
+                <label>Email</label>
+                <input *ngIf="editarH" id="email1" type="email"    pInputText class="w-full mb-3 border-round-3xl" formControlName="email">
+            </div>
+            <div class="field col-12 md:col-4">
+                <label>No Habitaciones</label>
+                <input *ngIf="editarH" type="number"  pInputText class="w-full mb-3 border-round-3xl" formControlName="cantidad_habitaciones">
+            </div>
+            <div class="field col-12 md:col-4">
+                <label>Direccion</label>
+                <input *ngIf="editarH" type="text"   pInputText class="w-full mb-3 border-round-3xl" formControlName="direccion">
+            </div>
+            <div class="field col-12 md:col-4">
+                <label>Telefono</label>
+                <input *ngIf="editarH" type="text" 
+                [value]="hotelData.telefono"  pInputText class="w-full mb-3 border-round-3xl" formControlName="telefono">
+            </div>
+            <div class="field col-12 md:col-4">
+                <label>Contacto</label>
+                <input *ngIf="editarH" type="text"   pInputText class="w-full mb-3 border-round-3xl" formControlName="contacto">
+            </div>
+            <div class="field col-12 md:col-4">
+                <label>Cargo</label>
+                <input *ngIf="editarH" type="text"    pInputText class="w-full mb-3 border-round-3xl" formControlName="contacto_cargo">
+            </div>
+            <div class="field col-12 md:col-4">
+                <label>Contacto Telefono</label>
+                <input *ngIf="editarH" type="text"   pInputText class="w-full mb-3 border-round-3xl" formControlName="contacto_telefono">
+            </div>
+            <div class="field col-12 md:col-6">
+                <label>Razón Social</label>
+                <input *ngIf="editarH" type="text"   pInputText class="w-full mb-3 border-round-3xl" formControlName="razon_social">
+            </div>
+            <div class="field col-12 md:col-6">
+                <label>Nit</label>
+                <input *ngIf="editarH" type="text"   pInputText class="w-full mb-3 border-round-3xl" formControlName="nit">
+            </div>
+            <div class="field col-12 md:col-12">
+                <button pButton pRipple label="Editar Hotel" icon="pi pi-user" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+            </div>
+        </div>
+    </form>
+</p-dialog>

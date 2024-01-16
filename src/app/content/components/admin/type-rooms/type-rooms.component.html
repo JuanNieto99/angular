@@ -1,0 +1,97 @@
+<ngx-spinner type="ball-scale-multiple"></ngx-spinner>
+
+<div class="surface-section px-4 py-5 md:px-6 lg:px-8">
+    <div class="flex align-items-start flex-column lg:justify-content-between lg:flex-row">
+        <div>
+            <div class="font-medium text-3xl text-900">Tipos de Habitación</div>
+            <div class="flex align-items-center text-700 flex-wrap">
+                <div class="mr-5 flex align-items-center mt-3">
+                    <i class="pi pi-users mr-2"></i>
+                    <!-- <span>{{ countRegisters }} Productos Creados</span> -->
+                </div>
+            </div>
+        </div>
+        <div class="mt-3 lg:mt-0">
+            <button pButton pRipple label="Crear" (click)="openModal()" class="p-button-outlined mr-2" icon="pi pi-star"></button>
+            <!--button pButton pRipple label="Exportar" icon="pi pi-check"></button-->
+        </div>
+    </div>
+</div>
+<div class="grid mt-3">
+    <div class="col-12">
+        <div class="card px-3 py-3">
+           <p-table [value]="typeRoomData"  [showPageLinks]="true"  [first]="1" [totalRecords]="17" [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [loading]="loadingTable" [rows]="8" [globalFilterFields]="['nombre','medida','precio','cantidad', 'inventario','acciones']" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" selectionMode="multiple" [rowHover]="true" dataKey="usuario" (onPage)="onPage($event)">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0">Lista de Habitaciones</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <form [formGroup]="formSearch" >
+                                <input formControlName="search" pInputText type="text" placeholder="Buscar..."  (input)="search(dt)" class="w-full sm:w-auto"/>
+                            </form>
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 3rem">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <th>Nombre</th>
+                        <th>Medida</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Inventario</th>
+                        <th>Visible Venta</th>
+                        <th>Acciones</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-product>
+                    <tr>
+                        <td>
+                            <p-tableCheckbox [value]="typeRoomData"></p-tableCheckbox>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="flex gap-2">
+                            <p-button (click)="editTypeRoom(typeRoom.id)" icon="pi pi-user-edit" severity="info"></p-button>
+                            <p-confirmDialog></p-confirmDialog>
+                            <p-button (click)="confirmDelete(typeRoom.id)" icon="pi pi-trash" severity="danger"></p-button>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="loadingbody">
+					<tr>
+						<td colspan="8">Cargando informacion porfavor espere ...</td>
+					</tr>
+				</ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>
+<<p-dialog header="Nuevo Tipo de Habitación" [(visible)]="visibleModalTypeRoom" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+    <div class="col-12">
+        <h5>Completa el formulario</h5>
+        <form [formGroup]="formCreateTypeRoom" (ngSubmit)="submitCreate()">
+            <div class="p-fluid p-formgrid grid">
+                <div class="field col-12 md:col-6">
+                    <label>Nombre</label>
+                    <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="nombre">
+                    <div style="color: red;" *ngIf="formCreateTypeRoom.get('nombre').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+					<label>Hotel</label>
+					<p-dropdown [options]="medida" optionLabel="nombre" formControlName="medida_id" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateTypeRoom.get('medida_id').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-12">
+                    <button pButton pRipple label="Crear Tipo de Habitación" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                </div>
+            </div>
+            <br>
+        </form>
+	</div>
+</p-dialog>

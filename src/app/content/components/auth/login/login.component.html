@@ -1,0 +1,36 @@
+<div class="grid grid-nogutter">
+    <div id="auth-add" class="col-12 xl:col-6 lg:col-6 md:col-12 sm:col-12 bg-sprimary overflow-hidden z-1 relative">
+        <img class="h-full absolute fadeinright animation-duration-10000 animation-iteration-infinite" src="assets/layout/images/banner-auth.svg">
+        <img class="h-full absolute fadeoutleft animation-duration-10000 animation-iteration-infinite" src="assets/layout/images/banner-auth.svg">
+    </div>
+    <div class="col-12 lg:col-6 md:col-6 md:col-12 sm:col-12">
+        <div class="h-screen bg-white flex flex-column justify-content-center align-items-center">
+            <div class="text-center mb-5 flex flex-column justify-content-center align-items-center">
+                <a (click)="router.navigate(['/'])" class="cursor-pointer"><img src="assets/layout/images/logo-dark.svg" alt="Image" width="220" height="auto" class="mb-3"></a>
+                <span class="text-600 font-medium line-height-3">¿Aún no tienes cuenta? <a class="font-medium no-underline ml-2 text-blue-500 cursor-pointer color-admin">Crear Cuenta</a></span>
+            </div>
+            <div class="surface-card hover:shodow-2 border-round xl:w-8 lg:w-8 md:w-8 sm:w-8 p-5">
+                <form [formGroup]="formLog" (ngSubmit)="onSubmit()">
+                    <label  class="block text-900 font-medium mb-2">Correo Electrónico</label>
+                    <input id="email1" type="email" placeholder="Correo Electrónico" pInputText class="w-full mb-3 border-round-3xl" formControlName="email">
+    
+                    <label class="block text-900 font-medium mb-2">Contraseña</label>
+                    <input id="password1" type="password" placeholder="Contraseña" pInputText class="w-full mb-3 border-round-3xl" formControlName="password">
+    
+                    <div class="flex align-items-center justify-content-between mb-6">
+                        <div class="flex align-items-center">
+                            <p-checkbox id="rememberme1" [binary]="true" styleClass="mr-2"></p-checkbox>
+                            <label  class="text-900">Recuerdame</label>
+                        </div>
+                        <a class="font-medium no-underline ml-2 color-admin text-right cursor-pointer">Recordar Contraseña</a>
+                    </div>
+    
+                    <button pButton pRipple label="Ingresar" icon="pi pi-user" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                    <div class="w-full h-full flex justify-content-center align-items-center">
+                        <a (click)="router.navigate(['/'])" class="font-medium no-underline ml-2 text-blue-500 cursor-pointer color-admin">Volver</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

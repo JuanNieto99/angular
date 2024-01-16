@@ -1,0 +1,12 @@
+.btn-notfound{
+    background: #f33462 !important;
+    color: white;
+    padding: 10px 70px;
+    border-radius: 20px
+}
+@media screen and (max-width: 400px)
+{
+    #img-notfound{
+        width: 150px !important;
+    }
+}
