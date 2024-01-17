@@ -23,7 +23,7 @@ export class PermissionsComponent implements OnInit {
     
     public editarH: boolean = false;
     public crearH:boolean = false;
-
+    public pageCount: number = 10;
     ////// Variables de obtencion de datos
     public permission: Permit[];
     public totalPermission:any;
@@ -33,7 +33,12 @@ export class PermissionsComponent implements OnInit {
     public crearPermit: boolean = false;
     public permissionData: any;
     public param: any;
- 
+    public pageActual:number = 1;
+    public ultimaPage:number = 1;
+    public disablePageLeft: boolean = false;
+    public disablePageRight: boolean = true;
+    public registrosContar: number = 0;
+
     ///////// Forms Groups ////////////    
     formNewP= new FormGroup({
         nombre: new FormControl('', Validators.required),
@@ -53,7 +58,7 @@ export class PermissionsComponent implements OnInit {
     
     ngOnInit(): void {
         // Inicializamos la consulta de hoteles
-        this.getAllPermissions();
+        this.getIndex();
         this.permissionsService.data.subscribe(permission => {
             this.permission = permission;
         });
@@ -66,16 +71,15 @@ export class PermissionsComponent implements OnInit {
         this.permissionsService.CreatePermissions(datos).subscribe(response => { 
             this.messageService.add({ severity: 'info', summary: 'Confirmación Exitosa', detail: 'Usuario creado.',sticky: true, life: 200, });
             this.crearPermit = false;
-            this.getAllPermissions();
+            this.getIndex();
         }, error => {
         console.log('Error:', error);
         });
     }
     /////// Consultar Todos los Permisos  ///////////
-    getAllPermissions(): void {
-        this.permissionsService.getPermissions(30).subscribe(
-            (response: any) => {
-                /* console.log('Response: ', response); */
+/* getAllPermissions(): void {
+        this.permissionsService.getPermissions(10).subscribe(
+            (response: any) => { 
                 this.permission = response.data;
                 this.totalPermission = response.total;  
             },
@@ -83,7 +87,23 @@ export class PermissionsComponent implements OnInit {
                 console.log('Error: ', error);
             }
         );
+    }*/
+
+    getIndex(search:string = '', pageCount:number = this.pageCount, page: number = 1){
+
+        this.permissionsService.getPermissions(pageCount, search, page).subscribe(
+            (response: any) => {
+            this.permission = response.data;
+            this.totalPermission = response.total;  
+            this.ultimaPage = response.last_page; 
+            this.registrosContar = response.total;
+            },
+            (error) => {
+                console.log('Error: ', error);
+            }
+        );
     }
+
     /////////// Consultar 1 hotel  //////////////
     getPermission(id:number){
         this.permissionsService.getPermissionById(id).subscribe(response => {
@@ -143,7 +163,35 @@ export class PermissionsComponent implements OnInit {
         this.crearPermit = true;
     }
     
-    
+    leftTable(){        
+        this.pageActual = this.pageActual - 1; 
+        this.getIndex('', this.pageCount, this.pageActual);
+        this.validatePage(); 
+    }
 
+    rightTable(){
+        this.pageActual = this.pageActual + 1; 
+        this.getIndex('', this.pageCount, this.pageActual);
+        this.validatePage();
+    }
+
+    validatePage(){
+        if(  this.pageActual == 1 ){  
+            this.disablePageLeft = false;
+        } 
+
+        if(  this.pageActual > 1 ){ 
+            this.disablePageLeft = true;
+        } 
+
+        if(this.ultimaPage == this.pageActual){
+            this.disablePageRight = false; 
+        }
+
+        
+        if(this.ultimaPage > this.pageActual){
+            this.disablePageRight = true; 
+        }
+    }
     
 }

@@ -33,7 +33,7 @@ import { Config } from '../../storage/config';
 
     //////////////////////  CRUD PERMISOS  /////////////////////////
     // Consultar lista de permisos
-    getPermissions(per_page:number):Observable<Permit[]>{
+    getPermissions(per_page:number, search:string = '',page: number = 1):Observable<Permit[]>{
         const parametros = { 
             id: '',
             codigo: '',
@@ -42,7 +42,7 @@ import { Config } from '../../storage/config';
             id_padre: '',
             estado: ''
         };
-        return this.httpClient.post<Permit[]>(`${this.baseUrl+this.endpointPListar}?per_page=${per_page}`, parametros);
+        return this.httpClient.post<Permit[]>(`${this.baseUrl+this.endpointPListar}?per_page=${per_page}&page=${page}&search=${search}`, parametros);
     }
     // Crear un nuevo servicio
     CreatePermissions(data: any): Observable<Permit[]> {
@@ -51,7 +51,7 @@ import { Config } from '../../storage/config';
     /////// Elegir un nuevo servicio por id
     getPermissionById(id: number){
         return this.httpClient.get<any>(`${this.baseUrl+this.endpointPMostrar}/${id}`)
-              .pipe(map(hotel => hotel));
+            .pipe(map(hotel => hotel));
     }
     updatePermissions(data:any): Observable<any> {
         return this.httpClient.post<any>(`${this.baseUrl+this.endpointPActualizar}`, data);
@@ -65,12 +65,12 @@ import { Config } from '../../storage/config';
     refresPermissionData(): void {
         this.getPermissions(30).subscribe(
             (response: any) => {
-              console.log(response.data);
-                this.dataSubject.next(response.data);
-            },
-            (error) => {
-                console.log('Error: ', error);
-            }
-        );  
-      } 
-  }
+                console.log(response.data);
+                    this.dataSubject.next(response.data);
+                },
+                (error) => {
+                    console.log('Error: ', error);
+                }
+            );  
+        } 
+    }

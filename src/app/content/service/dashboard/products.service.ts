@@ -33,9 +33,9 @@ export class ProductsService {
     this.baseUrl = Config.url;
   }
 
-  getAll(per_page:number, search:string = ''): Observable<Products[]> {
+  getAll(per_page:number, search:string = '', page:number = 1): Observable<Products[]> {
     const parametros = {};
-    return this.httpClient.post<Products[]>(`${this.baseUrl+this.endpointListar}?per_page=${per_page}&search=${search}`, parametros);
+    return this.httpClient.post<Products[]>(`${this.baseUrl+this.endpointListar}?per_page=${per_page}&page=${page}&search=${search}`, parametros);
     
   }
 

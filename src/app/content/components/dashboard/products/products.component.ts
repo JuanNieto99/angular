@@ -71,6 +71,11 @@ export class ProductsComponent implements OnInit {
     public first:number = 0;
     public rows:number = 8;
     public data = Array(18).fill(0);
+    public pageActual:number = 1;
+    public ultimaPage:number = 1;
+    public disablePageLeft: boolean = false;
+    public disablePageRight: boolean = true;
+    public registrosContar: number = 0; 
 
     @ViewChild('fileUpload') fileUpload!: FileUpload;
     @ViewChild('fileUploadCreate') fileUploadCreate!: FileUpload;
@@ -94,15 +99,15 @@ export class ProductsComponent implements OnInit {
       this.onCreate();
     }
 
-    getIndex(search:string = '', page:number = this.pageCount){
+    getIndex(search:string = '', pageCount:number = this.pageCount, page: number = 1){
       this.spinner.show();
       this.loadingTable = true;
-      this.productsService.getAll(page, search).subscribe(
+      this.productsService.getAll(pageCount, search, page).subscribe(
         (response: any) => {
-          this.loadingTable = false;
-            console.log('Response: ', response);
-            this.productsData = response.data;
-            this.countRegisters = response.total;
+            this.loadingTable = false;  
+            this.productsData = response.data; 
+            this.ultimaPage = response.last_page; 
+            this.registrosContar = response.total;          
             this.spinner.hide();
         },
         (error) => {
@@ -206,7 +211,15 @@ export class ProductsComponent implements OnInit {
 
     }
 
-    search(dt){
+    searchInput(){
+      let search = this.formSearch.get('search').value;
+      if(search==""){
+        this.getIndex(search); 
+      }
+
+    }
+
+    search(dt){ 
       let search = this.formSearch.get('search').value;
       this.getIndex(search);
     }
@@ -228,7 +241,8 @@ export class ProductsComponent implements OnInit {
         this.limiteCantidad = response.sin_limite;
         this.tipo = response.tipo;
         this.visibleModalProducto = true;
-       // this.imagen = 'data:image/png;base64,' + response.imagen;
+        this.registrosContar = response.total;
+        // this.imagen = 'data:image/png;base64,' + response.imagen;
        // this.cargarImagen(response.imagen);
       },
       (error) => {
@@ -288,7 +302,6 @@ export class ProductsComponent implements OnInit {
             }
           })
 
-          console.log( )
           setTimeout(() => {
             this.formEditProduct.get('nombre').setValue(this.dataEditarInfoProductos.nombre)
             this.formEditProduct.get('medida_id').setValue(medida)
@@ -424,9 +437,7 @@ export class ProductsComponent implements OnInit {
       dataProduct.limite_cantidad = dataProduct.limite_cantidad['id'];
       dataProduct.tipo_producto = dataProduct.tipo_producto['id'];
       dataProduct.id = this.idEditando;
-      dataProduct.estado = 1;
-
-
+      dataProduct.estado = 1; 
 
       const formData = new FormData();
 
@@ -485,4 +496,36 @@ export class ProductsComponent implements OnInit {
       this.first = event.first;
       this.rows = event.rows;
     }
+
+
+    leftTable(){        
+      this.pageActual = this.pageActual - 1; 
+      this.getIndex('', this.pageCount, this.pageActual);
+      this.validatePage(); 
+    }
+
+    rightTable(){
+        this.pageActual = this.pageActual + 1; 
+        this.getIndex('', this.pageCount, this.pageActual);
+        this.validatePage();
+    }
+
+    validatePage(){
+        if(this.pageActual == 1 ){  
+            this.disablePageLeft = false;
+        } 
+
+        if(this.pageActual > 1 ){ 
+            this.disablePageLeft = true;
+        }  
+
+        if(this.ultimaPage == this.pageActual){
+            this.disablePageRight = false; 
+        } 
+        
+        if(this.ultimaPage > this.pageActual){
+            this.disablePageRight = true; 
+        }
+    }
+  
 }
