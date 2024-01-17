@@ -1,52 +1,40 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { typeRoom } from '../../models/dashboard/typeRoom.model';
 import { Config } from '../../storage/config';
-
+ 
 @Injectable({
   providedIn: 'root'
 })
 export class TypeRoomsService {
     private baseUrl: string;
     private endpointListar: string;
-    private endpointTypeRoomGet: string;
-    private endpointTypeRoomUpdate: string;
-    private endpointTypeRoomCreate: string;
-    private endpointDelete: string;
+    public data: Observable<typeRoom[]>;
+    private dataSubject: BehaviorSubject<typeRoom[]>;
 
     constructor(private httpClient: HttpClient) {
+        this.dataSubject = new BehaviorSubject<typeRoom[]>([]);
         this.baseUrl = Config.url;
         this.endpointListar = '/tipoHabitacionListar';
-        this.endpointTypeRoomGet = '/tipoHabitacionEditar/';
-        this.endpointTypeRoomUpdate = '/tipoHabitacionActualizar/';
-        this.endpointTypeRoomCreate = '/tipoHabitacionCrear';
-        this.endpointDelete = '/tipoHabitacionEliminar/';
-    }
-
-    getTypeRoom(id:number): Observable<any>{
-        return this.httpClient.get<any>(`${this.baseUrl+this.endpointTypeRoomGet+id}`);
+        this.data = this.dataSubject.asObservable();
     }
 
     getAll(per_page:number, search:string = ''): Observable<typeRoom[]> {
-        const httpOptions = {
-            headers: new HttpHeaders({
-              'Content-Type': 'application/json',
-            })
-          };
         const parametros = {};
-        return this.httpClient.post<typeRoom[]>(`${this.baseUrl+this.endpointListar}?per_page=${per_page}&search=${search}`, httpOptions);
+        return this.httpClient.post<typeRoom[]>(`${this.baseUrl+this.endpointListar}?per_page=${per_page}&search=${search}`, parametros);
     }
 
-    createProduct(data:any){
-        return this.httpClient.post<any>(`${this.baseUrl+this.endpointTypeRoomCreate}`, data);
-    }
 
-    updateTypeRoom(data:any){
-        return this.httpClient.post<any>(`${this.baseUrl+this.endpointTypeRoomUpdate}`, data);
-    }
 
-    deleteTypeRoom(data:any){
-        return this.httpClient.post<any>(`${this.baseUrl+this.endpointDelete}`, data);
-    }
+  refreshUsersData(): void {
+    this.getAll(30).subscribe(
+        (response: any) => {
+            this.dataSubject.next(response.data);
+        },
+        (error) => {
+            console.log('Error: ', error);
+        }
+    );
+  }
 }

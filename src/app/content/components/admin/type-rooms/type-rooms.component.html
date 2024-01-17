@@ -23,7 +23,7 @@
            <p-table [value]="typeRoomData"  [showPageLinks]="true"  [first]="1" [totalRecords]="17" [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [loading]="loadingTable" [rows]="8" [globalFilterFields]="['nombre','medida','precio','cantidad', 'inventario','acciones']" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" selectionMode="multiple" [rowHover]="true" dataKey="usuario" (onPage)="onPage($event)">
                 <ng-template pTemplate="caption">
                     <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                        <h5 class="m-0">Tipo de Habitaciones</h5>
+                        <h5 class="m-0">Lista de Habitaciones</h5>
                         <span class="block mt-2 md:mt-0 p-input-icon-left">
                             <form [formGroup]="formSearch" >
                                 <input formControlName="search" pInputText type="text" placeholder="Buscar..."  (input)="search(dt)" class="w-full sm:w-auto"/>
@@ -37,17 +37,25 @@
                             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                         </th>
                         <th>Nombre</th>
-                        <th>Hotel</th>
+                        <th>Medida</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Inventario</th>
+                        <th>Visible Venta</th>
                         <th>Acciones</th>
                     </tr>
                 </ng-template>
-                <ng-template pTemplate="body" let-typeRoom>
+                <ng-template pTemplate="body" let-product>
                     <tr>
                         <td>
                             <p-tableCheckbox [value]="typeRoomData"></p-tableCheckbox>
                         </td>
-                        <td>{{ typeRoom.nombre }}</td>
-                        <td>{{ typeRoom.hotel.nombre }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                         <td class="flex gap-2">
                             <p-button (click)="editTypeRoom(typeRoom.id)" icon="pi pi-user-edit" severity="info"></p-button>
                             <p-confirmDialog></p-confirmDialog>
@@ -64,7 +72,6 @@
         </div>
     </div>
 </div>
-<!--Crear-->
 <<p-dialog header="Nuevo Tipo de Habitación" [(visible)]="visibleModalTypeRoom" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12">
         <h5>Completa el formulario</h5>
@@ -77,35 +84,11 @@
                 </div>
                 <div class="field col-12 md:col-6">
 					<label>Hotel</label>
-					<p-dropdown [options]="hotel" optionLabel="nombre" formControlName="hotel_id" ></p-dropdown>
-                    <div style="color: red;" *ngIf="formCreateTypeRoom.get('hotel_id').hasError('required')">Campo requerido</div>
+					<p-dropdown [options]="medida" optionLabel="nombre" formControlName="medida_id" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateTypeRoom.get('medida_id').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-12">
                     <button pButton pRipple label="Crear Tipo de Habitación" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
-                </div>
-            </div>
-            <br>
-        </form>
-	</div>
-</p-dialog>
-<!--Editar-->
-<p-dialog header="Editar Tipo de Hotel" [(visible)]="visibleModalTypeRoomEditar"  [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
-    <div class="col-12">
-        <h5>Completa el formulario</h5>
-        <form [formGroup]="formEditTypeRoom" (ngSubmit)="submitUpdate()">
-            <div class="p-fluid p-formgrid grid">
-                <div class="field col-12 md:col-6">
-                    <label>Nombre</label>
-                    <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="nombre">
-                    <div style="color: red;" *ngIf="formEditTypeRoom.get('nombre').hasError('required')">Campo requerido</div>
-                </div>
-                <div class="field col-12 md:col-6">
-					<label>Hotel</label>
-					 <p-dropdown [options]="hotel" optionLabel="nombre" formControlName="hotel_id" ></p-dropdown>
-                     <div style="color: red;" *ngIf="formEditTypeRoom.get('hotel_id').hasError('required')">Campo requerido</div>
-                </div>
-                <div class="field col-12 md:col-12">
-                    <button pButton pRipple label="Editar Tipo de Habitación" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>
             </div>
             <br>
