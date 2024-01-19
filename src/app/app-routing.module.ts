@@ -26,8 +26,9 @@ import { LoginBlockGuard } from './content/guards/loginblock.guard';
                     { path: 'admin/wallets', loadChildren: () => import('./content/components/admin/wallets/wallets.module').then(m => m.WalletsModule) },
                     { path: 'products', loadChildren: () => import('./content/components/dashboard/products/products.module').then(m => m.ProductsModule) },
                     { path: 'inventory', loadChildren: () => import('./content/components/dashboard/inventory/inventory.module').then(m => m.InventoryModule) },
-                    { path: 'typeRooms', loadChildren: () => import('./content/components/admin/type-rooms/type-rooms.module').then(m => m.TypeRoomsModule) }
-
+                    { path: 'typeRooms', loadChildren: () => import('./content/components/admin/type-rooms/type-rooms.module').then(m => m.TypeRoomsModule) },
+                    { path: 'admin/internalSequence', loadChildren: () => import('./content/components/admin/internal-sequence/internal-sequence.module').then(m => m.InternalSequenceModule) },
+                    { path: 'admin/externalSequence', loadChildren: () => import('./content/components/admin/external-sequence/external-sequence.module').then(m => m.ExternalSequenceModule) }
                 ],
                 canActivate: [LoginGuard]
             },

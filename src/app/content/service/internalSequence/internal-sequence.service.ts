@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Config } from '../../storage/config';
 import { Observable } from 'rxjs';
-import { internalSequence } from '../../models/dashboard/internalSequence.model';
+import { internalSequence } from '../../models/admin/internalSequence.model';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +19,7 @@ export class InternalSequenceService {
         this.baseUrl = Config.url;
         this.endpointListar = '/secuenciaInternaListar';
         this.endpointInternalSequenceGet = '/secuenciaInternaEditar/';
-        this.endpointInternalSequenceUpdate = '/secuenciaInternaActualizar/';
+        this.endpointInternalSequenceUpdate = '/secuenciaInternaActualizar';
         this.endpointInternalSequenceCreate = '/secuenciaInternaCrear';
         this.endpointDelete = '/secuenciaInternaEliminar/';
     }
@@ -31,10 +31,22 @@ export class InternalSequenceService {
             })
           };
         const parametros = {};
-        return this.httpClient.post<internalSequence[]>(`${this.baseUrl+this.endpointListar}?per_page=${per_page}&search=${search}`, httpOptions);
+        return this.httpClient.post<internalSequence[]>(`${this.baseUrl+this.endpointListar}?per_page=${per_page}&search=${search}`, parametros);
     }
 
     getInternalSequence(id:number): Observable<any>{
         return this.httpClient.get<any>(`${this.baseUrl+this.endpointInternalSequenceGet+id}`);
+    }
+
+    createInternalSequence(data:any){
+        return this.httpClient.post<any>(`${this.baseUrl+this.endpointInternalSequenceCreate}`, data);
+    }
+
+    updateInternalSequence(data:any){
+        return this.httpClient.post<any>(`${this.baseUrl+this.endpointInternalSequenceUpdate}`, data);
+    }
+
+    deleteInternalSequence(data:any){
+        return this.httpClient.post<any>(`${this.baseUrl+this.endpointDelete}`, data);
     }
 }

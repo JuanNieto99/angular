@@ -1,33 +1,33 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { InternalSequenceRoutingModule } from './internal-sequence-routing.module';
-import { TableModule } from 'primeng/table';
-import { FileUploadModule } from 'primeng/fileupload';
+import { ExternalSequenceRoutingModule } from './external-sequence-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { RippleModule } from 'primeng/ripple';
-import { ToastModule } from 'primeng/toast';
-import { RatingModule } from 'primeng/rating';
-import { ToolbarModule } from 'primeng/toolbar';
-import { InputTextModule } from 'primeng/inputtext';
-import { InputTextareaModule } from 'primeng/inputtextarea';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
+import { FileUploadModule } from 'primeng/fileupload';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputTextareaModule } from 'primeng/inputtextarea';
 import { PaginatorModule } from 'primeng/paginator';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { RatingModule } from 'primeng/rating';
+import { RippleModule } from 'primeng/ripple';
+import { TableModule } from 'primeng/table';
+import { ToastModule } from 'primeng/toast';
+import { ToolbarModule } from 'primeng/toolbar';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AdminInterceptor } from 'src/app/content/interceptors/admin.interceptor';
-import { InternalSequenceService } from 'src/app/content/service/internalSequence/internal-sequence.service';
-import { InternalSequenceComponent } from './internal-sequence.component';
+import { ExternalSequenceService } from '../../../service/externalSequence/external-sequence.service';
+import { ExternalSequenceComponent } from './external-sequence.component';
 
 
 @NgModule({
   imports: [
     CommonModule,
-    InternalSequenceRoutingModule,
+    ExternalSequenceRoutingModule,
     TableModule,
     FileUploadModule,
     FormsModule,
@@ -52,8 +52,8 @@ import { InternalSequenceComponent } from './internal-sequence.component';
         useClass:AdminInterceptor,
         multi:true
     },
-    InternalSequenceService,
+    ExternalSequenceService,
   ],
-    declarations: [InternalSequenceComponent]
+    declarations: [ExternalSequenceComponent]
 })
-export class InternalSequenceModule { }
+export class ExternalSequenceModule { }

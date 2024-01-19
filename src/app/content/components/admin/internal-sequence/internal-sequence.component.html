@@ -3,7 +3,7 @@
 <div class="surface-section px-4 py-5 md:px-6 lg:px-8">
     <div class="flex align-items-start flex-column lg:justify-content-between lg:flex-row">
         <div>
-            <div class="font-medium text-3xl text-900">Secuencia interna</div>
+            <div class="font-medium text-3xl text-900">Secuencia Interna</div>
             <div class="flex align-items-center text-700 flex-wrap">
                 <div class="mr-5 flex align-items-center mt-3">
                     <i class="pi pi-users mr-2"></i>
@@ -20,7 +20,7 @@
 <div class="grid mt-3">
     <div class="col-12">
         <div class="card px-3 py-3">
-           <p-table [value]="typeRoomData"  [showPageLinks]="true"  [first]="1" [totalRecords]="17" [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [loading]="loadingTable" [rows]="8" [globalFilterFields]="['nombre','medida','precio','cantidad', 'inventario','acciones']" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" selectionMode="multiple" [rowHover]="true" dataKey="usuario" (onPage)="onPage($event)">
+           <p-table [value]="internalSequenceData"  [showPageLinks]="true"  [first]="1" [totalRecords]="17" [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [loading]="loadingTable" [rows]="8" [globalFilterFields]="['nombre','medida','precio','cantidad', 'inventario','acciones']" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" selectionMode="multiple" [rowHover]="true" dataKey="usuario" (onPage)="onPage($event)">
                 <ng-template pTemplate="caption">
                     <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                         <h5 class="m-0">Tipo de Habitaciones</h5>
@@ -36,22 +36,26 @@
                         <th style="width: 3rem">
                             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                         </th>
-                        <th>Nombre</th>
                         <th>Hotel</th>
+                        <th>Descripción</th>
+                        <th>Secuencia Inicial</th>
+                        <th>Secuencia Actual</th>
                         <th>Acciones</th>
                     </tr>
                 </ng-template>
-                <ng-template pTemplate="body" let-typeRoom>
+                <ng-template pTemplate="body" let-internalSequence>
                     <tr>
                         <td>
-                            <p-tableCheckbox [value]="typeRoomData"></p-tableCheckbox>
+                            <p-tableCheckbox [value]="internalSequenceData"></p-tableCheckbox>
                         </td>
-                        <td>{{ typeRoom.nombre }}</td>
-                        <td>{{ typeRoom.hotel.nombre }}</td>
+                        <td>{{ internalSequence.hotel.nombre }}</td>
+                        <td>{{ internalSequence.descripcion_secuencia }}</td>
+                        <td>{{ internalSequence.secuensia_incial }}</td>
+                        <td>{{ internalSequence.secuensia_actual }}</td>
                         <td class="flex gap-2">
-                            <p-button (click)="editTypeRoom(typeRoom.id)" icon="pi pi-user-edit" severity="info"></p-button>
+                            <p-button (click)="editInternalSequence(internalSequence.id)" icon="pi pi-user-edit" severity="info"></p-button>
                             <p-confirmDialog></p-confirmDialog>
-                            <p-button (click)="confirmDelete(typeRoom.id)" icon="pi pi-trash" severity="danger"></p-button>
+                            <p-button (click)="confirmDelete(internalSequence.id)" icon="pi pi-trash" severity="danger"></p-button>
                         </td>
                     </tr>
                 </ng-template>
@@ -65,23 +69,33 @@
     </div>
 </div>
 <!--Crear-->
-<<p-dialog header="Nuevo Tipo de Habitación" [(visible)]="visibleModalInternalSequence" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+<<p-dialog header="Secuencia Interna" [(visible)]="visibleModalInternalSequence" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12">
         <h5>Completa el formulario</h5>
-        <form [formGroup]="formCreateTypeRoom" (ngSubmit)="submitCreate()">
+        <form [formGroup]="formCreateInternalSequence" (ngSubmit)="submitCreate()">
             <div class="p-fluid p-formgrid grid">
-                <div class="field col-12 md:col-6">
-                    <label>Nombre</label>
-                    <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="nombre">
-                    <div style="color: red;" *ngIf="formCreateTypeRoom.get('nombre').hasError('required')">Campo requerido</div>
-                </div>
                 <div class="field col-12 md:col-6">
 					<label>Hotel</label>
 					<p-dropdown [options]="hotel" optionLabel="nombre" formControlName="hotel_id" ></p-dropdown>
-                    <div style="color: red;" *ngIf="formCreateTypeRoom.get('hotel_id').hasError('required')">Campo requerido</div>
+                    <div style="color: red;" *ngIf="formCreateInternalSequence.get('hotel_id').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Descripción de Secuencia</label>
+                    <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="descripcion_secuencia">
+                    <div style="color: red;" *ngIf="formCreateInternalSequence.get('descripcion_secuencia').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Secuencia Inicial</label>
+                    <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="secuensia_incial">
+                    <div style="color: red;" *ngIf="formCreateInternalSequence.get('secuensia_incial').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Secuencia Actual</label>
+                    <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="secuensia_actual">
+                    <div style="color: red;" *ngIf="formCreateInternalSequence.get('secuensia_actual').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-12">
-                    <button pButton pRipple label="Crear Tipo de Habitación" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                    <button pButton pRipple label="Crear Secuencia Interna" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>
             </div>
             <br>
@@ -89,20 +103,30 @@
 	</div>
 </p-dialog>
 <!--Editar-->
-<p-dialog header="Editar Tipo de Hotel" [(visible)]="visibleModalTypeRoomEditar"  [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+<p-dialog header="Editar Secuencia Interna" [(visible)]="visibleModalInternalSequenceEditar"  [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12">
         <h5>Completa el formulario</h5>
-        <form [formGroup]="formEditTypeRoom" (ngSubmit)="submitUpdate()">
+        <form [formGroup]="formEditInternalSequence" (ngSubmit)="submitUpdate()">
             <div class="p-fluid p-formgrid grid">
-                <div class="field col-12 md:col-6">
-                    <label>Nombre</label>
-                    <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="nombre">
-                    <div style="color: red;" *ngIf="formEditTypeRoom.get('nombre').hasError('required')">Campo requerido</div>
-                </div>
                 <div class="field col-12 md:col-6">
 					<label>Hotel</label>
 					 <p-dropdown [options]="hotel" optionLabel="nombre" formControlName="hotel_id" ></p-dropdown>
-                     <div style="color: red;" *ngIf="formEditTypeRoom.get('hotel_id').hasError('required')">Campo requerido</div>
+                     <div style="color: red;" *ngIf="formEditInternalSequence.get('hotel_id').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Descripción de Secuencia</label>
+                    <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="descripcion_secuencia">
+                    <div style="color: red;" *ngIf="formEditInternalSequence.get('descripcion_secuencia').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Secuencia Inicial</label>
+                    <input type="number"  pInputText class="w-full mb-3 border-round-3xl" formControlName="secuensia_incial">
+                    <div style="color: red;" *ngIf="formEditInternalSequence.get('secuensia_incial').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Secuencia Actual</label>
+                    <input type="number"  pInputText class="w-full mb-3 border-round-3xl" formControlName="secuencia_actual">
+                    <div style="color: red;" *ngIf="formEditInternalSequence.get('secuencia_actual').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-12">
                     <button pButton pRipple label="Editar Tipo de Habitación" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>

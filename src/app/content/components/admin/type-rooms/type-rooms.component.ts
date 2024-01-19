@@ -201,7 +201,7 @@ export class TypeRoomsComponent {
 
     confirmDelete(id: number) {
         Swal.fire({
-            title: '¿Estas Seguro que deseas eliminar el tipo de habitación?',
+            title: '¿Estas seguro que deseas eliminar el tipo de habitación?',
             text: 'Ten cuidado esta acción no se prodrá reversar',
             icon: 'warning',
             showCancelButton: true,
@@ -216,7 +216,7 @@ export class TypeRoomsComponent {
                         if (response.code == 'success') {
                             Swal.fire({
                                 title: 'Exito',
-                                text: 'Producto eliminado exitosamente.',
+                                text: 'tipo de habitación eliminada exitosamente.',
                                 icon: 'success',
                             });
 
@@ -224,7 +224,7 @@ export class TypeRoomsComponent {
                         } else {
                             Swal.fire({
                                 title: 'Error',
-                                text: 'Error al eliminar el producto.',
+                                text: 'Error al eliminar el tipo de habitación.',
                                 icon: 'error',
                             });
                         }

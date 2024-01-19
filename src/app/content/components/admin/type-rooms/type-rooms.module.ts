@@ -29,7 +29,6 @@ import { TypeRoomsService } from 'src/app/content/service/typeRooms/type-rooms.s
   imports: [
     CommonModule,
     TypeRoomsRoutingModule,
-    CommonModule,
     TableModule,
     FileUploadModule,
     FormsModule,

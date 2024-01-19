@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { InternalSequenceComponent } from './internal-sequence.component';
+import { ExternalSequenceComponent } from './external-sequence.component';
 
 const routes: Routes = [];
 
 @NgModule({
   imports: [RouterModule.forChild([
-    { path: '', component: InternalSequenceComponent }
+    { path: '', component: ExternalSequenceComponent }
   ])],
     exports: [RouterModule]
 })
-export class InternalSequenceRoutingModule { }
+export class ExternalSequenceRoutingModule { }
