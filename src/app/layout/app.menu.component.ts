@@ -17,7 +17,7 @@ export class AppMenuComponent implements OnInit {
             {
                 label: 'Tablero',
                 items: [
-                    { label: 'Habitaciones', icon: 'pi pi-fw pi-home', routerLink: ['/dashboard'] },
+                    { label: 'Habitaciones', icon: 'pi pi-fw pi-home', routerLink: ['/dashboard/dashboardRooms'] },
                     { label: 'Reservas', icon: 'pi pi-fw pi-calendar', routerLink: ['/dashboard/booking'] },
                     { label: 'Clientes', icon: 'pi pi-fw pi-user', routerLink: ['/dashboard/clients'] },
                     { label: 'Facturación', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/cash-register'] }
