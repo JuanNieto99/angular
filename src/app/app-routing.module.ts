@@ -29,7 +29,8 @@ import { LoginBlockGuard } from './content/guards/loginblock.guard';
                     { path: 'typeRooms', loadChildren: () => import('./content/components/admin/type-rooms/type-rooms.module').then(m => m.TypeRoomsModule) },
                     { path: 'admin/internalSequence', loadChildren: () => import('./content/components/admin/internal-sequence/internal-sequence.module').then(m => m.InternalSequenceModule) },
                     { path: 'admin/externalSequence', loadChildren: () => import('./content/components/admin/external-sequence/external-sequence.module').then(m => m.ExternalSequenceModule) },
-                    { path: 'dashboardRooms', loadChildren: () => import('./content/components/dashboard/dashboard-rooms/dashboard-rooms.module').then(m => m.DashboardRoomsModule) }
+                    { path: 'dashboardRooms', loadChildren: () => import('./content/components/dashboard/dashboard-rooms/dashboard-rooms.module').then(m => m.DashboardRoomsModule) },
+                    { path: 'calendar', loadChildren: () => import('./content/components/admin/dashboard-calendar/dashboard-calendar.module').then(m => m.DashboardCalendarModule) }
                 ],
                 canActivate: [LoginGuard]
             },

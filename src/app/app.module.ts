@@ -23,7 +23,7 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
     imports: [
         AppRoutingModule,
         AppLayoutModule,
-        HttpClientModule,
+        HttpClientModule, 
         SweetAlert2Module.forRoot()
     ],
     providers: [
