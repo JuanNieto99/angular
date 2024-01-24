@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { dashboardRooms } from 'src/app/content/models/dashboard/dashboard-rooms.model';
 import { DashboardRoomsService } from 'src/app/content/service/dashboardRooms/dashboard-rooms.service';
-import {  MenuItem } from 'primeng/api';
+import {  MenuItem, MenuItemCommandEvent } from 'primeng/api';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { ThirdPartyDraggable } from '@fullcalendar/interaction';
 
 interface HotelData {
   hotel_id: number; // Adjust the type accordingly
@@ -17,6 +19,8 @@ interface dataRoomPiso {
 interface dataRoom {
   nombre: string,
   json: string,
+  id: number,
+  detalle: any;
 }
 @Component({
   selector: 'app-dashboard-rooms',
@@ -25,35 +29,10 @@ interface dataRoom {
 })
 
 export class DashboardRoomsComponent implements OnInit  {
+  @ViewChild('op1') op1: OverlayPanel;
 
-  public menuHabitacion: MenuItem [] =  [
-    {
-        label: 'Opciones',
-        items: [
-            {
-              label: 'Reservar',
-              icon: 'pi pi-calendar-times'
-            },
-            {
-                label: 'Disponible',
-                icon: 'pi pi-lock-open'
-            },
-            {
-                label: 'Limpieza',
-                icon: 'pi pi-exclamation-triangle'
-            },
-            {
-              label: 'Mantenimiento',
-              icon: 'pi pi-wrench'
-            },
-            {
-              label: 'Ocupar',
-              icon: 'pi pi-lock'
-            }
-        ]
-    }, 
-];
-;
+  public menuHabitacion: MenuItem ;
+  
   private hotelId: number;
   private pisoId: number;
   private primerPiso: number = 1;
@@ -61,6 +40,8 @@ export class DashboardRoomsComponent implements OnInit  {
   public dataRoomsPisos: any[];
   public htmlContent: string;
   public dataRoom: dataRoomPiso [] = [];
+  private estadoHabitacion: number;
+  private habitacionId: number;
 
   ngOnInit(): void {
     this.hotelId = 1; 
@@ -73,7 +54,7 @@ export class DashboardRoomsComponent implements OnInit  {
   }
 
   constructor( 
-    private dashboardRoomsService:DashboardRoomsService
+    private dashboardRoomsService:DashboardRoomsService, 
   ){
 
   }
@@ -103,12 +84,14 @@ export class DashboardRoomsComponent implements OnInit  {
           
           let pisoEncontrado = this.dataRoom.find(piso => piso.piso == this.pisoId);
             pisoEncontrado.loading = false;
-            response.forEach(habitaciones => {
+            response.forEach(habitaciones => { 
                 pisoEncontrado.habitaciones.push
                 (
                   { 
                       nombre: habitaciones.nombre,
-                      json: habitaciones.diseno_json 
+                      json: habitaciones.diseno_json,
+                      id: habitaciones.id,
+                      detalle: habitaciones.habitacion_estado,
                   }
                 )
             });
@@ -160,19 +143,425 @@ export class DashboardRoomsComponent implements OnInit  {
     this.getRoomsDashboard();   
   }
 
-  opcionesHabitacion($event, opcion){
-    console.log("1")
-    console.log(opcion)
-    console.log($event)
+  opcionesHabitacion(habitacion){ 
+    console.log(habitacion)
+    this.habitacionId = habitacion.id;
 
+/*
+    this.menuHabitacion = [
+      {
+          label: 'Opciones',
+          items: [
+              {
+                label: 'Reservar',
+                icon: 'pi pi-calendar-times',
+                id: '5',
+                command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event),
+                visible: true,
+              },
+              {
+                label: 'Limpieza',
+                icon: 'pi pi-exclamation-triangle',
+                id: '4',
+                command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event),
+                visible: true,
+              },
+              {
+                label: 'Mantenimiento',
+                icon: 'pi pi-wrench',
+                id: '6',
+                command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event),
+                visible: true,
+              },
+              {
+                label: 'Ocupar',
+                icon: 'pi pi-lock',
+                id: '2',
+                command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event),
+                visible: true,
+              },
+              {
+                label: 'Desocupar',
+                icon: 'pi pi-lock',
+                id: '20',
+                command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event),
+                visible: true,
+              },
+              {
+                label: 'Anular Limpieza',
+                icon: 'pi pi-lock',
+                id: '40',
+                command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event),
+                visible: true,
+              },
+              {
+                label: 'Anular Mantenimiento',
+                icon: 'pi pi-wrench',
+                id: '6',
+                command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event),
+                visible: true,
+              },
+              {
+                label: 'Anular Reserva',
+                icon: 'pi pi-calendar-times',
+                id: '50',
+                command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event),
+                visible: true,
+              },
+          ]
+      }, 
+    ]
+    */
+  }
+
+  opcionSeleccionada($event, habitacion){
+    this.estadoHabitacion = $event.item.id;
+
+    setTimeout(() => {
+      this.accionMenuHabitaciones();
+    }, 100);
 
   }
 
-  opcionesHabitacion2($event, opcion){
-    console.log("1")
-    console.log(opcion)
-    console.log($event)
 
+  accionMenuHabitaciones(){
+    let parametros  = {};
+    switch (this.estadoHabitacion) {
+      case 5:
+        //reserva
+          this.reservar();
+        break;         
+      case 4:
+        //Limpieza
+        parametros = {
+          id_habitacion: this.habitacionId, 
+        }; 
+        this.limpieza(parametros);
+        
+        break;
+      case 6:
+        //Mantenimiento
+        parametros = {
+          id_habitacion: this.habitacionId, 
+        }; 
 
+        this.enviarMantenimiento(parametros);
+
+        break;
+      case 2:
+        //Ocupar
+          this.ocupar()
+        break;
+      case 20:
+        //Desocupar
+          parametros = {
+            id_habitacion: this.habitacionId,
+            id_detalle: 1,
+          }; 
+          this.enviarDesocupar(parametros);
+        break;
+      case 50:
+        //anular resrva 
+
+          parametros = {
+            id_habitacion: this.habitacionId,
+            id_reserva: 1,
+          }; 
+
+          this.enviarAnularReserva(parametros);
+        
+        break;
+      case 40:
+        //anular Limpieza 
+
+          parametros = {
+            id_habitacion: this.habitacionId, 
+          }; 
+
+          this.enviarAnularLimpieza(parametros);
+        
+        break;
+      case 60:
+        //anular Mantenimiento 
+
+        parametros = {
+          id_habitacion: this.habitacionId, 
+        }; 
+
+        this.enviarAnularMantenimiento(parametros);
+        
+        break;
+    }
   }
+
+  abrirMenu($event, habitacion){
+    this.op1.toggle($event)
+    let estadoHabitaciones = [];
+
+    
+    let letItem: MenuItem []; 
+
+    habitacion.detalle.forEach(element => {
+      estadoHabitaciones.push(element.estado_id);
+    }); 
+
+    console.log(estadoHabitaciones)
+    if(!estadoHabitaciones.includes(5)){ //no esta reservada entonces reservemosla
+      letItem = [
+        {
+          label: 'Reservar',
+          icon: 'pi pi-calendar-times',
+          id: '5',
+          command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
+          visible: true,
+        } 
+      ]
+
+      
+    }
+
+    if(!estadoHabitaciones.includes(4)){ //no esta en limpieza
+      letItem = [
+        {
+          label: 'Limpieza',
+          icon: 'pi pi-exclamation-triangle',
+          id: '4',
+          command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
+          visible: true,
+        },
+      ]
+      
+    }
+
+    if(!estadoHabitaciones.includes(2)){ //no ocupado
+      letItem = [
+        {
+          label: 'Ocupar',
+          icon: 'pi pi-lock',
+          id: '2',
+          command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
+          visible: true,
+        },
+      ]
+      
+    }
+
+    if(!estadoHabitaciones.includes(6)){ //no esta en mantenimiento
+      
+      letItem = [
+        {
+          label: 'Mantenimiento',
+          icon: 'pi pi-wrench',
+          id: '6',
+          command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
+          visible: true,
+        }, 
+      ]
+      
+    }
+
+
+    estadoHabitaciones.forEach(element => {
+
+      switch (element) {
+        case 5:
+          //esta reservada
+          letItem = [
+            { 
+              label: 'Anular Reserva',
+              icon: 'pi pi-calendar-times',
+              id: '50',
+              command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
+              visible: true,
+            } 
+          ]
+          
+          break;
+        case 4:
+          //esta limpieza 
+
+          letItem = [
+            { 
+              label: 'Anular Limpieza',
+              icon: 'pi pi-lock',
+              id: '40',
+              command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
+              visible: true,
+            }
+          ]
+      
+
+        break;
+        case 6:
+          //esta mantenimiento 
+
+          letItem = [
+            { 
+              label: 'Anular Mantenimiento',
+              icon: 'pi pi-wrench',
+              id: '6',
+              command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
+              visible: true,
+            }
+          ]
+
+        break;
+
+        case 2:
+          //esta ocupado 
+
+        letItem   = [
+            { 
+              label: 'Desocupar',
+              icon: 'pi pi-lock',
+              id: '20',
+              command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
+              visible: true,
+            }
+        ] 
+          
+        break;
+      }
+  
+    });
+
+    console.log(letItem)
+
+    this.menuHabitacion = 
+    {
+        label: 'Opciones',
+        items: letItem
+    };
+    
+  }
+
+  reservar(){
+    //sacar modal
+  }
+
+  enviarReservar(parametros){  
+
+    this.dashboardRoomsService.reservar(parametros).subscribe(
+      (response: any) => {       
+        let data = response;
+
+      },
+      (error) => {
+          console.log('Error: ', error);
+      }
+    );
+  
+  }
+  
+  enviarDesocupar(parametros){
+
+    this.dashboardRoomsService.desocupar(parametros).subscribe(
+      (response: any) => {       
+        let data = response;
+
+      },
+      (error) => {
+          console.log('Error: ', error);
+      }
+    ); 
+  } 
+
+      
+  enviarAnularReserva(parametros){
+
+    this.dashboardRoomsService.desocupar(parametros).subscribe(
+      (response: any) => {       
+        let data = response;
+
+      },
+      (error) => {
+          console.log('Error: ', error);
+      }
+    );
+  
+  } 
+
+  enviarAnularLimpieza(parametros){
+
+    this.dashboardRoomsService.desocupar(parametros).subscribe(
+      (response: any) => {       
+        let data = response;
+
+      },
+      (error) => {
+          console.log('Error: ', error);
+      }
+    );
+  
+  } 
+
+  enviarAnularMantenimiento(parametros){
+
+    this.dashboardRoomsService.anularMantenimiento(parametros).subscribe(
+      (response: any) => {       
+        let data = response;
+
+      },
+      (error) => {
+          console.log('Error: ', error);
+      }
+    );
+  
+  } 
+
+  enviarMantenimiento(parametros){
+
+    this.dashboardRoomsService.mantenimiento(parametros).subscribe(
+      (response: any) => {       
+        let data = response;
+
+      },
+      (error) => {
+          console.log('Error: ', error);
+      }
+    );
+  
+  } 
+
+  enviarOcupar(parametros){
+
+    this.dashboardRoomsService.mantenimiento(parametros).subscribe(
+      (response: any) => {       
+        let data = response;
+
+      },
+      (error) => {
+          console.log('Error: ', error);
+      }
+    );
+  
+  } 
+
+  limpieza(parametros){
+
+    this.dashboardRoomsService.limpieza(parametros).subscribe(
+      (response: any) => {       
+        let data = response;
+
+      },
+      (error) => {
+          console.log('Error: ', error);
+      }
+    );
+  
+  } 
+
+  ocupar(){
+
+    //sacar modal
+    let parametros = {
+      id_habitacion: this.habitacionId,
+      cliente_id: 1,
+      hotel_id: 1,
+    }; 
+
+    this.enviarOcupar(parametros);
+  }
+
+
 }

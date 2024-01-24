@@ -23,11 +23,11 @@ export class DashboardCalendarComponent {
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+      right: 'dayGridMonth'
     },
     initialView: 'dayGridMonth',
     initialEvents: INITIAL_EVENTS, // alternatively, use the `events` setting to fetch from a feed
-    weekends: true,
+    weekends: false,
     editable: true,
     selectable: true,
     selectMirror: true,
