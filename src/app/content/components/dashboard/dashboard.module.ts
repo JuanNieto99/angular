@@ -9,6 +9,7 @@ import { ButtonModule } from 'primeng/button';
 import { StyleClassModule } from 'primeng/styleclass';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { DashboardsRoutingModule } from './dashboard-routing.module';
+import { DashboardRoomsComponent } from './dashboard-rooms/dashboard-rooms.component';
 
 @NgModule({
     imports: [

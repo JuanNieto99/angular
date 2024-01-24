@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { internalSequence } from '../../models/admin/internalSequence.model';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class InternalSequenceService {
     private baseUrl: string;
@@ -25,11 +25,6 @@ export class InternalSequenceService {
     }
 
     getAll(per_page:number, search:string = ''): Observable<internalSequence[]> {
-        const httpOptions = {
-            headers: new HttpHeaders({
-              'Content-Type': 'application/json',
-            })
-          };
         const parametros = {};
         return this.httpClient.post<internalSequence[]>(`${this.baseUrl+this.endpointListar}?per_page=${per_page}&search=${search}`, parametros);
     }

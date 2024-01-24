@@ -47,17 +47,17 @@ export class InternalSequenceComponent {
     onCreate() {
         this.formCreateInternalSequence.reset();
         this.InternalSequenceService.getInternalSequence(0).subscribe(
-             (response: any) => {
-                 this.hotel = response.hotel;
-                 this.secuenciaDescripcion = response.descripcion_secuencia;
-                 this.secuenciaInicial = response.secuensia_incial;
-                 this.secuenciaActual = response.secuensia_actual;
-                 this.visibleModalInternalSequence = true;
-             },
-             (error) => {
-                 console.log('Error: ', error);
-             }
-         );
+            (response: any) => {
+                this.hotel = response.hotel;
+                this.secuenciaDescripcion = response.descripcion_secuencia;
+                this.secuenciaInicial = response.secuensia_incial;
+                this.secuenciaActual = response.secuensia_actual;
+                this.visibleModalInternalSequence = true;
+            },
+            (error) => {
+                console.log('Error: ', error);
+            }
+        );
     }
 
     onRemove(event) {
