@@ -16,23 +16,23 @@
             <!--button pButton pRipple label="Exportar" icon="pi pi-check"></button-->
         </div>
     </div>
-</div> 
+</div>
 <div class="grid mt-3">
     <div class="col-12">
         <div class="card px-3 py-3">
-            <p-table [value]="productsData"    [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [loading]="loadingTable" [rows]="8" [globalFilterFields]="['nombre','medida','precio','cantidad', 'inventario','acciones']"  selectionMode="multiple" [rowHover]="true" dataKey="usuario" (onPage)="onPage($event)">
+            <p-table [value]="productsData" [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [loading]="loadingTable" [rows]="8" [globalFilterFields]="['nombre','medida','precio','cantidad', 'inventario','acciones']"  selectionMode="multiple" [rowHover]="true" dataKey="usuario" (onPage)="onPage($event)">
                 <ng-template pTemplate="caption">
                     <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                         <h5 class="m-0">Lista de Productos</h5>
-                        <span class="block mt-2 md:mt-0 p-input-icon-left"> 
-                            <form [formGroup]="formSearch" >  
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <form [formGroup]="formSearch" >
                                 <div class="p-inputgroup">
                                     <input formControlName="search" pInputText type="text" placeholder="Buscar..."   (input)="searchInput()"  class="w-full sm:w-auto"/>
-                                    <button type="button" pButton pRipple   class="pi pi-search" (click)="search(dt)"></button> 
+                                    <button type="button" pButton pRipple   class="pi pi-search" (click)="search(dt)"></button>
                                 </div>
                                     <!--i class="pi pi-search"></i>
-                                    <input formControlName="search" pInputText type="text" placeholder="Buscar..."  (input)="search(dt)" class="w-full sm:w-auto"/--> 
-                            </form> 
+                                    <input formControlName="search" pInputText type="text" placeholder="Buscar..."  (input)="search(dt)" class="w-full sm:w-auto"/-->
+                            </form>
                         </span>
                     </div>
                 </ng-template>
@@ -46,12 +46,12 @@
                         <th>Precio</th>
                         <th>Cantidad</th>
                         <th>Inventario</th>
-                        <th>Visible Venta</th> 
+                        <th>Visible Venta</th>
                         <th>Acciones</th>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-product>
-                    <tr> 
+                    <tr>
                         <td>
                             <p-tableCheckbox [value]="productsData"></p-tableCheckbox>
                         </td>
@@ -78,7 +78,7 @@
             <div style="text-align: center;">
                 <span class="p-buttonset">
                     <button pButton pRipple label="" icon="pi pi-arrow-left"   [disabled]="!disablePageLeft" (click)="leftTable()" ></button>
-                    <button pButton pRipple [label]="pageActual" ></button> 
+                    <button pButton pRipple [label]="pageActual" ></button>
                     <button pButton pRipple label="" icon="pi pi-arrow-right" [disabled]="!disablePageRight" (click)="rightTable()"></button>
                 </span>
             </div>
@@ -94,7 +94,7 @@
                     <label>Nombre</label>
                     <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="nombre">
                     <div style="color: red;" *ngIf="formCreateProduct.get('nombre').hasError('required')">Campo requerido</div>
-                </div>  
+                </div>
                 <div class="field col-12 md:col-6">
 					<label>Medida</label>
 					<p-dropdown [options]="medida" optionLabel="nombre" formControlName="medida_id" ></p-dropdown>
@@ -105,11 +105,11 @@
                     <input type="number" formControlName="cantidad"   pInputText class="w-full mb-3 border-round-3xl" >
                     <div style="color: red;" *ngIf="formCreateProduct.get('cantidad').hasError('required')">Campo requerido</div>
                     <div style="color: red;" *ngIf="formCreateProduct.get('cantidad').hasError('min')">El número debe ser mayor o igua a {{  formCreateProduct?.controls['cantidad']?.errors['min'].min }}</div>
-                </div>  
+                </div>
                 <div class="field col-12 md:col-6">
                     <label>Sin limite Cantidad</label>
                     <p-dropdown [options]="limiteCantidad" formControlName="limite_cantidad"  optionLabel="nombre"  ></p-dropdown>
-                </div>  
+                </div>
                 <div class="field col-12 md:col-6">
 					<label>Inventario</label>
 					<p-dropdown [options]="inventario" formControlName="inventario_id"  optionLabel="nombre"  ></p-dropdown>
@@ -120,32 +120,32 @@
                     <input type="number"  pInputText class="w-full mb-3 border-round-3xl" formControlName="precio">
                     <div style="color: red;" *ngIf="formCreateProduct.get('precio').hasError('required')">Campo requerido</div>
                     <div style="color: red;" *ngIf="formCreateProduct.get('precio').hasError('min')">El número debe ser mayor o igual a {{  formCreateProduct?.controls['precio']?.errors['min'].min }}</div>
-                </div>  
+                </div>
                 <div class="field col-12 md:col-6">
                     <label>Stop minimo</label>
                     <input type="number"  pInputText class="w-full mb-3 border-round-3xl" formControlName="stop_minimo">
                     <div style="color: red;" *ngIf="formCreateProduct.get('stop_minimo').hasError('required')">Campo requerido</div>
                     <div style="color: red;" *ngIf="formCreateProduct.get('stop_minimo').hasError('min')">El número debe ser mayor o igual a {{  formCreateProduct?.controls['precio']?.errors['min'].min }}</div>
-                </div>  
+                </div>
                 <div class="field col-12 md:col-6">
                     <label>Precio base</label>
                     <input type="number"  pInputText class="w-full mb-3 border-round-3xl" formControlName="precio_base">
                     <div style="color: red;" *ngIf="formCreateProduct.get('precio_base').hasError('required')">Campo requerido</div>
                     <div style="color: red;" *ngIf="formCreateProduct.get('precio_base').hasError('min')">El número debe ser mayor o igua a {{  formCreateProduct?.controls['precio_base']?.errors['min'].min }}</div>
-                </div>  
+                </div>
                 <div class="field col-12 md:col-6">
                     <label>Visible Venta</label>
                     <p-dropdown [options]="visibleVenta" formControlName="visible_venta"  optionLabel="nombre"  ></p-dropdown>
                     <div style="color: red;" *ngIf="formCreateProduct.get('visible_venta').hasError('required')">Campo requerido</div>
-                </div>  
+                </div>
                 <div class="field col-12 md:col-6">
                     <label>Tipo</label>
                     <p-dropdown [options]="tipo" formControlName="tipo_producto"  optionLabel="nombre"  ></p-dropdown>
                     <div style="color: red;" *ngIf="formCreateProduct.get('tipo_producto').hasError('required')">Campo requerido</div>
-                </div>  
+                </div>
                 <div class="field col-12 md:col-12">
                     <p-fileUpload name="imsgenes[]"  #fileUploadCreate chooseLabel="Seleccionar" [showUploadButton]="false" cancelLabel="Cancelar" accept="image/*"  [maxFileSize]="1000000" (onRemove)="onRemove($event)" (onClear)="onRemove($event)" (onSelect)="onSelect($event)"></p-fileUpload>
-                </div>  
+                </div>
                 <div class="field col-12 md:col-12">
 					<label>Descripcion</label>
                     <textarea formControlName="descripcion" pInputTextarea  required rows="3" cols="20"></textarea>
@@ -169,7 +169,7 @@
                     <label>Nombre</label>
                     <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="nombre">
                     <div style="color: red;" *ngIf="formEditProduct.get('nombre').hasError('required')">Campo requerido</div>
-                </div>  
+                </div>
                 <div class="field col-12 md:col-6">
 					<label>Medida</label>
 					<p-dropdown [options]="medida" optionLabel="nombre" formControlName="medida_id" ></p-dropdown>
@@ -180,11 +180,11 @@
                     <input type="number" formControlName="cantidad"   pInputText class="w-full mb-3 border-round-3xl" >
                     <div style="color: red;" *ngIf="formEditProduct.get('cantidad').hasError('required')">Campo requerido</div>
                     <div style="color: red;" *ngIf="formEditProduct.get('cantidad').hasError('min')">El número debe ser mayor o igua a {{  formCreateProduct?.controls['cantidad']?.errors['min'].min }}</div>
-                </div>  
+                </div>
                 <div class="field col-12 md:col-6">
                     <label>Sin limite Cantidad</label>
                     <p-dropdown [options]="limiteCantidad" formControlName="limite_cantidad"  optionLabel="nombre"  ></p-dropdown>
-                </div>  
+                </div>
                 <div class="field col-12 md:col-6">
 					<label>Inventario</label>
 					<p-dropdown [options]="inventario" formControlName="inventario_id"  optionLabel="nombre"  ></p-dropdown>
@@ -195,32 +195,32 @@
                     <input type="number"  pInputText class="w-full mb-3 border-round-3xl" formControlName="precio">
                     <div style="color: red;" *ngIf="formEditProduct.get('precio').hasError('required')">Campo requerido</div>
                     <div style="color: red;" *ngIf="formEditProduct.get('precio').hasError('min')">El número debe ser mayor o igual a {{  formCreateProduct?.controls['precio']?.errors['min'].min }}</div>
-                </div>  
+                </div>
                 <div class="field col-12 md:col-6">
                     <label>Stop minimo</label>
                     <input type="number"  pInputText class="w-full mb-3 border-round-3xl" formControlName="stop_minimo">
                     <div style="color: red;" *ngIf="formEditProduct.get('stop_minimo').hasError('required')">Campo requerido</div>
                     <div style="color: red;" *ngIf="formEditProduct.get('stop_minimo').hasError('min')">El número debe ser mayor o igual a {{  formCreateProduct?.controls['precio']?.errors['min'].min }}</div>
-                </div>  
+                </div>
                 <div class="field col-12 md:col-6">
                     <label>Precio base</label>
                     <input type="number"  pInputText class="w-full mb-3 border-round-3xl" formControlName="precio_base">
                     <div style="color: red;" *ngIf="formEditProduct.get('precio_base').hasError('required')">Campo requerido</div>
                     <div style="color: red;" *ngIf="formEditProduct.get('precio_base').hasError('min')">El número debe ser mayor o igua a {{  formCreateProduct?.controls['precio_base']?.errors['min'].min }}</div>
-                </div>  
+                </div>
                 <div class="field col-12 md:col-6">
                     <label>Visible Venta</label>
                     <p-dropdown [options]="visibleVenta" formControlName="visible_venta"  optionLabel="nombre"  ></p-dropdown>
                     <div style="color: red;" *ngIf="formEditProduct.get('visible_venta').hasError('required')">Campo requerido</div>
-                </div>  
+                </div>
                 <div class="field col-12 md:col-6">
                     <label>Tipo</label>
                     <p-dropdown [options]="tipo" formControlName="tipo_producto"  optionLabel="nombre"  ></p-dropdown>
                     <div style="color: red;" *ngIf="formEditProduct.get('tipo_producto').hasError('required')">Campo requerido</div>
-                </div>  
+                </div>
                 <div class="field col-12 md:col-12">
                     <p-fileUpload name="imsgenes[]" #fileUpload chooseLabel="Seleccionar" [showUploadButton]="false" cancelLabel="Cancelar" accept="image/*"  [maxFileSize]="1000000"  (onRemove)="onRemove($event)" (onClear)="onRemove($event)" (onSelect)="onSelect($event)"></p-fileUpload>
-                </div>  
+                </div>
                 <div class="field col-12 md:col-12">
 					<label>Descripcion</label>
                     <textarea formControlName="descripcion" pInputTextarea  required rows="3" cols="20"></textarea>

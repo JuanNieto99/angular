@@ -5,6 +5,13 @@ import { typeRoom } from 'src/app/content/models/dashboard/typeRoom.model';
 import { TypeRoomsService } from 'src/app/content/service/typeRooms/type-rooms.service';
 import Swal from 'sweetalert2';
 
+interface PageEvent {
+    first: number;
+    rows: number;
+    page: number;
+    pageCount: number;
+}
+
 @Component({
     selector: 'app-type-rooms',
     templateUrl: './type-rooms.component.html',
@@ -24,6 +31,12 @@ export class TypeRoomsComponent {
     public visibleModalTypeRoomEditar: boolean = false;
     public idEditando: number = 0;
     public dataEditarInfoTypeRoom: any;
+    public first:number = 0;
+    public rows:number = 8;
+    public pageActual:number = 1;
+    public ultimaPage:number = 1;
+    public disablePageLeft: boolean = false;
+    public disablePageRight: boolean = true;
 
     constructor(
         private FB: FormBuilder,
@@ -139,17 +152,7 @@ export class TypeRoomsComponent {
                     .setValue(response.tiposHabitaciones.nombre);
                 let hotel: any = null;
 
-                // this.hotel.forEach((value) => {
-                //   if(value.id == this.dataEditarInfoTypeRoom.hotel_id){
-                //     hotel = value;
-                //   }
-                // })
-
-                console.log();
                 setTimeout(() => {
-                    //this.formEditTypeRoom.get('nombre').setValue(this.dataEditarInfoTypeRoom.nombre)
-                    // this.formEditTypeRoom.get('hotel_id').setValue(hotel)
-
                     this.visibleModalTypeRoomEditar = true;
                 }, 1);
             },
@@ -237,13 +240,12 @@ export class TypeRoomsComponent {
         });
     }
 
-    getIndex(search: string = '', page: number = this.pageCount) {
+    getIndex(search:string = '', pageCount:number = this.pageCount, page: number = 1) {
         this.spinner.show();
         this.loadingTable = true;
-        this.typeRoomService.getAll(page, search).subscribe(
+        this.typeRoomService.getAll(pageCount, search, page).subscribe(
             (response: any) => {
                 this.loadingTable = false;
-                console.log('Response: ', response);
                 this.typeRoomData = response.data;
                 this.countRegisters = response.total;
                 this.spinner.hide();
@@ -254,4 +256,57 @@ export class TypeRoomsComponent {
             }
         );
     }
+
+    //Buscador
+
+    searchInput(){
+        let search = this.formSearch.get('search').value;
+        if(search==""){
+          this.getIndex(search);
+        }
+
+      }
+
+      search(dt){
+        let search = this.formSearch.get('search').value;
+        this.getIndex(search);
+      }
+
+    //Paginador
+
+    onPageChange(event){
+        this.first = event.first;
+        this.rows = event.rows;
+      }
+
+
+      leftTable(){
+        this.pageActual = this.pageActual - 1;
+        this.getIndex('', this.pageCount, this.pageActual);
+        this.validatePage();
+      }
+
+      rightTable(){
+          this.pageActual = this.pageActual + 1;
+          this.getIndex('', this.pageCount, this.pageActual);
+          this.validatePage();
+      }
+
+      validatePage(){
+          if(this.pageActual == 1 ){
+              this.disablePageLeft = false;
+          }
+
+          if(this.pageActual > 1 ){
+              this.disablePageLeft = true;
+          }
+
+          if(this.ultimaPage == this.pageActual){
+              this.disablePageRight = false;
+          }
+
+          if(this.ultimaPage > this.pageActual){
+              this.disablePageRight = true;
+          }
+      }
 }

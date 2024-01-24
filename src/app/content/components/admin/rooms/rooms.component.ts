@@ -4,6 +4,13 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { RoomsService } from 'src/app/content/service/rooms/rooms.service';
 import Swal from 'sweetalert2';
 
+interface PageEvent {
+    first: number;
+    rows: number;
+    page: number;
+    pageCount: number;
+}
+
 @Component({
   selector: 'app-rooms',
   templateUrl: './rooms.component.html',
@@ -30,6 +37,12 @@ export class RoomsComponent {
     public capacidadPersonas: number;
     public precio: number;
     public diseno_json: any[];
+    public first:number = 0;
+    public rows:number = 8;
+    public pageActual:number = 1;
+    public ultimaPage:number = 1;
+    public disablePageLeft: boolean = false;
+    public disablePageRight: boolean = true;
 
     constructor(
         private FB: FormBuilder,
@@ -58,6 +71,19 @@ export class RoomsComponent {
 
     openModal() {
         this.onCreate();
+    }
+
+    searchInput(){
+        let search = this.formSearch.get('search').value;
+        if(search==""){
+          this.getIndex(search);
+        }
+
+    }
+
+    search(dt){
+        let search = this.formSearch.get('search').value;
+        this.getIndex(search);
     }
 
     //Crear
@@ -278,14 +304,15 @@ export class RoomsComponent {
         });
     }
 
-    getIndex(search: string = '', page: number = this.pageCount) {
+    getIndex(search:string = '', pageCount:number = this.pageCount, page: number = 1) {
         this.spinner.show();
         this.loadingTable = true;
-        this.RoomsService.getAll(page, search).subscribe(
+        this.RoomsService.getAll(pageCount, search, page).subscribe(
             (response: any) => {
                 this.loadingTable = false;
                 this.roomsData = response.data;
                 this.countRegisters = response.total;
+                this.ultimaPage = response.last_page
                 this.spinner.hide();
             },
             (error) => {
@@ -295,4 +322,40 @@ export class RoomsComponent {
         );
     }
 
+    //Paginador
+
+    onPageChange(event){
+        this.first = event.first;
+        this.rows = event.rows;
+    }
+
+    leftTable(){
+        this.pageActual = this.pageActual - 1;
+        this.getIndex('', this.pageCount, this.pageActual);
+        this.validatePage();
+      }
+
+      rightTable(){
+          this.pageActual = this.pageActual + 1;
+          this.getIndex('', this.pageCount, this.pageActual);
+          this.validatePage();
+      }
+
+    validatePage(){
+        if(this.pageActual == 1 ){
+            this.disablePageLeft = false;
+        }
+
+        if(this.pageActual > 1 ){
+            this.disablePageLeft = true;
+        }
+
+        if(this.ultimaPage == this.pageActual){
+            this.disablePageRight = false;
+        }
+
+        if(this.ultimaPage > this.pageActual){
+            this.disablePageRight = true;
+        }
+    }
 }

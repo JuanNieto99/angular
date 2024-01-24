@@ -25,14 +25,14 @@ export class ExternalSequenceService {
         this.endpointDelete = '/secuenciaExternaEliminar/';
     }
 
-    getAll(per_page:number, search:string = ''): Observable<externalSequence[]> {
+    getAll(per_page:number, search:string = '', page:number = 1): Observable<externalSequence[]> {
          const httpOptions = {
              headers: new HttpHeaders({
                'Content-Type': 'application/json',
              })
            };
         const parametros = {};
-        return this.httpClient.post<externalSequence[]>(`${this.baseUrl+this.endpointListar}?per_page=${per_page}&search=${search}`, parametros);
+        return this.httpClient.post<externalSequence[]>(`${this.baseUrl+this.endpointListar}?per_page=${per_page}&page=${page}&search=${search}`, parametros);
     }
 
     getExternalSequence(id:number): Observable<any>{

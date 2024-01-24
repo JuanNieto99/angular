@@ -4,11 +4,17 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { ExternalSequenceService } from '../../../service/externalSequence/external-sequence.service';
 import Swal from 'sweetalert2';
 
+interface PageEvent {
+    first: number;
+    rows: number;
+    page: number;
+    pageCount: number;
+}
 
 @Component({
-  selector: 'app-external-sequence',
-  templateUrl: './external-sequence.component.html',
-  styleUrls: ['./external-sequence.component.scss']
+    selector: 'app-external-sequence',
+    templateUrl: './external-sequence.component.html',
+    styleUrls: ['./external-sequence.component.scss'],
 })
 export class ExternalSequenceComponent {
     public loadingTable: boolean = false;
@@ -30,6 +36,12 @@ export class ExternalSequenceComponent {
     public fechaInicial: string;
     public fechaFinal: string;
     public prefijo: string;
+    public pageActual: number = 1;
+    public ultimaPage: number = 1;
+    public disablePageLeft: boolean = false;
+    public disablePageRight: boolean = true;
+    public first: number = 0;
+    public rows: number = 8;
 
     constructor(
         private FB: FormBuilder,
@@ -52,7 +64,7 @@ export class ExternalSequenceComponent {
         this.ExternalSequenceService.getExternalSequence(0).subscribe(
             (response: any) => {
                 this.hotel = response.hotel;
-                this.prefijo = response.prefijo
+                this.prefijo = response.prefijo;
                 this.fechaInicial = response.fecha_inicio;
                 this.fechaFinal = response.fecha_final;
                 this.secuenciaInicial = response.secuensia_incial;
@@ -65,7 +77,6 @@ export class ExternalSequenceComponent {
             }
         );
     }
-
 
     onRemove(event) {
         this.imagen = null;
@@ -96,7 +107,9 @@ export class ExternalSequenceComponent {
         dataExternalSequence.hotel_id = dataExternalSequence.hotel_id['id'];
         dataExternalSequence.estado = 1;
 
-        this.ExternalSequenceService.createExternalSequence(dataExternalSequence).subscribe(
+        this.ExternalSequenceService.createExternalSequence(
+            dataExternalSequence
+        ).subscribe(
             (response: any) => {
                 this.spinner.hide();
                 this.imagen = null;
@@ -130,7 +143,7 @@ export class ExternalSequenceComponent {
         this.spinner.show();
         this.ExternalSequenceService.getExternalSequence(id).subscribe(
             (response: any) => {
-                console.log(response)
+                console.log(response);
                 this.spinner.hide();
                 this.hotel = response.hotel;
                 const secuenciaExterna = response.secuencia_externa;
@@ -140,8 +153,12 @@ export class ExternalSequenceComponent {
                     this.secuenciaInicial = secuenciaExterna.secuensia_incial;
                     this.secuenciaActual = secuenciaExterna.secuensia_actual;
                     this.secuenciaFinal = secuenciaExterna.secuencia_final;
-                    this.fechaInicial = new Date(secuenciaExterna.fecha_inicio).toISOString().split('T')[0];
-                    this.fechaFinal = new Date(secuenciaExterna.fecha_final).toISOString().split('T')[0];
+                    this.fechaInicial = new Date(secuenciaExterna.fecha_inicio)
+                        .toISOString()
+                        .split('T')[0];
+                    this.fechaFinal = new Date(secuenciaExterna.fecha_final)
+                        .toISOString()
+                        .split('T')[0];
                     this.prefijo = secuenciaExterna.prefijo;
 
                     this.formEditExternalSequence.setValue({
@@ -153,7 +170,6 @@ export class ExternalSequenceComponent {
                         secuensia_actual: this.secuenciaActual,
                         secuencia_final: this.secuenciaFinal,
                     });
-
                 }
 
                 setTimeout(() => {
@@ -173,7 +189,9 @@ export class ExternalSequenceComponent {
         dataExternalSequence.id = this.idEditando;
         dataExternalSequence.estado = 1;
 
-        this.ExternalSequenceService.updateExternalSequence(dataExternalSequence).subscribe(
+        this.ExternalSequenceService.updateExternalSequence(
+            dataExternalSequence
+        ).subscribe(
             (response: any) => {
                 this.spinner.hide();
                 this.imagen = null;
@@ -208,44 +226,41 @@ export class ExternalSequenceComponent {
 
     //Eliminar
 
-    confirmDelete(id:number){
+    confirmDelete(id: number) {
         Swal.fire({
-          title: "¿Estas seguro que deseas eliminar esta secuencia?",
-          text: "Ten cuidado esta acción no se prodrá reversar",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Sí, Confirmar",
-          cancelButtonText: "Cancelar",
+            title: '¿Estas seguro que deseas eliminar esta secuencia?',
+            text: 'Ten cuidado esta acción no se prodrá reversar',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, Confirmar',
+            cancelButtonText: 'Cancelar',
         }).then((result) => {
             if (result.isConfirmed) {
                 this.spinner.show();
-                this.ExternalSequenceService.deleteExternalSequence({id}).subscribe(
-                (response: any) => {
-                    this.spinner.hide();
-                    if(response.code == "success"){
+                this.ExternalSequenceService.deleteExternalSequence({
+                    id,
+                }).subscribe(
+                    (response: any) => {
+                        this.spinner.hide();
+                        if (response.code == 'success') {
+                            Swal.fire({
+                                title: 'Exito',
+                                text: 'Secuencia eliminada exitosamente.',
+                                icon: 'success',
+                            });
 
-                    Swal.fire({
-                        title: "Exito",
-                        text: "Secuencia eliminada exitosamente.",
-                        icon: "success"
-                    });
-
-                    this.getIndex();
-
-                    }  else {
-
-                    Swal.fire({
-                        title: "Error",
-                        text: "Error al eliminar la secuencia." ,
-                        icon: "error"
-                    });
-
+                            this.getIndex();
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'Error al eliminar la secuencia.',
+                                icon: 'error',
+                            });
+                        }
+                    },
+                    (error) => {
+                        console.log('Error: ', error);
                     }
-
-                },
-                (error) => {
-                    console.log('Error: ', error);
-                }
                 );
             }
         });
@@ -263,7 +278,7 @@ export class ExternalSequenceComponent {
             fecha_final: ['', [Validators.required]],
             secuensia_incial: ['', [Validators.required]],
             secuensia_actual: ['', [Validators.required]],
-            secuencia_final: ['', [Validators.required]]
+            secuencia_final: ['', [Validators.required]],
         });
 
         this.formEditExternalSequence = this.FB.group({
@@ -273,18 +288,23 @@ export class ExternalSequenceComponent {
             fecha_final: ['', [Validators.required]],
             secuensia_incial: ['', [Validators.required]],
             secuensia_actual: ['', [Validators.required]],
-            secuencia_final: ['', [Validators.required]]
+            secuencia_final: ['', [Validators.required]],
         });
     }
 
-    getIndex(search: string = '', page: number = this.pageCount) {
+    getIndex(
+        search: string = '',
+        pageCount: number = this.pageCount,
+        page: number = 1
+    ) {
         this.spinner.show();
         this.loadingTable = true;
-        this.ExternalSequenceService.getAll(page, search).subscribe(
+        this.ExternalSequenceService.getAll(pageCount, search, page).subscribe(
             (response: any) => {
                 this.loadingTable = false;
                 console.log('Response: ', response);
                 this.externalSequenceData = response.data;
+                this.ultimaPage = response.last_page;
                 this.countRegisters = response.total;
                 this.spinner.hide();
             },
@@ -293,5 +313,56 @@ export class ExternalSequenceComponent {
                 this.spinner.hide();
             }
         );
+    }
+
+    //Buscador
+
+    searchInput() {
+        let search = this.formSearch.get('search').value;
+        if (search == '') {
+            this.getIndex(search);
+        }
+    }
+
+    search(dt) {
+        let search = this.formSearch.get('search').value;
+        this.getIndex(search);
+    }
+
+    //Paginador
+
+    onPageChange(event) {
+        this.first = event.first;
+        this.rows = event.rows;
+    }
+
+    leftTable() {
+        this.pageActual = this.pageActual - 1;
+        this.getIndex('', this.pageCount, this.pageActual);
+        this.validatePage();
+    }
+
+    rightTable() {
+        this.pageActual = this.pageActual + 1;
+        this.getIndex('', this.pageCount, this.pageActual);
+        this.validatePage();
+    }
+
+    validatePage() {
+        if (this.pageActual == 1) {
+            this.disablePageLeft = false;
+        }
+
+        if (this.pageActual > 1) {
+            this.disablePageLeft = true;
+        }
+
+        if (this.ultimaPage == this.pageActual) {
+            this.disablePageRight = false;
+        }
+
+        if (this.ultimaPage > this.pageActual) {
+            this.disablePageRight = true;
+        }
     }
 }
