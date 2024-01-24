@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { dashboardRooms } from 'src/app/content/models/dashboard/dashboard-rooms.model';
 import { DashboardRoomsService } from 'src/app/content/service/dashboardRooms/dashboard-rooms.service';
+import {  MenuItem } from 'primeng/api';
 
 interface HotelData {
   hotel_id: number; // Adjust the type accordingly
@@ -25,6 +26,34 @@ interface dataRoom {
 
 export class DashboardRoomsComponent implements OnInit  {
 
+  public menuHabitacion: MenuItem [] =  [
+    {
+        label: 'Opciones',
+        items: [
+            {
+              label: 'Reservar',
+              icon: 'pi pi-calendar-times'
+            },
+            {
+                label: 'Disponible',
+                icon: 'pi pi-lock-open'
+            },
+            {
+                label: 'Limpieza',
+                icon: 'pi pi-exclamation-triangle'
+            },
+            {
+              label: 'Mantenimiento',
+              icon: 'pi pi-wrench'
+            },
+            {
+              label: 'Ocupar',
+              icon: 'pi pi-lock'
+            }
+        ]
+    }, 
+];
+;
   private hotelId: number;
   private pisoId: number;
   private primerPiso: number = 1;
@@ -129,5 +158,21 @@ export class DashboardRoomsComponent implements OnInit  {
   openTag(piso){   
     this.pisoId = piso; 
     this.getRoomsDashboard();   
+  }
+
+  opcionesHabitacion($event, opcion){
+    console.log("1")
+    console.log(opcion)
+    console.log($event)
+
+
+  }
+
+  opcionesHabitacion2($event, opcion){
+    console.log("1")
+    console.log(opcion)
+    console.log($event)
+
+
   }
 }

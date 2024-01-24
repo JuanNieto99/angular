@@ -26,6 +26,8 @@ import { DashboardRoomsComponent } from './dashboard-rooms.component';
 import { DashboardRoomsService } from 'src/app/content/service/dashboardRooms/dashboard-rooms.service';
 import { AccordionModule } from 'primeng/accordion';
 import { TagModule } from 'primeng/tag';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { MenuModule } from 'primeng/menu';
 
 @NgModule({ 
   imports: [
@@ -33,6 +35,7 @@ import { TagModule } from 'primeng/tag';
     TableModule,
     FileUploadModule,
     FormsModule,
+    MenuModule,
     ButtonModule,
     RippleModule,
     ToastModule,
@@ -42,6 +45,7 @@ import { TagModule } from 'primeng/tag';
     InputTextareaModule,
     DropdownModule,
     RadioButtonModule,
+    OverlayPanelModule,
     InputNumberModule,
     DialogModule,
     SweetAlert2Module.forRoot(),

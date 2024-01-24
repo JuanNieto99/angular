@@ -8,9 +8,13 @@
                             <div class="field col-12 md:col-4" *ngFor="let habitaciones of item.habitaciones">
                                 <div> 
                                     <div class="nomeRoome">
-                                        <i class="pi-ellipsis-h" style="font-size: 2rem"></i>
-                                        <label pButton icon="pi pi-clock" [label]="habitaciones.nombre" ></label>
+                                        <label pButton icon="pi pi-clock" [label]="habitaciones.nombre" >                           
+                                        </label>
                                     </div>
+                                    <i class="pi pi-ellipsis-v" style="font-size: 2rem; margin-top: 4%;  cursor: pointer;" (click)="op1.toggle($event)"></i>
+                                    <p-overlayPanel #op1 [showCloseIcon]="true" >
+                                        <p-menu [model]="menuHabitacion" (click)="opcionesHabitacion($event, habitaciones)"></p-menu>
+                                    </p-overlayPanel> 
                                     <img src="https://cdn.pixabay.com/photo/2019/02/10/08/19/doors-3986684_1280.png" width="100%" height="100%"  class="rooms"/> 
                                     <div class="tag">
                                         <p-tag icon="pi-calendar-times" value="Reservada" class="tag" *ngIf="habitaciones.estado == 5"></p-tag>
@@ -19,9 +23,10 @@
                                         <p-tag icon="pi-wrench" severity="warning" value="Mantenimiento" class="tag" *ngIf="habitaciones.estado == 6"></p-tag>
                                         <p-tag icon="pi-lock" severity="danger" value="Ocupada" class="tag" *ngIf="habitaciones.estado == 2"></p-tag>   
                                     </div>  
+
                                 </div>
                             </div> 
-                        </div>  
+                        </div> 
                     </ng-template> 
                 </p-accordionTab>
             </p-accordion>
