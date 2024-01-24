@@ -79,8 +79,9 @@ export class AppMenuComponent implements OnInit {
                             { label: 'Permisos', icon: 'pi pi-fw pi-lock-open', routerLink: ['/dashboard/admin/permissions'] },
                             { label: 'Cajas', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/wallets'] },
                             { label: 'Tipo Habitación', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/typeRooms'] },
-                            { label: 'Secuencua Interna', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/internalSequence'] },
-                            { label: 'Secuencua Externa', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/externalSequence'] }
+                            { label: 'Secuencia Interna', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/internalSequence'] },
+                            { label: 'Secuencia Externa', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/externalSequence'] },
+                            { label: 'Habitaciones', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/rooms'] }
                         ]
                     },
                 ]
