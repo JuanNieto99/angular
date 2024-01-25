@@ -34,14 +34,14 @@ import { Config } from '../../storage/config';
 
     //////////////////////  CRUD PERMISOS  /////////////////////////
     // Consultar lista de permisos
-    getRoles(per_page:number):Observable<Rol[]>{
-        const parametros = { 
+    getRoles(per_page:number, search:string = '', page:number = 1):Observable<Rol[]>{
+        const parametros = {
             id: '',
             nombre: '',
             descripcion: '',
             estado: ''
         };
-        return this.httpClient.post<Rol[]>(`${this.baseUrl+this.endpointRolListar}?per_page=${per_page}`, parametros);
+        return this.httpClient.post<Rol[]>(`${this.baseUrl+this.endpointRolListar}?per_page=${per_page}&page=${page}&search=${search}`, parametros);
     }
     // Crear un nuevo servicio
     CreateRoles(data: any): Observable<Rol[]> {
@@ -56,7 +56,7 @@ import { Config } from '../../storage/config';
         return this.httpClient.post<any>(`${this.baseUrl+this.endpointRolActualizar}`, data);
     }
     deleteRoles(id:number){
-        const parametros = { 
+        const parametros = {
             id: id
         };
         return this.httpClient.post<any>(`${this.baseUrl+this.endpointRolEliminar}`, parametros);
@@ -70,7 +70,7 @@ import { Config } from '../../storage/config';
             (error) => {
                 console.log('Error: ', error);
             }
-        );  
-      }  
-   
+        );
+      }
+
   }

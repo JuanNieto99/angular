@@ -12,8 +12,9 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';  
+import { ButtonModule } from 'primeng/button';
 import Swal from 'sweetalert2/dist/sweetalert2.all.js';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 
 @Component({
@@ -32,6 +33,15 @@ export class WalletsComponent implements OnInit {
     public selectedHotel: any;
     public tipo:any = 1;
 
+    public loadingTable :boolean = false;
+    public first:number = 0;
+    public rows:number = 8;
+    public pageCount: number = 10;
+    public pageActual: number = 1;
+    public ultimaPage: number = 1;
+    public disablePageLeft: boolean = false;
+    public disablePageRight: boolean = true;
+
 
     public editarW: boolean = false;
     public crearW:boolean = false;
@@ -46,7 +56,11 @@ export class WalletsComponent implements OnInit {
     public permissionData: any;
     public param: any;
 
-    ///////// Forms Groups ////////////    
+    ///////// Forms Groups ////////////
+    formSearch= new FormGroup({
+        search: new FormControl ('',[])
+    });
+
     formNewWallet= new FormGroup({
         nombre: new FormControl('', Validators.required),
         descripcion: new FormControl('', Validators.required),
@@ -67,23 +81,25 @@ export class WalletsComponent implements OnInit {
     });
 
     changeDetector: any;
-    
-    ///////// Forms Groups ////////////  
-    constructor(private walletService:WalletService, private permissionsService:PermissionsService, private hotelsService:HotelsService, private confirmationService: ConfirmationService, private toastModule: ToastModule, private dialogModule: DialogModule , private messageService: MessageService, private usersService: UsersService, private breadcrumbService: BreadcrumbService, private tableModule: TableModule, private buttonModule: ButtonModule, private cdRef: ChangeDetectorRef) {}
-    
+
+    ///////// Forms Groups ////////////
+    constructor(private walletService:WalletService, private spinner: NgxSpinnerService, private permissionsService:PermissionsService, private hotelsService:HotelsService, private confirmationService: ConfirmationService, private toastModule: ToastModule, private dialogModule: DialogModule , private messageService: MessageService, private usersService: UsersService, private breadcrumbService: BreadcrumbService, private tableModule: TableModule, private buttonModule: ButtonModule, private cdRef: ChangeDetectorRef) {}
+
     ngOnInit(): void {
         // Inicializamos la consulta de hoteles
-        this.getAllHotels();
+        this.getIndex();
         // iniciamos la consulta de cajas
         this.getAllWallets();
         this.walletService.data.subscribe(wallets => {
             this.wallets = wallets;
         });
-        
+
     }
     //////// Lista de Hoteles ////////
-    getAllHotels(): void {
-        this.hotelsService.getHotels(30).subscribe(
+    getIndex(search:string = '', pageCount:number = this.pageCount, page: number = 1): void {
+        this.spinner.show();
+        this.loadingTable = true;
+        this.hotelsService.getHotels(pageCount, search, page).subscribe(
             (response: any) => {
                 /* console.log('Response: ', response); */
                 this.hotels = response.data;
@@ -95,7 +111,7 @@ export class WalletsComponent implements OnInit {
         );
     }
     //////// Crear un nuevo Permiso //////////////////
-    createWallet(){   
+    createWallet(){
         this.formNewWallet.get('hotel_id').setValue(this.selectedHotel.id);
         this.formNewWallet.get('tipo').setValue(this.tipo);
         const datos = this.formNewWallet.value;
@@ -107,16 +123,16 @@ export class WalletsComponent implements OnInit {
         // this.getAllWallets();
         }, error => {
             console.log('Error:', error);
-        }); 
+        });
     }
 
 
     /////// Consultar Todos los Permisos  ///////////
     getAllWallets(): void {
         this.walletService.getWallets(30).subscribe(
-            (response: any) => { 
+            (response: any) => {
                 this.wallets = response.data;
-                this.totalWallets = response.total; 
+                this.totalWallets = response.total;
             },
             (error) => {
                 console.log('Error: ', error);
@@ -124,16 +140,16 @@ export class WalletsComponent implements OnInit {
         );
     }
     /////////// Consultar 1 hotel  //////////////
-    getWallet(id:number){ 
+    getWallet(id:number){
         this.walletService.getWallteEditById(id).subscribe(response => {
             this.walletData = response;
-            
-            let hotel: string;  
+
+            let hotel: string;
             response.hotel.forEach(element => {
                 if(element.id==response.caja.hotel_id){
                     hotel = element;
                 }
-            }); 
+            });
 
             console.log(hotel)
 
@@ -187,12 +203,66 @@ export class WalletsComponent implements OnInit {
               });
             }
           });
-    }    
+    }
     modalNewW(){
         this.crearW = true;
     }
-    
-    
 
-    
+    //Busqueda
+
+    searchInput(){
+        let search = this.formSearch.get('search').value;
+        if(search==""){
+          this.getIndex(search);
+        }
+
+    }
+
+      search(dt){
+        let search = this.formSearch.get('search').value;
+        this.getIndex(search);
+    }
+
+    onPage(event){
+        this.pageCount = event['rows'];
+        this.getIndex('', this.pageCount);
+    }
+
+    //Paginador
+
+    onPageChange(event) {
+        this.first = event.first;
+        this.rows = event.rows;
+    }
+
+    leftTable() {
+        this.pageActual = this.pageActual - 1;
+        this.getIndex('', this.pageCount, this.pageActual);
+        this.validatePage();
+    }
+
+    rightTable() {
+        this.pageActual = this.pageActual + 1;
+        this.getIndex('', this.pageCount, this.pageActual);
+        this.validatePage();
+    }
+
+    validatePage() {
+        if (this.pageActual == 1) {
+            this.disablePageLeft = false;
+        }
+
+        if (this.pageActual > 1) {
+            this.disablePageLeft = true;
+        }
+
+        if (this.ultimaPage == this.pageActual) {
+            this.disablePageRight = false;
+        }
+
+        if (this.ultimaPage > this.pageActual) {
+            this.disablePageRight = true;
+        }
+    }
+
 }

@@ -4,6 +4,7 @@ import { DashboardRoomsService } from 'src/app/content/service/dashboardRooms/da
 import {  MenuItem, MenuItemCommandEvent } from 'primeng/api';
 import { OverlayPanel } from 'primeng/overlaypanel';
 import { ThirdPartyDraggable } from '@fullcalendar/interaction';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 interface HotelData {
   hotel_id: number; // Adjust the type accordingly
@@ -35,13 +36,14 @@ export class DashboardRoomsComponent implements OnInit  {
   
   private hotelId: number;
   private pisoId: number;
-  private primerPiso: number = 1;
-  private dataDashBoardRooms: dashboardRooms;
+  private primerPiso: number = 1; 
   public dataRoomsPisos: any[];
   public htmlContent: string;
   public dataRoom: dataRoomPiso [] = [];
   private estadoHabitacion: number;
   private habitacionId: number;
+  public reservacionModalVisible: boolean = true;
+  public formReservacion: FormGroup;
 
   ngOnInit(): void {
     this.hotelId = 1; 
@@ -55,14 +57,16 @@ export class DashboardRoomsComponent implements OnInit  {
 
   constructor( 
     private dashboardRoomsService:DashboardRoomsService, 
+    private FB: FormBuilder,
   ){
 
   }
 
   buildForm(){ 
-    setTimeout(() => {
-     // console.log(this.dataRoom);
-    }, 2000);
+    this.formReservacion =  this.FB.group({
+      search: ['',[]],
+    });
+
   }
 
   getRoomsDashboard(){
@@ -78,9 +82,7 @@ export class DashboardRoomsComponent implements OnInit  {
             if(this.pisoId == element.piso){
               element.habitaciones = [];
             }
-          });
-
-          this.dataDashBoardRooms = response;
+          }); 
           
           let pisoEncontrado = this.dataRoom.find(piso => piso.piso == this.pisoId);
             pisoEncontrado.loading = false;
@@ -457,8 +459,13 @@ export class DashboardRoomsComponent implements OnInit  {
       }
     );
   
+    
   }
+
+  reservarSubmit(){
   
+  }
+
   enviarDesocupar(parametros){
 
     this.dashboardRoomsService.desocupar(parametros).subscribe(

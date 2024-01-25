@@ -33,8 +33,8 @@ import { Config } from '../../storage/config';
 
     //////////////////////  CRUD PERMISOS  /////////////////////////
     // Consultar lista de permisos
-    getPermissions(per_page:number, search:string = '',page: number = 1):Observable<Permit[]>{
-        const parametros = { 
+    getPermissions(per_page:number, search:string = '', page:number = 1):Observable<Permit[]>{
+        const parametros = {
             id: '',
             codigo: '',
             nombre: '',
@@ -57,7 +57,7 @@ import { Config } from '../../storage/config';
         return this.httpClient.post<any>(`${this.baseUrl+this.endpointPActualizar}`, data);
     }
     deletePermissions(id:number){
-        const parametros = { 
+        const parametros = {
             id: id
         };
         return this.httpClient.post<any>(`${this.baseUrl+this.endpointPEliminar}`, parametros);
@@ -71,6 +71,6 @@ import { Config } from '../../storage/config';
                 (error) => {
                     console.log('Error: ', error);
                 }
-            );  
-        } 
+            );
+        }
     }
