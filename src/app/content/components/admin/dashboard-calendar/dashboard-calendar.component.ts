@@ -5,6 +5,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import { INITIAL_EVENTS, createEventId } from './event-utils';
+import esLocale from '@fullcalendar/core/locales/es'; // Importa el idioma español
 
 @Component({
   selector: 'app-dashboard-calendar',
@@ -34,7 +35,8 @@ export class DashboardCalendarComponent {
     dayMaxEvents: true,
     select: this.handleDateSelect.bind(this),
     eventClick: this.handleEventClick.bind(this),
-    eventsSet: this.handleEvents.bind(this)
+    eventsSet: this.handleEvents.bind(this),
+    locale: esLocale
     /* you can update a remote database when these fire:
     eventAdd:
     eventChange:
