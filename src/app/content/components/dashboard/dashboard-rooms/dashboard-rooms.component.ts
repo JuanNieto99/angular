@@ -31,7 +31,7 @@ interface dataRoom {
 export class DashboardRoomsComponent implements OnInit  {
   @ViewChild('op1') op1: OverlayPanel;
 
-  public menuHabitacion: MenuItem ;
+  public menuHabitacion: MenuItem [];
   
   private hotelId: number;
   private pisoId: number;
@@ -299,139 +299,145 @@ export class DashboardRoomsComponent implements OnInit  {
     let estadoHabitaciones = [];
 
     
-    let letItem: MenuItem []; 
-
-    habitacion.detalle.forEach(element => {
-      estadoHabitaciones.push(element.estado_id);
-    }); 
-
-    console.log(estadoHabitaciones)
-    if(!estadoHabitaciones.includes(5)){ //no esta reservada entonces reservemosla
-      letItem = [
-        {
-          label: 'Reservar',
-          icon: 'pi pi-calendar-times',
-          id: '5',
-          command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
-          visible: true,
-        } 
-      ]
-
-      
+    let letItem: MenuItem[] = [];  // Corrected the declaration and initialization
+     
+    if(habitacion.detalle){
+      habitacion.detalle.forEach(element => {
+        estadoHabitaciones.push(element.estado_id);
+      }); 
     }
-
+ 
+    if(!estadoHabitaciones.includes(5)){ //no esta reservada entonces reservemosla
+      letItem.push(
+      {
+        label: 'Reservar',
+        icon: 'pi pi-calendar-times',
+        id: '5',
+        command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
+        visible: true,
+        disabled: !estadoHabitaciones.includes(2)?false:true,
+      }) 
+    }
+  
     if(!estadoHabitaciones.includes(4)){ //no esta en limpieza
-      letItem = [
+      letItem.push(
         {
           label: 'Limpieza',
           icon: 'pi pi-exclamation-triangle',
           id: '4',
           command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
           visible: true,
+          disabled: !estadoHabitaciones.includes(2)?false:true,
         },
-      ]
+      )
       
     }
 
     if(!estadoHabitaciones.includes(2)){ //no ocupado
-      letItem = [
+      letItem.push(
         {
           label: 'Ocupar',
           icon: 'pi pi-lock',
           id: '2',
           command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
           visible: true,
+          disabled: !estadoHabitaciones.includes(5)/* 5-6-4 */ ?false:true,
         },
-      ]
+      )
       
     }
 
     if(!estadoHabitaciones.includes(6)){ //no esta en mantenimiento
       
-      letItem = [
+      letItem.push(
         {
           label: 'Mantenimiento',
           icon: 'pi pi-wrench',
           id: '6',
           command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
           visible: true,
+          disabled: !estadoHabitaciones.includes(2)?false:true,
+
         }, 
-      ]
+      )
       
     }
 
 
-    estadoHabitaciones.forEach(element => {
-
+    estadoHabitaciones.forEach(element => { 
       switch (element) {
         case 5:
           //esta reservada
-          letItem = [
+          letItem.push(
             { 
               label: 'Anular Reserva',
               icon: 'pi pi-calendar-times',
               id: '50',
               command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
               visible: true,
+              disabled: !estadoHabitaciones.includes(2)?false:true,
             } 
-          ]
+          )
           
           break;
         case 4:
           //esta limpieza 
 
-          letItem = [
+          letItem.push(
             { 
               label: 'Anular Limpieza',
-              icon: 'pi pi-lock',
+              icon: 'pi pi-exclamation-triangle',
               id: '40',
               command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
               visible: true,
+              disabled: !estadoHabitaciones.includes(2)?false:true,
             }
-          ]
+          )
       
 
         break;
         case 6:
           //esta mantenimiento 
-
-          letItem = [
+          
+          letItem.push(
             { 
               label: 'Anular Mantenimiento',
               icon: 'pi pi-wrench',
               id: '6',
               command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
               visible: true,
+              disabled: !estadoHabitaciones.includes(2)?false:true,
             }
-          ]
+          )
 
         break;
 
         case 2:
           //esta ocupado 
 
-        letItem   = [
+          letItem.push(
             { 
-              label: 'Desocupar',
-              icon: 'pi pi-lock',
-              id: '20',
-              command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
-              visible: true,
+                label: 'Desocupar',
+                icon: 'pi pi-lock-open',
+                id: '20',
+                command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
+                visible: true,
+                
             }
-        ] 
+          )
           
         break;
       }
   
     });
 
-    console.log(letItem)
-
     this.menuHabitacion = 
-    {
+    [
+      {
         label: 'Opciones',
         items: letItem
-    };
+      }
+    ]
     
   }
 
