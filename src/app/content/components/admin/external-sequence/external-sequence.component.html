@@ -20,13 +20,18 @@
 <div class="grid mt-3">
     <div class="col-12">
         <div class="card px-3 py-3">
-           <p-table [value]="externalSequenceData"  [showPageLinks]="true"  [first]="1" [totalRecords]="17" [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [loading]="loadingTable" [rows]="8" [globalFilterFields]="['nombre','medida','precio','cantidad', 'inventario','acciones']" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" selectionMode="multiple" [rowHover]="true" dataKey="usuario" (onPage)="onPage($event)">
+           <p-table [value]="externalSequenceData"  [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [loading]="loadingTable" [rows]="8" [globalFilterFields]="['nombre','prefijo','fecha_inicio','fecha_final', 'secuensia_incial','secuensia_actual','secuencia_final','acciones']"  selectionMode="multiple" [rowHover]="true" dataKey="usuario" (onPage)="onPage($event)">
                 <ng-template pTemplate="caption">
                     <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                         <h5 class="m-0">Secuencia Externa</h5>
                         <span class="block mt-2 md:mt-0 p-input-icon-left">
                             <form [formGroup]="formSearch" >
-                                <input formControlName="search" pInputText type="text" placeholder="Buscar..."  (input)="search(dt)" class="w-full sm:w-auto"/>
+                                <div class="p-inputgroup">
+                                    <input formControlName="search" pInputText type="text" placeholder="Buscar..."   (input)="searchInput()"  class="w-full sm:w-auto"/>
+                                    <button type="button" pButton pRipple   class="pi pi-search" (click)="search(dt)"></button>
+                                </div>
+                                    <!--i class="pi pi-search"></i>
+                                    <input formControlName="search" pInputText type="text" placeholder="Buscar..."  (input)="search(dt)" class="w-full sm:w-auto"/-->
                             </form>
                         </span>
                     </div>
@@ -71,6 +76,14 @@
 					</tr>
 				</ng-template>
             </p-table>
+            <br>
+            <div style="text-align: center;">
+                <span class="p-buttonset">
+                    <button pButton pRipple label="" icon="pi pi-arrow-left"   [disabled]="!disablePageLeft" (click)="leftTable()" ></button>
+                    <button pButton pRipple [label]="pageActual" ></button>
+                    <button pButton pRipple label="" icon="pi pi-arrow-right" [disabled]="!disablePageRight" (click)="rightTable()"></button>
+                </span>
+            </div>
         </div>
     </div>
 </div>

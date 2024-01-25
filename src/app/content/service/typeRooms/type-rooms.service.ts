@@ -28,14 +28,14 @@ export class TypeRoomsService {
         return this.httpClient.get<any>(`${this.baseUrl+this.endpointTypeRoomGet+id}`);
     }
 
-    getAll(per_page:number, search:string = ''): Observable<typeRoom[]> {
+    getAll(per_page:number, search:string = '', page:number = 1): Observable<typeRoom[]> {
         const httpOptions = {
             headers: new HttpHeaders({
               'Content-Type': 'application/json',
             })
           };
         const parametros = {};
-        return this.httpClient.post<typeRoom[]>(`${this.baseUrl+this.endpointListar}?per_page=${per_page}&search=${search}`, httpOptions);
+        return this.httpClient.post<typeRoom[]>(`${this.baseUrl+this.endpointListar}?per_page=${per_page}&page=${page}&search=${search}`, httpOptions);
     }
 
     createProduct(data:any){

@@ -40,13 +40,19 @@
 <div class="grid mt-3">
     <div class="col-12">
         <div class="card px-3 py-3">
-            <p-table [value]="hotels" [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['usuario','email','superadmin','estado']" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Mostrando {first} de {totalRecords} Hoteles"  selectionMode="multiple" [rowHover]="true" dataKey="hotel">
+            <p-table [value]="hotels" [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [loading]="loadingTable" [rows]="8" [globalFilterFields]="['nombre','medida','precio','cantidad', 'inventario','acciones']"  selectionMode="multiple" [rowHover]="true" dataKey="usuario" (onPage)="onPage($event)">
                 <ng-template pTemplate="caption">
                     <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                         <h5 class="m-0">Lista de Hoteles</h5>
                         <span class="block mt-2 md:mt-0 p-input-icon-left">
-                            <i class="pi pi-search"></i>
-                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar..."  class="w-full sm:w-auto"/>
+                            <form [formGroup]="formSearch" >
+                                <div class="p-inputgroup">
+                                    <input formControlName="search" pInputText type="text" placeholder="Buscar..."   (input)="searchInput()"  class="w-full sm:w-auto"/>
+                                    <button type="button" pButton pRipple   class="pi pi-search" (click)="search(dt)"></button>
+                                </div>
+                                    <!--i class="pi pi-search"></i>
+                                    <input formControlName="search" pInputText type="text" placeholder="Buscar..."  (input)="search(dt)" class="w-full sm:w-auto"/-->
+                            </form>
                         </span>
                     </div>
                 </ng-template>
@@ -67,7 +73,7 @@
                     <tr>
                         <td>
                             <p-tableCheckbox [value]="hotels"></p-tableCheckbox>
-                        </td> 
+                        </td>
                         <td>{{ hotel.nombre }}</td>
                         <td>{{ hotel.email }}</td>
                         <td>{{ hotel.contacto }}</td>
@@ -77,11 +83,19 @@
                             <p-button (click)="getHotel(hotel.id)" icon="pi pi-user-edit" severity="info"></p-button>
                             <p-confirmDialog></p-confirmDialog>
                             <p-button (click)="confirmDelete(hotel.id)" icon="pi pi-trash" severity="danger"></p-button>
-                            
+
                         </td>
                     </tr>
                 </ng-template>
             </p-table>
+            <br>
+            <div style="text-align: center;">
+                <span class="p-buttonset">
+                    <button pButton pRipple label="" icon="pi pi-arrow-left"   [disabled]="!disablePageLeft" (click)="leftTable()" ></button>
+                    <button pButton pRipple [label]="pageActual" ></button>
+                    <button pButton pRipple label="" icon="pi pi-arrow-right" [disabled]="!disablePageRight" (click)="rightTable()"></button>
+                </span>
+            </div>
         </div>
     </div>
 </div>
@@ -114,7 +128,7 @@
                     <label>Ciudad</label>
                     <p-dropdown [options]="cities$"  [(ngModel)]="selectedCity" [ngModelOptions]="{standalone: true}" optionLabel="nombre"></p-dropdown>
                 </div>
-               
+
                 <div class="field col-12 md:col-4">
                     <label>Direccion</label>
                     <input type="text" placeholder="Cra 50 #24-09" pInputText class="w-full mb-3 border-round-3xl" formControlName="direccion">
@@ -171,7 +185,7 @@
             </div>
             <div class="field col-12 md:col-4">
                 <label>Telefono</label>
-                <input *ngIf="editarH" type="text" 
+                <input *ngIf="editarH" type="text"
                 [value]="hotelData.telefono"  pInputText class="w-full mb-3 border-round-3xl" formControlName="telefono">
             </div>
             <div class="field col-12 md:col-4">

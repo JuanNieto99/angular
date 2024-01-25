@@ -4,6 +4,12 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { InternalSequenceService } from 'src/app/content/service/internalSequence/internal-sequence.service';
 import Swal from 'sweetalert2';
 
+interface PageEvent {
+    first: number;
+    rows: number;
+    page: number;
+    pageCount: number;
+}
 
 @Component({
   selector: 'app-internal-sequence',
@@ -27,6 +33,12 @@ export class InternalSequenceComponent {
     public secuenciaDescripcion: any[];
     public secuenciaInicial: any[];
     public secuenciaActual: any[];
+    public pageActual:number = 1;
+    public ultimaPage:number = 1;
+    public disablePageLeft: boolean = false;
+    public disablePageRight: boolean = true;
+    public first:number = 0;
+    public rows:number = 8;
 
     constructor(
         private FB: FormBuilder,
@@ -71,6 +83,20 @@ export class InternalSequenceComponent {
     onPage(event) {
         this.pageCount = event['rows'];
         this.getIndex('', this.pageCount);
+    }
+
+    //Busqueda
+    searchInput(){
+        let search = this.formSearch.get('search').value;
+        if(search==""){
+          this.getIndex(search);
+        }
+
+    }
+
+    search(dt){
+        let search = this.formSearch.get('search').value;
+        this.getIndex(search);
     }
 
     //Create
@@ -206,7 +232,7 @@ export class InternalSequenceComponent {
             secuensia_actual: ['', [Validators.required]]
 
         });
-        
+
         this.formEditInternalSequence = this.FB.group({
             hotel_id: ['', [Validators.required]],
             descripcion_secuencia: ['', [Validators.required]],
@@ -260,14 +286,15 @@ export class InternalSequenceComponent {
         });
     }
 
-    getIndex(search: string = '', page: number = this.pageCount) {
+    getIndex(search:string = '', pageCount:number = this.pageCount, page: number = 1) {
         this.spinner.show();
         this.loadingTable = true;
-        this.InternalSequenceService.getAll(page, search).subscribe(
+        this.InternalSequenceService.getAll(pageCount, search, page).subscribe(
             (response: any) => {
                 this.loadingTable = false;
                 console.log('Response: ', response);
                 this.internalSequenceData = response.data;
+                this.ultimaPage = response.last_page;
                 this.countRegisters = response.total;
                 this.spinner.hide();
             },
@@ -277,4 +304,44 @@ export class InternalSequenceComponent {
             }
         );
     }
+
+    //Paginador
+
+    onPageChange(event){
+        this.first = event.first;
+        this.rows = event.rows;
+      }
+
+
+      leftTable(){
+        this.pageActual = this.pageActual - 1;
+        this.getIndex('', this.pageCount, this.pageActual);
+        this.validatePage();
+      }
+
+      rightTable(){
+          this.pageActual = this.pageActual + 1;
+          this.getIndex('', this.pageCount, this.pageActual);
+          this.validatePage();
+      }
+
+      validatePage(){
+          if(this.pageActual == 1 ){
+              this.disablePageLeft = false;
+          }
+
+          if(this.pageActual > 1 ){
+              this.disablePageLeft = true;
+          }
+
+          if(this.ultimaPage == this.pageActual){
+              this.disablePageRight = false;
+          }
+
+          if(this.ultimaPage > this.pageActual){
+              this.disablePageRight = true;
+          }
+      }
+
+
 }

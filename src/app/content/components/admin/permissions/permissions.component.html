@@ -11,20 +11,26 @@
             </div>
         </div>
         <div class="mt-3 lg:mt-0">
-            <button pButton pRipple (click)="modalNewP()" class="p-button-outlined mr-2" icon="pi pi-plus"></button> 
+            <button pButton pRipple (click)="modalNewP()" class="p-button-outlined mr-2" icon="pi pi-plus"></button>
         </div>
     </div>
 </div>
 <div class="grid mt-3">
     <div class="col-12">
         <div class="card px-3 py-3">
-            <p-table [value]="permission" [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['usuario','email','superadmin','estado']"   [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Mostrando {first} de {totalRecords} Permisos"  selectionMode="multiple" [rowHover]="true" dataKey="hotel">
+            <p-table [value]="permission" [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [loading]="loadingTable" [rows]="8" [globalFilterFields]="['nombre','medida','precio','cantidad', 'inventario','acciones']"  selectionMode="multiple" [rowHover]="true" dataKey="usuario" (onPage)="onPage($event)">
                 <ng-template pTemplate="caption">
                     <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                         <h5 class="m-0">Lista de Permisos</h5>
                         <span class="block mt-2 md:mt-0 p-input-icon-left">
-                            <i class="pi pi-search"></i>
-                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar..."  class="w-full sm:w-auto"/>
+                            <form [formGroup]="formSearch" >
+                                <div class="p-inputgroup">
+                                    <input formControlName="search" pInputText type="text" placeholder="Buscar..."   (input)="searchInput()"  class="w-full sm:w-auto"/>
+                                    <button type="button" pButton pRipple   class="pi pi-search" (click)="search(dt)"></button>
+                                </div>
+                                    <!--i class="pi pi-search"></i>
+                                    <input formControlName="search" pInputText type="text" placeholder="Buscar..."  (input)="search(dt)" class="w-full sm:w-auto"/-->
+                            </form>
                         </span>
                     </div>
                 </ng-template>
@@ -50,7 +56,7 @@
                         <td class="flex gap-2">
                             <p-button (click)="getPermission(permit.id)" icon="pi pi-user-edit" severity="info"></p-button>
                             <p-confirmDialog></p-confirmDialog>
-                            <p-button (click)="confirmDelete(permit.id)" icon="pi pi-trash" severity="danger"></p-button> 
+                            <p-button (click)="confirmDelete(permit.id)" icon="pi pi-trash" severity="danger"></p-button>
                         </td>
                     </tr>
                 </ng-template>
@@ -59,7 +65,7 @@
             <div style="text-align: center;">
                 <span class="p-buttonset">
                     <button pButton pRipple label="" icon="pi pi-arrow-left"   [disabled]="!disablePageLeft" (click)="leftTable()" ></button>
-                    <button pButton pRipple [label]="pageActual" ></button> 
+                    <button pButton pRipple [label]="pageActual" ></button>
                     <button pButton pRipple label="" icon="pi pi-arrow-right" [disabled]="!disablePageRight" (click)="rightTable()"></button>
                 </span>
             </div>
@@ -83,7 +89,7 @@
                 <div class="field col-12 md:col-4">
                     <label>Descripcion</label>
                     <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="descripcion">
-                </div>               
+                </div>
                 <div class="field col-12 md:col-12">
                     <button pButton pRipple label="Crear Permiso" icon="pi pi-user" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>

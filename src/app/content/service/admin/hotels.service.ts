@@ -23,9 +23,9 @@ export class HotelsService {
   ///// variables para manedar datos de hotel
   private dataSubject: BehaviorSubject<Hotel[]>;
   public data: Observable<Hotel[]>;
-  
-  
-  constructor(private httpClient: HttpClient) { 
+
+
+  constructor(private httpClient: HttpClient) {
     this.dataSubject = new BehaviorSubject<Hotel[]>([]);
     this.data = this.dataSubject.asObservable();
     this.baseUrl = Config.url;
@@ -40,8 +40,8 @@ export class HotelsService {
   }
   // CRUD HOTELES
   // Consultar hoteles
-  getHotels(per_page:number):Observable<Hotel[]>{
-    const parametros = { 
+  getHotels(per_page:number, search:string = '', page:number = 1):Observable<Hotel[]>{
+    const parametros = {
       id: '',
       nombre: '',
       direccion: '',
@@ -52,7 +52,7 @@ export class HotelsService {
       razon_social: '',
       cantidad_habitaciones: '',
     };
-    return this.httpClient.post<Hotel[]>(`${this.baseUrl+this.endpointHotelsListar}?per_page=${per_page}`, parametros);
+    return this.httpClient.post<Hotel[]>(`${this.baseUrl+this.endpointHotelsListar}?per_page=${per_page}&page=${page}&search=${search}`, parametros);
   }
   ///// Crear Hotel
   createHotel(data: any): Observable<Hotel[]> {
@@ -62,20 +62,20 @@ export class HotelsService {
   getHotelById(id: number){
     return this.httpClient.get<any>(`${this.baseUrl+this.endpointHotelMostrar}/${id}`)
           .pipe(map(hotel => hotel));
-  } 
+  }
   ////////// Update Hotel //////////////////////
   updateHotel(data:any): Observable<any> {
     return this.httpClient.post<any>(`${this.baseUrl+this.endpointHotelActualizar}`, data);
   }
   deleteHotel(id:number){
-    const parametros = { 
+    const parametros = {
       id: id
     };
     return this.httpClient.post<any>(`${this.baseUrl+this.endpointHotelEliminar}`, parametros);
   }
 
   //Actualizar observable de Hoteles
-  
+
   refresHotelsData(): void {
     this.getHotels(30).subscribe(
         (response: any) => {
@@ -85,11 +85,11 @@ export class HotelsService {
         (error) => {
             console.log('Error: ', error);
         }
-    );  
-  } 
+    );
+  }
 
   getCountries(per_page):Observable<country[]>{
-    const parametros = { 
+    const parametros = {
       id: ''
     };
     return this.httpClient.post<any>(`${this.baseUrl+this.endpointCountry}?per_page=${per_page}`, parametros).pipe(
@@ -97,21 +97,20 @@ export class HotelsService {
     );
   }
   getStates(countryId: any):Observable<state[]>{
-    const parametros = { 
+    const parametros = {
       id: countryId
     };
     const url = `${this.baseUrl+this.endpointState}`;
       return this.httpClient.post<state[]>(url, parametros);
   }
   getCities(stateId: any):Observable<city[]>{
-    const parametros = { 
+    const parametros = {
       id: stateId
     };
     const url = `${this.baseUrl+this.endpointCity}`;
       return this.httpClient.post<city[]>(url, parametros);
   }
-   
-   
+
+
 
 }
- 
