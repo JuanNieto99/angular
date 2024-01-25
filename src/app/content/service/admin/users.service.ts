@@ -7,10 +7,10 @@ import { firstValueFrom, catchError } from 'rxjs';
 import { Config } from '../../storage/config';
 
 @Injectable({
- providedIn: 'root' 
+ providedIn: 'root'
 })
 export class UsersService {
- 
+
  private usersUrl: any;
  private endpointListar: any;
  private endpointCrear: any;
@@ -20,7 +20,7 @@ export class UsersService {
  private dataSubject: BehaviorSubject<User[]>;
  public data: Observable<User[]>;
  public token: string;
- 
+
 
     constructor(private httpClient: HttpClient) {
         this.dataSubject = new BehaviorSubject<User[]>([]);
@@ -33,8 +33,8 @@ export class UsersService {
         this.endpointDelete = '/usuariosEliminar';
     }
 
-    getAll(per_page:number): Observable<User[]> {
-      const parametros = { 
+    getAll(per_page:number, search:string = '', page:number = 1): Observable<User[]> {
+      const parametros = {
         id: '',
         name: '',
         email: '',
@@ -42,8 +42,8 @@ export class UsersService {
         estado: '',
         superadmin: '',
       };
-      return this.httpClient.post<User[]>(`${this.usersUrl+this.endpointListar}?per_page=${per_page}`, parametros);
-      
+      return this.httpClient.post<User[]>(`${this.usersUrl+this.endpointListar}?per_page=${per_page}&page=${page}&search=${search}`, parametros);
+
     }
     getById(id:number){
       console.log(id);

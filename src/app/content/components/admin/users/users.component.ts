@@ -10,6 +10,7 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { HttpHeaders } from '@angular/common/http';
 import Swal from 'sweetalert2/dist/sweetalert2.all.js';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 
 @Component({
@@ -27,7 +28,19 @@ export class UsersComponent implements OnInit {
     public visibleDialog1:boolean = false;
     public selectedState: any = null;
     public selectedUserIndex = -1;
-    
+    public pageCount: number = 10;
+    public pageActual: number = 1;
+    public ultimaPage: number = 1;
+    public disablePageLeft: boolean = false;
+    public disablePageRight: boolean = true;
+    public loadingTable: boolean = false;
+    public first: number = 0;
+    public rows: number = 8;
+
+    formSearch = new FormGroup({
+        search: new FormControl('', []),
+    });
+
     formNuser = new FormGroup({
         usuario: new FormControl('', Validators.required),
         email: new FormControl('', [Validators.required, Validators.email]),
@@ -44,27 +57,32 @@ export class UsersComponent implements OnInit {
         superadmin: new FormControl('', Validators.required),
         id: new FormControl('', Validators.required)
      });
-    
-    constructor(private confirmationService: ConfirmationService, private toastModule: ToastModule, private dialogModule: DialogModule , private messageService: MessageService, private usersService: UsersService, private breadcrumbService: BreadcrumbService, private tableModule: TableModule, private buttonModule: ButtonModule ) { 
-    
+
+    constructor(private confirmationService: ConfirmationService, private spinner: NgxSpinnerService, private toastModule: ToastModule, private dialogModule: DialogModule , private messageService: MessageService, private usersService: UsersService, private breadcrumbService: BreadcrumbService, private tableModule: TableModule, private buttonModule: ButtonModule ) {
+
     }
 
     ngOnInit(): void {
-        this.getAllUsers();
+        this.getIndex();
         this.usersService.data.subscribe(users => {
             this.users = users;
             console.log(this.users);
         });
         this.breadcrumbService.currentBreadcrumbs.subscribe(breadcrumbs => this.breadcrumbs = breadcrumbs);
     }
+
     onQuitItem(item: string): void {
         this.breadcrumbService.quitItem(item);
     }
-    getAllUsers(): void {
-        this.usersService.getAll(30).subscribe(
+
+    getIndex(search: string = '', pageCount: number = this.pageCount, page: number = 1): void {
+        this.spinner.show();
+        this.loadingTable = true;
+        this.usersService.getAll(pageCount, search, page).subscribe(
             (response: any) => {
-                /* console.log('Response: ', response); */
+                this.loadingTable = false;
                 this.users = response.data;
+                this.ultimaPage = response.last_page;
                 this.totalUsers = response.total;
                 console.log(this.users);
             },
@@ -73,14 +91,16 @@ export class UsersComponent implements OnInit {
             }
         );
     }
+
     getAUser(id:number){
         this.usersService.getById(id).subscribe(response => {
             this.userData = response;
             this.userData.id = id;
-            console.log(this.userData);  
+            console.log(this.userData);
             this.visibleDialog1 = true;
         });
     }
+
     getRolName(rol: number): string {
         if (rol === 1){
             return 'Super Administrador';
@@ -92,6 +112,7 @@ export class UsersComponent implements OnInit {
             return 'Rol no identificado';
         }
     }
+
     getStatusName(status: number): string {
         if (status === 1){
             return 'Activo';
@@ -101,11 +122,11 @@ export class UsersComponent implements OnInit {
             return 'Estado no identificado';
         }
     }
-    
+
     openNew() {
         this.visible = true;
     }
-    
+
     async newUser(){
         const datos = this.formNuser.value;
         this.usersService.insertData(datos).subscribe(response => {
@@ -116,7 +137,7 @@ export class UsersComponent implements OnInit {
           }, error => {
             console.log('Error:', error);
           });
-    } 
+    }
 
     updateUser(){
         this.formEuser.get('id').setValue(this.userData.id);
@@ -132,6 +153,7 @@ export class UsersComponent implements OnInit {
             console.log('Error:', error)
         });
     }
+
     deleteUser(id: number){
         const params = {
             headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' }),
@@ -145,6 +167,7 @@ export class UsersComponent implements OnInit {
             console.log('Error:', error)
         });
     }
+
     confirmDelete(id:number){
         console.log(id);
         Swal.fire({
@@ -165,7 +188,61 @@ export class UsersComponent implements OnInit {
             }
           });
     }
-    
 
-    
+    //Buscar
+
+    searchInput() {
+        let search = this.formSearch.get('search').value;
+        if (search == '') {
+            this.getIndex(search);
+        }
+    }
+
+    search(dt) {
+        let search = this.formSearch.get('search').value;
+        this.getIndex(search);
+    }
+
+    onPage(event) {
+        this.pageCount = event['rows'];
+        this.getIndex('', this.pageCount);
+    }
+
+    //Paginador
+
+    onPageChange(event) {
+        this.first = event.first;
+        this.rows = event.rows;
+    }
+
+    leftTable() {
+        this.pageActual = this.pageActual - 1;
+        this.getIndex('', this.pageCount, this.pageActual);
+        this.validatePage();
+    }
+
+    rightTable() {
+        this.pageActual = this.pageActual + 1;
+        this.getIndex('', this.pageCount, this.pageActual);
+        this.validatePage();
+    }
+
+    validatePage() {
+        if (this.pageActual == 1) {
+            this.disablePageLeft = false;
+        }
+
+        if (this.pageActual > 1) {
+            this.disablePageLeft = true;
+        }
+
+        if (this.ultimaPage == this.pageActual) {
+            this.disablePageRight = false;
+        }
+
+        if (this.ultimaPage > this.pageActual) {
+            this.disablePageRight = true;
+        }
+    }
+
 }
