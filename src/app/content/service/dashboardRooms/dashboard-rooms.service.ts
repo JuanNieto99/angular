@@ -27,7 +27,7 @@ export class DashboardRoomsService {
       this.baseUrl = Config.url;
       this.endpointListar = '/habitacionesDashboard'; 
       this.endpointPisos = '/habitacionesDashboardPisos'; 
-      this.endpointGetReservar = '/'; 
+      this.endpointGetReservar = '/getReserva'; 
       this.endpointReservar = '/'; 
       this.endpointAnularReserva = '/';
       this.endpointMantenimiento = '/';

@@ -12,13 +12,6 @@
     text-align: center;
 }
 
-.box {
-    flex: 1; /* Hace que los elementos se expandan para ocupar el espacio disponible */
- 
-    box-sizing: border-box; /* Incluye el padding en el ancho total */
-}
-
-.container{
-    display: flex;
-
+.padding{
+    padding: 1%;
 }

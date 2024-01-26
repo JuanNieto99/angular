@@ -1,10 +1,12 @@
+<ngx-spinner type="ball-scale-multiple"></ngx-spinner>
+
 <div class="card">
     <div >
-        <p-tag icon="pi pi-calendar-times"  style="padding: 1%" value="Reservada"></p-tag>
-        <p-tag icon="pi pi-lock-open" style="padding: 1%" severity="success" value="Disponible"></p-tag>
-        <p-tag icon="pi pi-exclamation-triangle" style="padding: 1%" severity="info" value="Limpieza" class="box"></p-tag>
-        <p-tag icon="pi pi-wrench" style="padding: 1%" severity="warning" value="Mantenimiento" class="box"></p-tag>
-        <p-tag icon="pi pi-lock" style="padding: 1%" severity="danger" value="Ocupada" class="box"></p-tag> 
+        <p-tag icon="pi pi-calendar-times"  class="padding" value="Reservada"></p-tag>
+        <p-tag icon="pi pi-lock-open"   class="padding" severity="success" value="Disponible"></p-tag>
+        <p-tag icon="pi pi-exclamation-triangle"  class="padding"  severity="info" value="Limpieza" ></p-tag>
+        <p-tag icon="pi pi-wrench" class="padding" severity="warning" value="Mantenimiento" ></p-tag>
+        <p-tag icon="pi pi-lock" class="padding" severity="danger" value="Ocupada" ></p-tag> 
     </div>  
     
     <h5>Habitaciones</h5>
@@ -24,10 +26,10 @@
                             </p-overlayPanel> 
                             <img src="https://cdn.pixabay.com/photo/2019/02/10/08/19/doors-3986684_1280.png" width="100%" height="100%"  class="rooms"/> 
                         </div>
-                        <div class="flex flex-wrap gap-2">  
+                        <div class="flex flex-wrap gap-2" style="margin-left: 20%; " >  
                             <ng-container *ngFor="let estados of habitaciones.detalle"> 
-                                <div *ngIf="estados.estado_id == 5">
-                                    <p-tag icon="pi pi-calendar-times"  ></p-tag>
+                                <div *ngIf="estados.estado_id == 5" >
+                                    <p-tag icon="pi pi-calendar-times" ></p-tag>
                                 </div>
                                 <div *ngIf="estados.estado_id == 3" >
                                     <p-tag icon="pi pi-lock-open" severity="success" ></p-tag>
@@ -35,7 +37,7 @@
                                 <div *ngIf="estados.estado_id == 4"  >
                                     <p-tag icon="pi pi-exclamation-triangle" severity="info"></p-tag>
                                 </div>
-                                <div *ngIf="estados.estado_id == 6"  >
+                                <div *ngIf="estados.estado_id == 6" >
                                     <p-tag icon="pi pi-wrench" severity="warning"  ></p-tag>
                                 </div>
                                 <div *ngIf="estados.estado_id == 2"  >
@@ -50,30 +52,32 @@
     </p-accordion>
 </div>
 
-<!--p-dialog header="Resevar" [(visible)]="reservacionModalVisible" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
-    <div class="col-12">
-        <h5>Completa el formulario</h5>
-        <form [formGroup]="formReservacion" (ngSubmit)="reservarSubmit()">
+<p-dialog header="Resevar" [(visible)]="reservacionModalVisible" [modal]="true" [style]="{ width: '70vw' }" [draggable]="false" [resizable]="false">
+    <div class="col-12"> 
+        <div  (ngSubmit)="reservarSubmit()">
             <div class="p-fluid p-formgrid grid">
-                <div class="field col-12 md:col-4">
-                    <label>Nombre del Rol</label>
-                    <input type="text" placeholder="Auditar" pInputText class="w-full mb-3 border-round-3xl" formControlName="nombre">
-                </div>
-                <div class="field col-12 md:col-4">
-                    <label>Descripcion</label>
-                    <input type="text" placeholder="aut" pInputText class="w-full mb-3 border-round-3xl" formControlName="descripcion">
-                </div>
-                <div class="field col-12 md:col-4">
-                    <label htmlFor="state">Rol</label>
-                    <select formControlName="estado" class="w-full mb-3 border-round-3xl selects-main">
-                        <option value="1">Activo</option>
-                        <option value="2">Inactivo</option>
-                    </select>
-                </div>
                 <div class="field col-12 md:col-12">
-                    <button pButton pRipple label="Crear Rol" icon="pi pi-user" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                    <label for="cliente">Cliente</label>
+                     <p-multiSelect [options]="clienteData"  selectionLimit="1" (onFilter)="busquedaCliente($event)" optionLabel="name" placeholder="Buscar cliente" optionLabel="name" class="multiselect-custom" display="chip" emptyMessage="Cliente no encontrado">
+                        <ng-template let-cliente pTemplate="item">
+                            <div class="flex align-items-center">
+                                 <span class="ml-2">{{cliente.name}}</span>
+                            </div>
+                        </ng-template>
+                    </p-multiSelect>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Fecha Inicio </label>
+                    <p-calendar inputId="fechaInicio" [(ngModel)]="fechaInicio" class="ng-invalid ng-dirty" [showIcon]="true"></p-calendar>
+                 </div>
+                <div class="field col-12 md:col-6">
+                    <label>Fecha Final</label>
+                    <p-calendar inputId="fechaFinal" [(ngModel)]="fechaFinal" class="ng-invalid ng-dirty" [showIcon]="true"></p-calendar>
+                </div> 
+                <div class="field col-12 md:col-12">
+                    <button pButton pRipple label="Crear Reserva" icon="pi pi-user" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>
             </div>
-        </form>
+        </div>
 	</div>
-</p-dialog-->
+</p-dialog>
