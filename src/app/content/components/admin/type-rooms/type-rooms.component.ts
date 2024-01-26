@@ -265,12 +265,12 @@ export class TypeRoomsComponent {
           this.getIndex(search);
         }
 
-      }
+    }
 
-      search(dt){
+    search(dt){
         let search = this.formSearch.get('search').value;
         this.getIndex(search);
-      }
+    }
 
     //Paginador
 
@@ -293,20 +293,20 @@ export class TypeRoomsComponent {
       }
 
       validatePage(){
-          if(this.pageActual == 1 ){
-              this.disablePageLeft = false;
-          }
+        if(this.pageActual == 1 ){
+            this.disablePageLeft = false;
+        }
 
-          if(this.pageActual > 1 ){
-              this.disablePageLeft = true;
-          }
+        if(this.pageActual > 1 ){
+            this.disablePageLeft = true;
+        }
 
-          if(this.ultimaPage == this.pageActual){
-              this.disablePageRight = false;
-          }
+        if(this.ultimaPage == this.pageActual){
+            this.disablePageRight = false;
+        }
 
-          if(this.ultimaPage > this.pageActual){
-              this.disablePageRight = true;
-          }
-      }
+        if(this.ultimaPage > this.pageActual){
+            this.disablePageRight = true;
+        }
+    }
 }

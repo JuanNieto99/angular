@@ -3,8 +3,11 @@ import { CommonModule } from '@angular/common';
 import { PagesRoutingModule } from './admin-routing.module';
 import { AdminInterceptor } from '../../interceptors/admin.interceptor';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { RecipesComponent } from './recipes/recipes.component';
 @NgModule({
-    declarations: [ ],
+    declarations: [ 
+    RecipesComponent
+  ],
     imports: [
         CommonModule,
         PagesRoutingModule

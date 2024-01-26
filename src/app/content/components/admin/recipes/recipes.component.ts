@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { RoomsService } from 'src/app/content/service/rooms/rooms.service';
+import { Recipes } from 'src/app/content/models/admin/recipes.model';
+import { RecipesService } from 'src/app/content/service/recipes/recipes.service';
 import Swal from 'sweetalert2';
 
 interface PageEvent {
@@ -12,31 +13,28 @@ interface PageEvent {
 }
 
 @Component({
-  selector: 'app-rooms',
-  templateUrl: './rooms.component.html',
-  styleUrls: ['./rooms.component.scss']
+  selector: 'app-recipes',
+  templateUrl: './recipes.component.html',
+  styleUrls: ['./recipes.component.scss']
 })
-export class RoomsComponent {
-    public loadingTable: boolean = false;
-    public roomsData: any[];
-    public pageCount: number = 10;
-    public imagen: any = null;
-    public countRegisters: number;
+export class RecipesComponent {
+    public recipesData: any[];
+    public loadingTable :boolean = false;
+    public visibleModalRecipes: boolean = true;
+    public visibleModalRecipesEditar: boolean = false;
+    public formCreateRecipes: FormGroup;
     public formSearch: FormGroup;
-    public formCreateRooms: FormGroup;
-    public formEditRooms: FormGroup;
-    public visibleModalRooms: boolean = true;
-    public visibleModalRoomsEditar: boolean = false;
-    public idEditando: number = 0;
-    public dataEditarInfoRooms: any;
+    public formEditRecipes: FormGroup;
     public hotel: any[];
     public nombre: string;
-    public descripcion: string;
-    public tipo: any[];
-    public pisos: any[];
-    public capacidadPersonas: number;
+    public recipesDescripcion: any[];
     public precio: number;
-    public diseno_json: any[];
+    public imagen: any = null;
+    public countRegisters: number;
+    public idEditando: number = 0;
+
+    //Buscador y Paginador
+    public pageCount: number = 10;
     public first:number = 0;
     public rows:number = 8;
     public pageActual:number = 1;
@@ -44,80 +42,56 @@ export class RoomsComponent {
     public disablePageLeft: boolean = false;
     public disablePageRight: boolean = true;
 
+
+
     constructor(
+        private recipesService: RecipesService,
         private FB: FormBuilder,
-        private spinner: NgxSpinnerService,
-        private RoomsService: RoomsService
-    ) {}
+        private spinner: NgxSpinnerService
+    ){ }
 
     ngOnInit(): void {
         this.buildForm();
         this.getIndex();
-        this.visibleModalRooms = false;
+        this.visibleModalRecipes = false;
     }
 
-    onRemove(event) {
-        this.imagen = null;
-    }
+    //CREAR
 
-    onSelect(event) {
-        this.imagen = event.currentFiles[0]; //.objectURL.changingThisBreaksApplicationSecurity;
-    }
-
-    onPage(event) {
-        this.pageCount = event['rows'];
-        this.getIndex('', this.pageCount);
-    }
-
-    openModal() {
+    openModal(){
         this.onCreate();
     }
 
-    searchInput(){
-        let search = this.formSearch.get('search').value;
-        if(search==""){
-          this.getIndex(search);
-        }
-
-    }
-
-    search(dt){
-        let search = this.formSearch.get('search').value;
-        this.getIndex(search);
-    }
-
-    //Crear
-
     onCreate() {
-        this.formCreateRooms.reset();
-        console.log('onCreate se está ejecutando');
-        this.RoomsService.getRooms(0).subscribe(
+        this.formCreateRecipes.reset();
+        this.recipesService.getRecipes(0).subscribe(
             (response: any) => {
-              this.hotel = response.hotel;
-              this.pisos = response.pisos;
-              this.tipo = response.tipo_habitacion;
-              this.visibleModalRooms = true;
+                this.hotel = response.hotel;
+                this.nombre = response.nombre;
+                this.recipesDescripcion = response.descripcion;
+                this.precio = response.precio;
+                this.visibleModalRecipes = true;
             },
             (error) => {
-              console.error('Error en getRooms:', error);
+                console.log('Error: ', error);
             }
-          );
+        );
     }
 
-    newRooms() {
+    newRecipes() {
         this.spinner.show();
-        let dataRooms = this.formCreateRooms.value;
+        let dataRecipes = this.formCreateRecipes.value;
 
-        dataRooms.hotel_id = dataRooms.hotel_id['id'];
-        dataRooms.piso = dataRooms.pisos;
-        dataRooms.tipo = dataRooms.tipo['id'];
-        dataRooms.estado = 1;
+        console.log(dataRecipes)
 
-        this.RoomsService.createRooms(dataRooms).subscribe(
+        dataRecipes.hotel_id = dataRecipes.hotel_id['id'];
+        dataRecipes.estado = 1;
+
+        this.recipesService.createRecipes(dataRecipes).subscribe(
             (response: any) => {
                 this.spinner.hide();
                 this.imagen = null;
-                this.visibleModalRooms = false;
+                this.visibleModalRecipes = false;
                 if (response.code == 'success') {
                     Swal.fire({
                         title: 'Éxito',
@@ -141,41 +115,44 @@ export class RoomsComponent {
     }
 
     submitCreate() {
-        if (this.formCreateRooms.valid) {
-            this.newRooms();
+        if (this.formCreateRecipes.valid) {
+            this.newRecipes();
         } else {
-            this.formCreateRooms.markAllAsTouched();
+            this.formCreateRecipes.markAllAsTouched();
         }
     }
 
     //Editar
 
-    editRooms(id: number) {
+    editRecipes(id: number) {
         this.idEditando = id;
         this.spinner.show();
-        this.RoomsService.getRooms(id).subscribe(
+        this.recipesService.getRecipes(id).subscribe(
             (response: any) => {
-                console.log(response)
+                console.log(response);
                 this.spinner.hide();
+
+                // Accede al primer elemento del array para obtener el hotel
                 this.hotel = response.hotel;
-                this.nombre = response.habitacion.nombre;
-                this.tipo = response.tipo_habitacion;
-                this.pisos = response.pisos;
+                const receta = response.receta;
 
-                this.formEditRooms.setValue({
-                    hotel_id: this.hotel,
-                    pisos: this.pisos.find(piso => piso == response.habitacion.piso),
-                    tipo: this.tipo.find(tipo => tipo.id == response.habitacion.tipo),
-                    nombre: this.nombre,
-                    capacidad_personas: response.habitacion.capacidad_personas,
-                    precio: response.habitacion.precio,
-                    descripcion: response.habitacion.descripcion,
-                    diseno_json: response.habitacion.diseno_json
-                });
+                if (receta) {
+                    this.nombre = receta.nombre;
+                    this.recipesDescripcion = receta.descripcion;
 
-                console.log();
+                    // Convierte el precio a número
+                    this.precio = parseFloat(receta.precio);
+
+                    this.formEditRecipes.setValue({
+                        hotel_id: this.hotel, // Ajusta según la estructura de la respuesta
+                        precio: this.precio,
+                        descripcion: this.recipesDescripcion,
+                        nombre: this.nombre
+                    });
+                }
+
                 setTimeout(() => {
-                    this.visibleModalRoomsEditar = true;
+                    this.visibleModalRecipesEditar = true;
                 }, 1);
             },
             (error) => {
@@ -184,21 +161,22 @@ export class RoomsComponent {
         );
     }
 
-    updateRoom() {
+    updateRecipe() {
         this.spinner.show();
-        let dataRooms = this.formEditRooms.value;
-        dataRooms.hotel_id = dataRooms.hotel_id.id;
-        dataRooms.tipo = dataRooms.tipo.id;
-        dataRooms.piso = dataRooms.pisos;
-        dataRooms.id = this.idEditando;
-        dataRooms.estado = 1;
-        console.log(dataRooms);
+        let dataRecipes = this.formEditRecipes.value;
+        dataRecipes.hotel_id = dataRecipes.hotel_id.id;
+        dataRecipes.nombre = dataRecipes.nombre;
+        dataRecipes.descripcion = dataRecipes.descripcion;
+        dataRecipes.precio = dataRecipes.precio;
+        dataRecipes.id = this.idEditando;
+        dataRecipes.estado = 1;
+        console.log(dataRecipes);
 
-        this.RoomsService.updateRooms(dataRooms).subscribe(
+        this.recipesService.updateRecipes(dataRecipes).subscribe(
             (response: any) => {
                 this.spinner.hide();
                 this.imagen = null;
-                this.visibleModalRoomsEditar = false;
+                this.visibleModalRecipesEditar = false;
                 if (response.code == 'success') {
                     Swal.fire({
                         title: 'Éxito',
@@ -222,8 +200,8 @@ export class RoomsComponent {
     }
 
     submitUpdate() {
-        if (this.formEditRooms.valid) {
-            this.updateRoom();
+        if (this.formEditRecipes.valid) {
+            this.updateRecipe();
         }
     }
 
@@ -231,7 +209,7 @@ export class RoomsComponent {
 
     confirmDelete(id:number){
         Swal.fire({
-          title: "¿Estas seguro que deseas eliminar esta habitación?",
+          title: "¿Estas seguro que deseas eliminar esta receta?",
           text: "Ten cuidado esta acción no se prodrá reversar",
           icon: "warning",
           showCancelButton: true,
@@ -240,14 +218,14 @@ export class RoomsComponent {
         }).then((result) => {
             if (result.isConfirmed) {
                 this.spinner.show();
-                this.RoomsService.deleteRooms({id}).subscribe(
+                this.recipesService.deleteRecipes({id}).subscribe(
                 (response: any) => {
                     this.spinner.hide();
                     if(response.code == "success"){
 
                     Swal.fire({
                         title: "Exito",
-                        text: "Habitación eliminada exitosamente.",
+                        text: "Receta eliminada exitosamente.",
                         icon: "success"
                     });
 
@@ -257,7 +235,7 @@ export class RoomsComponent {
 
                     Swal.fire({
                         title: "Error",
-                        text: "Error al eliminar la habitación." ,
+                        text: "Error al eliminar la receta." ,
                         icon: "error"
                     });
 
@@ -272,52 +250,72 @@ export class RoomsComponent {
         });
     }
 
-    //Construcción formulario
+    //Construcción formulario e Index
 
     buildForm() {
         this.formSearch = this.FB.group({
             search: ['', []],
         });
 
-        this.formCreateRooms = this.FB.group({
+        this.formCreateRecipes = this.FB.group({
             hotel_id: ['', [Validators.required]],
             nombre: ['', [Validators.required]],
-            descripcion: ['', [Validators.required]],
-            tipo: ['', [Validators.required]],
-            capacidad_personas: ['', [Validators.required]],
             precio: ['', [Validators.required]],
-            pisos: [''],
-            diseno_json: ['']
+            descripcion: ['', [Validators.required]],
         });
 
-        this.formEditRooms = this.FB.group({
+        this.formEditRecipes = this.FB.group({
             hotel_id: ['', [Validators.required]],
             nombre: ['', [Validators.required]],
-            descripcion: ['', [Validators.required]],
-            tipo: ['', [Validators.required]],
-            capacidad_personas: ['', [Validators.required]],
             precio: ['', [Validators.required]],
-            pisos: [''],
-            diseno_json: ['']
+            descripcion: ['', [Validators.required]],
         });
     }
 
-    getIndex(search:string = '', pageCount:number = this.pageCount, page: number = 1) {
+    getIndex(search:string = '', pageCount:number = this.pageCount, page: number = 1){
         this.spinner.show();
         this.loadingTable = true;
-        this.RoomsService.getAll(pageCount, search, page).subscribe(
-            (response: any) => {
-                this.loadingTable = false;
-                this.roomsData = response.data;
-                this.countRegisters = response.total;
-                this.ultimaPage = response.last_page
-                this.spinner.hide();
-            },
-            (error) => {
-                console.log('Error: ', error);
-                this.spinner.hide();
-            }
+        this.recipesService.getAll(pageCount, search, page).subscribe(
+          (response: any) => {
+              this.loadingTable = false;
+              console.log(response.data);
+              this.recipesData = response.data;
+              this.ultimaPage = response.last_page;
+              this.countRegisters = response.total;
+              this.spinner.hide();
+          },
+          (error) => {
+              console.log('Error: ', error);
+          }
         );
+    }
+
+    onRemove(event) {
+        this.imagen = null;
+    }
+
+    onSelect(event) {
+        this.imagen = event.currentFiles[0]; //.objectURL.changingThisBreaksApplicationSecurity;
+    }
+
+    onPage(event) {
+        this.pageCount = event['rows'];
+        this.getIndex('', this.pageCount);
+    }
+
+    //Buscador
+
+    searchInput(){
+        let search = this.formSearch.get('search').value;
+        if(search==""){
+          this.getIndex(search);
+        }
+
+    }
+
+    search(dt){
+        let search = this.formSearch.get('search').value;
+        this.getIndex(search);
     }
 
     //Paginador
@@ -325,9 +323,10 @@ export class RoomsComponent {
     onPageChange(event){
         this.first = event.first;
         this.rows = event.rows;
-    }
+      }
 
-    leftTable(){
+
+      leftTable(){
         this.pageActual = this.pageActual - 1;
         this.getIndex('', this.pageCount, this.pageActual);
         this.validatePage();
@@ -339,7 +338,7 @@ export class RoomsComponent {
           this.validatePage();
       }
 
-    validatePage(){
+      validatePage(){
         if(this.pageActual == 1 ){
             this.disablePageLeft = false;
         }
@@ -356,4 +355,5 @@ export class RoomsComponent {
             this.disablePageRight = true;
         }
     }
+
 }

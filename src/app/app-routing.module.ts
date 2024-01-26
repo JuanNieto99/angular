@@ -31,7 +31,8 @@ import { LoginBlockGuard } from './content/guards/loginblock.guard';
                     { path: 'admin/externalSequence', loadChildren: () => import('./content/components/admin/external-sequence/external-sequence.module').then(m => m.ExternalSequenceModule) },
                     { path: 'admin/rooms', loadChildren: () => import('./content/components/admin/rooms/rooms.module').then(m => m.RoomsModule) },
                     { path: 'dashboardRooms', loadChildren: () => import('./content/components/dashboard/dashboard-rooms/dashboard-rooms.module').then(m => m.DashboardRoomsModule) },
-                    { path: 'calendar', loadChildren: () => import('./content/components/admin/dashboard-calendar/dashboard-calendar.module').then(m => m.DashboardCalendarModule) }
+                    { path: 'calendar', loadChildren: () => import('./content/components/admin/dashboard-calendar/dashboard-calendar.module').then(m => m.DashboardCalendarModule) },
+                    { path: 'admin/recipes', loadChildren: () => import('./content/components/admin/recipes/recipes.module').then(m => m.RecipesModule) },
                 ],
                 canActivate: [LoginGuard]
             },
