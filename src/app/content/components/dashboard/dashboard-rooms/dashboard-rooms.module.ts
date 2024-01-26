@@ -20,14 +20,17 @@ import { AdminInterceptor } from '../../../interceptors/admin.interceptor';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';  
 import { NgxSpinnerModule } from "ngx-spinner";
 import { PaginatorModule } from 'primeng/paginator'; 
-
+import { CalendarModule } from "primeng/calendar";
 import { DashboardRoomsRoutingModule } from './dashboard-rooms-routing.module';
 import { DashboardRoomsComponent } from './dashboard-rooms.component';
 import { DashboardRoomsService } from 'src/app/content/service/dashboardRooms/dashboard-rooms.service';
 import { AccordionModule } from 'primeng/accordion';
 import { TagModule } from 'primeng/tag';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { MenuModule } from 'primeng/menu';
+import { MenuModule } from 'primeng/menu'; 
+import { MultiSelectModule } from "primeng/multiselect";
+import { ChipModule } from "primeng/chip";
+import { ChipsModule } from "primeng/chips";
 
 @NgModule({ 
   imports: [
@@ -54,7 +57,11 @@ import { MenuModule } from 'primeng/menu';
     PaginatorModule,
     DashboardRoomsRoutingModule,
     AccordionModule,
-    TagModule
+    TagModule,
+    CalendarModule, 
+    MultiSelectModule,
+    ChipModule,
+    ChipsModule
   ],
     providers: [
     {
