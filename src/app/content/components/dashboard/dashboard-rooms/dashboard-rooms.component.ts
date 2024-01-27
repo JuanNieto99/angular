@@ -4,9 +4,10 @@ import { DashboardRoomsService } from 'src/app/content/service/dashboardRooms/da
 import {  MenuItem, MenuItemCommandEvent } from 'primeng/api';
 import { OverlayPanel } from 'primeng/overlaypanel';
 import { ThirdPartyDraggable } from '@fullcalendar/interaction';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Validators } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';  
 import { MultiSelectModule } from 'primeng/multiselect';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 
 interface HotelData {
   hotel_id: number; // Adjust the type accordingly
@@ -30,6 +31,11 @@ interface dataProducto {
   nombre: string, 
   id: number, 
 }
+
+interface dataMedioPago {
+  nombre: string, 
+  id: number, 
+}
 @Component({
   selector: 'app-dashboard-rooms',
   templateUrl: './dashboard-rooms.component.html',
@@ -38,8 +44,9 @@ interface dataProducto {
 
 export class DashboardRoomsComponent implements OnInit  {
   @ViewChild('op1') op1: OverlayPanel;
- 
+
   public menuHabitacion: MenuItem [];
+  public totalPagarReserva: number = 48.100;
   public fechaInicio: any;
   public fechaFinal: any;
   public selectedMulti: any[] = [];
@@ -54,10 +61,13 @@ export class DashboardRoomsComponent implements OnInit  {
   private habitacionId: number;
   public reservacionModalVisible: boolean = false;
   public formReservacion: FormGroup;  
+  public formReservacionArray: FormArray ;  
   public clienteData: any;
   public ProductoServicioData: any; 
   public ProductoServicio: any; 
-  public ProductoServicioDataSeleccionados: dataProducto [] =[] ;
+  public ProductoServicioDataSeleccionados: dataProducto [] =[] ; 
+  public selectMedioPago: dataMedioPago [] =[] ;
+  public metodosPago: any;
 
   ngOnInit(): void {
     this.pisoId = 1; 
@@ -69,6 +79,7 @@ export class DashboardRoomsComponent implements OnInit  {
     this.getRoomsDashboardPisos();
     this.clienteData = [];
     this.ProductoServicioData = [];
+  
   }
 
   constructor( 
@@ -76,10 +87,11 @@ export class DashboardRoomsComponent implements OnInit  {
     private FB: FormBuilder,
     private spinner: NgxSpinnerService
   ){
-
+    this.formReservacionArray = this.FB.array([]); 
   }
 
   buildForm(){ 
+
     this.formReservacion =  this.FB.group({
       habitacion_id: ['',[Validators.required]],
       hotel_id: ['',[Validators.required]],
@@ -87,8 +99,19 @@ export class DashboardRoomsComponent implements OnInit  {
       fecha_inicio: ['',[Validators.required]],
       fecha_final: ['',[Validators.required]],
     }); 
+
   }
 
+  agregarAbono(){
+    let form =  this.FB.group({ 
+      monto: ['', [Validators.required, Validators.min(0)]],
+      medio_pago: ['', [Validators.required, Validators.min(0)]],
+    }); 
+
+    this.formReservacionArray.push(
+      form
+    )
+  }
   getRoomsDashboard(){
     let data : HotelData = {
       hotel_id: this.hotelId,
@@ -248,13 +271,13 @@ export class DashboardRoomsComponent implements OnInit  {
 
     
     let letItem: MenuItem[] = [];  // Corrected the declaration and initialization
-     
+    
     if(habitacion.detalle){
       habitacion.detalle.forEach(element => {
         estadoHabitaciones.push(element.estado_id);
       }); 
     }
- 
+
     if(!estadoHabitaciones.includes(5)){ //no esta reservada entonces reservemosla
       letItem.push(
       {
@@ -537,14 +560,25 @@ export class DashboardRoomsComponent implements OnInit  {
       (response: any) => {   
         this.spinner.hide();  
         this.reservacionModalVisible = true;
-        let data = response.cliente;
+        let dataCliente = response.cliente;
+        let dataMedioPago = response.metodos_pago;
         this.clienteData = [];
-        data.forEach(element => {
+        dataCliente.forEach(element => {
           this.clienteData.push({
             name: element.numero_documento +' '+element.nombres +' '+ element.apellidos ,
             code: element.numero_documento
           }) 
         });
+
+        this.selectMedioPago = [];
+        dataMedioPago.forEach(element => {
+          this.selectMedioPago.push({
+            nombre: element.nombre,
+            id: element.id
+          }) 
+        });
+
+        console.log(this.selectMedioPago)
       },
       (error) => {
         this.spinner.hide();
@@ -610,6 +644,10 @@ export class DashboardRoomsComponent implements OnInit  {
     //this.ProductoServicioData = this.ProductoServicio; 
     
   } 
+
+  eliminarMedioPago(index: number){
+    this.formReservacionArray.removeAt(index); 
+  }
 
 
 }

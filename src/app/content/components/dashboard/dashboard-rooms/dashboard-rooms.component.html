@@ -52,17 +52,17 @@
     </p-accordion>
 </div>
 
-<p-dialog header="Resevar" [(visible)]="reservacionModalVisible" [modal]="true" [style]="{ width: '70vw' }" [draggable]="false" [resizable]="false">
+<p-dialog header="Total reserva ${{totalPagarReserva}}" [(visible)]="reservacionModalVisible" [modal]="true" [style]="{ width: '70vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12"> 
         <div  (ngSubmit)="reservarSubmit()">
             <h2 style="text-align: center;">{{ nombreHabitacionReservada }} </h2>
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-12">
                     <label for="cliente">Cliente</label>
-                     <p-multiSelect [options]="clienteData"  selectionLimit="1" (onFilter)="busquedaCliente($event)" optionLabel="name" placeholder="Buscar cliente" optionLabel="name" class="multiselect-custom" display="chip" emptyMessage="Cliente no encontrado">
+                    <p-multiSelect [options]="clienteData"  selectionLimit="1" (onFilter)="busquedaCliente($event)" optionLabel="name" placeholder="Buscar cliente" optionLabel="name" class="multiselect-custom" display="chip" emptyMessage="Cliente no encontrado">
                         <ng-template let-cliente pTemplate="item">
                             <div class="flex align-items-center">
-                                 <span class="ml-2">{{cliente.name}}</span>
+                                <span class="ml-2">{{cliente.name}}</span>
                             </div>
                         </ng-template>
                     </p-multiSelect>
@@ -70,22 +70,36 @@
                 <div class="field col-12 md:col-12">
                     <label for="cliente">Producto / Servicio</label>
                     <!-- (onFilter)="busquedaProductoServicio($event)" (onChange)="checkProductoServicio($event)"-->
-                     <p-multiSelect [options]="ProductoServicioData"  optionLabel="name" placeholder="Buscar Producto/Servicio" optionLabel="name" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
+                    <p-multiSelect [options]="ProductoServicioData"  optionLabel="name" placeholder="Buscar Producto/Servicio" optionLabel="name" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
                         <ng-template let-cliente pTemplate="item">
                             <div class="flex align-items-center">
-                                 <span class="ml-2">{{cliente.name}}</span>
+                                <span class="ml-2">{{cliente.name}}</span>
                             </div>
                         </ng-template>
                     </p-multiSelect>
                 </div>
                 <div class="field col-12 md:col-12">
                     <p-panel header="Abonos" [toggleable]="true" [collapsed]="true"   >
-                        <div class="grid formgrid">
-                            <div class="col-12 mb-2 lg:col-6 lg:mb-0">
-                                <input type="text" pInputText placeholder="Default">
+                        <button pButton pRipple type="button" (click)="agregarAbono()" icon="pi pi-plus" class="p-button-rounded"></button>
+                        
+                        <div style="margin-top: 5%;" class="grid formgrid" *ngFor="let formGroup of formReservacionArray.controls; let i = index" [formGroup]="formGroup">
+                            <div class="col-12 mb-2 lg:col-5 lg:mb-0">
+                                <label for="monto">Monto</label>
+                                <br>
+                                <input type="number" id="monto" formControlName="monto"  pInputText placeholder="Valor">
+                                <br>
+                                <div *ngIf="formGroup?.controls['monto']?.errors?.['required']" style="color: red;">Nombre es requerido.</div>
+                                
                             </div>
-                            <div class="col-12 mb-2 lg:col-6 lg:mb-0">
-                                <input type="text" pInputText />
+                            <div class="col-12 mb-2 lg:col-5 lg:mb-0">
+                                <label htmlFor="medioPago">Medio Pago</label>
+                                <br>
+                                <p-dropdown [options]="selectMedioPago"  formControlName="medio_pago"  id="medioPago"  optionLabel="nombre" ></p-dropdown>                        
+                            </div>
+                            <div class="col-12 mb-2 lg:col-2 lg:mb-0"  >
+                                <label htmlFor="opciones"></label>
+                                <br>
+                                <p-button (click)="eliminarMedioPago(i)" id="opciones" icon="pi pi-trash" severity="danger"></p-button>
                             </div>
                         </div>
                     </p-panel>
@@ -94,13 +108,13 @@
                 <div class="field col-12 md:col-6">
                     <label>Fecha Inicio </label>
                     <p-calendar inputId="fechaInicio" [(ngModel)]="fechaInicio" class="ng-invalid ng-dirty" [showIcon]="true"></p-calendar>
-                 </div>
+                </div>
                 <div class="field col-12 md:col-6">
                     <label>Fecha Final</label>
                     <p-calendar inputId="fechaFinal" [(ngModel)]="fechaFinal" class="ng-invalid ng-dirty" [showIcon]="true"></p-calendar>
                 </div> 
                 <div class="field col-12 md:col-12">
-                    <button pButton pRipple label="Crear Reserva" icon="pi pi-user" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                    <button pButton pRipple label="Crear Reserva" icon="pi pi-calendar-times" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>
             </div>
         </div>

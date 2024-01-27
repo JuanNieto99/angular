@@ -76,6 +76,9 @@ export class ProductsComponent implements OnInit {
     public disablePageLeft: boolean = false;
     public disablePageRight: boolean = true;
     public registrosContar: number = 0; 
+    public visibleServicio: boolean = true;
+    public visibleServicioEditar: boolean = true;
+    public editarData: any;
 
     @ViewChild('fileUpload') fileUpload!: FileUpload;
     @ViewChild('fileUploadCreate') fileUploadCreate!: FileUpload;
@@ -118,14 +121,23 @@ export class ProductsComponent implements OnInit {
 
     newProduct(){
       this.spinner.show();
-      let dataProduct = this.formCreateProduct.value;
-      dataProduct.medida_id = dataProduct.medida_id['id'];
+      let dataProduct = this.formCreateProduct.value; 
       dataProduct.inventario_id = dataProduct.inventario_id['id'];
       dataProduct.visible_venta = dataProduct.visible_venta['id'];
-      dataProduct.limite_cantidad = dataProduct.limite_cantidad['id'];
       dataProduct.tipo_producto = dataProduct.tipo_producto['id'];
       dataProduct.estado = 1;
 
+      if(dataProduct.tipo_producto != 2){
+        dataProduct.medida_id = dataProduct.medida_id['id'];
+        dataProduct.limite_cantidad = dataProduct.limite_cantidad['id'];
+
+      } else {
+        dataProduct.cantidad = 0;
+        dataProduct.limite_cantidad = 0;
+        dataProduct.medida_id = 0;
+        dataProduct.precio_base = 0;
+        dataProduct.stop_minimo = 0;
+      }
 
 
       const formData = new FormData();
@@ -431,13 +443,24 @@ export class ProductsComponent implements OnInit {
     updateProducto(){
       this.spinner.show();
       let dataProduct = this.formEditProduct.value;
-      dataProduct.medida_id = dataProduct.medida_id['id'];
+    
       dataProduct.inventario_id = dataProduct.inventario_id['id'];
-      dataProduct.visible_venta = dataProduct.visible_venta['id'];
-      dataProduct.limite_cantidad = dataProduct.limite_cantidad['id'];
+      dataProduct.visible_venta = dataProduct.visible_venta['id']; 
       dataProduct.tipo_producto = dataProduct.tipo_producto['id'];
       dataProduct.id = this.idEditando;
       dataProduct.estado = 1; 
+
+      if(dataProduct.tipo_producto != 2){
+        dataProduct.medida_id = dataProduct.medida_id['id'];
+        dataProduct.limite_cantidad = dataProduct.limite_cantidad['id'];
+
+      } else {
+        dataProduct.cantidad = 0;
+        dataProduct.limite_cantidad = 0;
+        dataProduct.medida_id = 0;
+        dataProduct.precio_base = 0;
+        dataProduct.stop_minimo = 0;
+      }
 
       const formData = new FormData();
 
@@ -526,6 +549,79 @@ export class ProductsComponent implements OnInit {
         if(this.ultimaPage > this.pageActual){
             this.disablePageRight = true; 
         }
+    }
+    
+    onChangeTipoProductoCrear (){ 
+      let tipo_producto = this.formCreateProduct.get('tipo_producto').value; 
+
+      if(tipo_producto.id == 1){
+        //producto 
+        this.visibleServicio = true;
+        this.formCreateProduct.get('medida_id').enable();
+        this.formCreateProduct.get('cantidad').enable();
+        this.formCreateProduct.get('limite_cantidad').enable(); 
+        this.formCreateProduct.get('stop_minimo').enable();
+        this.formCreateProduct.get('precio_base').enable();
+
+        this.formCreateProduct.get('cantidad').setValue(null);
+        this.formCreateProduct.get('medida_id').setValue(null);
+        this.formCreateProduct.get('limite_cantidad').setValue(null);
+        this.formCreateProduct.get('stop_minimo').setValue(null);
+        this.formCreateProduct.get('precio_base').setValue(null);
+      }
+
+      if(tipo_producto.id == 2){
+        //servicio 
+        this.visibleServicio = false;
+        this.formCreateProduct.get('medida_id').disable();
+        this.formCreateProduct.get('cantidad').disable();
+        this.formCreateProduct.get('limite_cantidad').disable(); 
+        this.formCreateProduct.get('stop_minimo').disable();
+        this.formCreateProduct.get('precio_base').disable();
+
+        this.formCreateProduct.get('cantidad').setValue(0);
+        this.formCreateProduct.get('medida_id').setValue(0);
+        this.formCreateProduct.get('limite_cantidad').setValue(0); 
+        this.formCreateProduct.get('stop_minimo').setValue(0);
+        this.formCreateProduct.get('precio_base').setValue(0);
+      }
+    }
+
+    onChangeTipoProductoEditar(){
+      let tipo_producto = this.formEditProduct.get('tipo_producto').value; 
+      if(tipo_producto.id == 1){
+        
+        //producto 
+        this.visibleServicioEditar = true;
+        this.formEditProduct.get('medida_id').enable();
+        this.formEditProduct.get('cantidad').enable();
+        this.formEditProduct.get('limite_cantidad').enable(); 
+        this.formEditProduct.get('stop_minimo').enable();
+        this.formEditProduct.get('precio_base').enable();
+
+        this.formEditProduct.get('cantidad').setValue(this.editarData.cantidad);
+        this.formEditProduct.get('medida_id').setValue(this.editarData.medida_id);
+        this.formEditProduct.get('limite_cantidad').setValue(this.editarData.limite_cantidad);
+        this.formEditProduct.get('stop_minimo').setValue(this.editarData.stop_minimo);
+        this.formEditProduct.get('precio_base').setValue(this.editarData.precio_base);
+      }
+
+      if(tipo_producto.id == 2){
+        this.editarData =  this.formEditProduct.value;
+
+        //servicio 
+        this.visibleServicioEditar = false;
+        this.formEditProduct.get('cantidad').disable();
+        this.formEditProduct.get('limite_cantidad').disable(); 
+        this.formEditProduct.get('stop_minimo').disable();
+        this.formEditProduct.get('precio_base').disable();
+
+        this.formEditProduct.get('cantidad').setValue(0);
+        this.formEditProduct.get('medida_id').setValue(0);
+        this.formEditProduct.get('limite_cantidad').setValue(0); 
+        this.formEditProduct.get('stop_minimo').setValue(0);
+        this.formEditProduct.get('precio_base').setValue(0);
+      }
     }
   
 }

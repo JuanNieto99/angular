@@ -3,11 +3,9 @@
 <div class="surface-section px-4 py-5 md:px-6 lg:px-8">
     <div class="flex align-items-start flex-column lg:justify-content-between lg:flex-row">
         <div>
-            <div class="font-medium text-3xl text-900">Productos</div>
+            <div class="font-medium text-3xl text-900">Productos / Servicios</div>
             <div class="flex align-items-center text-700 flex-wrap">
-                <div class="mr-5 flex align-items-center mt-3">
-                    <i class="pi pi-users mr-2"></i>
-                    <span>{{ countRegisters }} Productos Creados</span>
+                <div class="mr-5 flex align-items-center mt-3"> 
                 </div>
             </div>
         </div>
@@ -44,7 +42,7 @@
                         <th>Nombre</th>
                         <th>Medida</th>
                         <th>Precio</th>
-                        <th>Cantidad</th>
+                        <th>Tipo</th>
                         <th>Inventario</th>
                         <th>Visible Venta</th>
                         <th>Acciones</th>
@@ -58,7 +56,7 @@
                         <td>{{ product.nombre }}</td>
                         <td>{{ product.medida.nombre }}</td>
                         <td>{{ product.precio }}</td>
-                        <td>{{ product.cantidad }}</td>
+                        <td>{{ product.tipo_producto=='1'?'Producto':'Servicio' }}</td>
                         <td>{{ product.inventario.nombre }}</td>
                         <td>{{ product.visible_venta?'si':'No' }}</td>
                         <td class="flex gap-2">
@@ -95,18 +93,23 @@
                     <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="nombre">
                     <div style="color: red;" *ngIf="formCreateProduct.get('nombre').hasError('required')">Campo requerido</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" >
+                    <label>Tipo</label>
+                    <p-dropdown [options]="tipo" (onChange)="onChangeTipoProductoCrear()" formControlName="tipo_producto"  optionLabel="nombre"  ></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateProduct.get('tipo_producto').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6" *ngIf="visibleServicio">
 					<label>Medida</label>
 					<p-dropdown [options]="medida" optionLabel="nombre" formControlName="medida_id" ></p-dropdown>
                     <div style="color: red;" *ngIf="formCreateProduct.get('medida_id').hasError('required')">Campo requerido</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" *ngIf="visibleServicio">
                     <label>Cantidad</label>
                     <input type="number" formControlName="cantidad"   pInputText class="w-full mb-3 border-round-3xl" >
                     <div style="color: red;" *ngIf="formCreateProduct.get('cantidad').hasError('required')">Campo requerido</div>
                     <div style="color: red;" *ngIf="formCreateProduct.get('cantidad').hasError('min')">El número debe ser mayor o igua a {{  formCreateProduct?.controls['cantidad']?.errors['min'].min }}</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" *ngIf="visibleServicio">
                     <label>Sin limite Cantidad</label>
                     <p-dropdown [options]="limiteCantidad" formControlName="limite_cantidad"  optionLabel="nombre"  ></p-dropdown>
                 </div>
@@ -121,27 +124,22 @@
                     <div style="color: red;" *ngIf="formCreateProduct.get('precio').hasError('required')">Campo requerido</div>
                     <div style="color: red;" *ngIf="formCreateProduct.get('precio').hasError('min')">El número debe ser mayor o igual a {{  formCreateProduct?.controls['precio']?.errors['min'].min }}</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" *ngIf="visibleServicio">
                     <label>Stop minimo</label>
                     <input type="number"  pInputText class="w-full mb-3 border-round-3xl" formControlName="stop_minimo">
                     <div style="color: red;" *ngIf="formCreateProduct.get('stop_minimo').hasError('required')">Campo requerido</div>
                     <div style="color: red;" *ngIf="formCreateProduct.get('stop_minimo').hasError('min')">El número debe ser mayor o igual a {{  formCreateProduct?.controls['precio']?.errors['min'].min }}</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" *ngIf="visibleServicio">
                     <label>Precio base</label>
                     <input type="number"  pInputText class="w-full mb-3 border-round-3xl" formControlName="precio_base">
                     <div style="color: red;" *ngIf="formCreateProduct.get('precio_base').hasError('required')">Campo requerido</div>
                     <div style="color: red;" *ngIf="formCreateProduct.get('precio_base').hasError('min')">El número debe ser mayor o igua a {{  formCreateProduct?.controls['precio_base']?.errors['min'].min }}</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" >
                     <label>Visible Venta</label>
                     <p-dropdown [options]="visibleVenta" formControlName="visible_venta"  optionLabel="nombre"  ></p-dropdown>
                     <div style="color: red;" *ngIf="formCreateProduct.get('visible_venta').hasError('required')">Campo requerido</div>
-                </div>
-                <div class="field col-12 md:col-6">
-                    <label>Tipo</label>
-                    <p-dropdown [options]="tipo" formControlName="tipo_producto"  optionLabel="nombre"  ></p-dropdown>
-                    <div style="color: red;" *ngIf="formCreateProduct.get('tipo_producto').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-12">
                     <p-fileUpload name="imsgenes[]"  #fileUploadCreate chooseLabel="Seleccionar" [showUploadButton]="false" cancelLabel="Cancelar" accept="image/*"  [maxFileSize]="1000000" (onRemove)="onRemove($event)" (onClear)="onRemove($event)" (onSelect)="onSelect($event)"></p-fileUpload>
@@ -171,17 +169,22 @@
                     <div style="color: red;" *ngIf="formEditProduct.get('nombre').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
+                    <label>Tipo</label>
+                    <p-dropdown [options]="tipo" formControlName="tipo_producto"  (onChange)="onChangeTipoProductoEditar()" optionLabel="nombre"  ></p-dropdown>
+                    <div style="color: red;" *ngIf="formEditProduct.get('tipo_producto').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6" *ngIf="visibleServicioEditar">
 					<label>Medida</label>
 					<p-dropdown [options]="medida" optionLabel="nombre" formControlName="medida_id" ></p-dropdown>
                     <div style="color: red;" *ngIf="formEditProduct.get('medida_id').hasError('required')">Campo requerido</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" *ngIf="visibleServicioEditar">
                     <label>Cantidad</label>
                     <input type="number" formControlName="cantidad"   pInputText class="w-full mb-3 border-round-3xl" >
                     <div style="color: red;" *ngIf="formEditProduct.get('cantidad').hasError('required')">Campo requerido</div>
                     <div style="color: red;" *ngIf="formEditProduct.get('cantidad').hasError('min')">El número debe ser mayor o igua a {{  formCreateProduct?.controls['cantidad']?.errors['min'].min }}</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" *ngIf="visibleServicioEditar">
                     <label>Sin limite Cantidad</label>
                     <p-dropdown [options]="limiteCantidad" formControlName="limite_cantidad"  optionLabel="nombre"  ></p-dropdown>
                 </div>
@@ -196,28 +199,23 @@
                     <div style="color: red;" *ngIf="formEditProduct.get('precio').hasError('required')">Campo requerido</div>
                     <div style="color: red;" *ngIf="formEditProduct.get('precio').hasError('min')">El número debe ser mayor o igual a {{  formCreateProduct?.controls['precio']?.errors['min'].min }}</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" *ngIf="visibleServicioEditar">
                     <label>Stop minimo</label>
                     <input type="number"  pInputText class="w-full mb-3 border-round-3xl" formControlName="stop_minimo">
                     <div style="color: red;" *ngIf="formEditProduct.get('stop_minimo').hasError('required')">Campo requerido</div>
                     <div style="color: red;" *ngIf="formEditProduct.get('stop_minimo').hasError('min')">El número debe ser mayor o igual a {{  formCreateProduct?.controls['precio']?.errors['min'].min }}</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" *ngIf="visibleServicioEditar">
                     <label>Precio base</label>
                     <input type="number"  pInputText class="w-full mb-3 border-round-3xl" formControlName="precio_base">
                     <div style="color: red;" *ngIf="formEditProduct.get('precio_base').hasError('required')">Campo requerido</div>
                     <div style="color: red;" *ngIf="formEditProduct.get('precio_base').hasError('min')">El número debe ser mayor o igua a {{  formCreateProduct?.controls['precio_base']?.errors['min'].min }}</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" >
                     <label>Visible Venta</label>
                     <p-dropdown [options]="visibleVenta" formControlName="visible_venta"  optionLabel="nombre"  ></p-dropdown>
                     <div style="color: red;" *ngIf="formEditProduct.get('visible_venta').hasError('required')">Campo requerido</div>
-                </div>
-                <div class="field col-12 md:col-6">
-                    <label>Tipo</label>
-                    <p-dropdown [options]="tipo" formControlName="tipo_producto"  optionLabel="nombre"  ></p-dropdown>
-                    <div style="color: red;" *ngIf="formEditProduct.get('tipo_producto').hasError('required')">Campo requerido</div>
-                </div>
+                </div> 
                 <div class="field col-12 md:col-12">
                     <p-fileUpload name="imsgenes[]" #fileUpload chooseLabel="Seleccionar" [showUploadButton]="false" cancelLabel="Cancelar" accept="image/*"  [maxFileSize]="1000000"  (onRemove)="onRemove($event)" (onClear)="onRemove($event)" (onSelect)="onSelect($event)"></p-fileUpload>
                 </div>

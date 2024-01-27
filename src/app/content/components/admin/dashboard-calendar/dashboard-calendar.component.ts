@@ -1,20 +1,28 @@
 import { Component, signal, ChangeDetectorRef } from '@angular/core';
-import { CalendarOptions, DateSelectArg, EventClickArg, EventApi } from '@fullcalendar/core';
+import { CalendarOptions, DateSelectArg, EventClickArg, EventApi, EventInput } from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import listPlugin from '@fullcalendar/list';
-import { INITIAL_EVENTS, createEventId } from './event-utils';
+import listPlugin from '@fullcalendar/list'; 
 import esLocale from '@fullcalendar/core/locales/es'; // Importa el idioma español
+
+
+interface dataEvento {
+  nombre: string,
+  id: number,
+  fechaInnicio: string,
+  fechaFin: string,
+  todoElDia: boolean,
+}
 
 @Component({
   selector: 'app-dashboard-calendar',
   templateUrl: './dashboard-calendar.component.html',
   styleUrls: ['./dashboard-calendar.component.scss']
 })
-export class DashboardCalendarComponent {
-  calendarVisible = signal(true);
-  calendarOptions = signal<CalendarOptions>({
+
+export class DashboardCalendarComponent { 
+  option: any = {
     plugins: [
       interactionPlugin,
       dayGridPlugin,
@@ -27,8 +35,8 @@ export class DashboardCalendarComponent {
       right: 'dayGridMonth'
     },
     initialView: 'dayGridMonth',
-    initialEvents: INITIAL_EVENTS, // alternatively, use the `events` setting to fetch from a feed
-    weekends: false,
+   // initialEvents: INITIAL_EVENTS, // alternatively, use the `events` setting to fetch from a feed
+    weekends: true,
     editable: true,
     selectable: true,
     selectMirror: true,
@@ -36,16 +44,17 @@ export class DashboardCalendarComponent {
     select: this.handleDateSelect.bind(this),
     eventClick: this.handleEventClick.bind(this),
     eventsSet: this.handleEvents.bind(this),
-    locale: esLocale
-    /* you can update a remote database when these fire:
-    eventAdd:
-    eventChange:
-    eventRemove:
-    */
-  });
+    locale: esLocale, 
+  };
+  idGenerato:number = 50;
+  calendarVisible = signal(true);
+  calendarOptions = signal<CalendarOptions>(this.option);
   currentEvents = signal<EventApi[]>([]);
 
   constructor(private changeDetector: ChangeDetectorRef) {
+
+    this.eventoData();
+
   }
 
   handleCalendarToggle() {
@@ -66,7 +75,7 @@ export class DashboardCalendarComponent {
 
     if (title) {
       calendarApi.addEvent({
-        id: createEventId(),
+        id: this.createEventId()+'',
         title,
         start: selectInfo.startStr,
         end: selectInfo.endStr,
@@ -86,4 +95,28 @@ export class DashboardCalendarComponent {
     this.changeDetector.detectChanges(); // workaround for pressionChangedAfterItHasBeenCheckedError
   }
 
+  eventoData(){
+    //console.log(new Date().toISOString().replace(/T.*$/, ''));
+    let dataEvento:EventInput[] = [
+      {
+        id: '1',
+        title: 'Hbitacion 2',
+        start:  new Date('2024-01-27T10:00:00'),
+        end: new Date('2024-01-28T10:00:00'), 
+      },
+      {
+        id: '2',
+        title: 'Hbitacion 3',
+        start:  new Date('2024-01-29T10:00:00'),
+        end: new Date('2024-01-30T10:00:00'), 
+      },
+    ]; 
+
+    this.option.events = dataEvento;
+  }
+
+  createEventId(){
+    this.idGenerato ++;
+  }
+  
 }
