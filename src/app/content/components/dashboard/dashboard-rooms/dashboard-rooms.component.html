@@ -55,6 +55,7 @@
 <p-dialog header="Resevar" [(visible)]="reservacionModalVisible" [modal]="true" [style]="{ width: '70vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12"> 
         <div  (ngSubmit)="reservarSubmit()">
+            <h2 style="text-align: center;">{{ nombreHabitacionReservada }} </h2>
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-12">
                     <label for="cliente">Cliente</label>
@@ -66,6 +67,30 @@
                         </ng-template>
                     </p-multiSelect>
                 </div>
+                <div class="field col-12 md:col-12">
+                    <label for="cliente">Producto / Servicio</label>
+                    <!-- (onFilter)="busquedaProductoServicio($event)" (onChange)="checkProductoServicio($event)"-->
+                     <p-multiSelect [options]="ProductoServicioData"  optionLabel="name" placeholder="Buscar Producto/Servicio" optionLabel="name" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
+                        <ng-template let-cliente pTemplate="item">
+                            <div class="flex align-items-center">
+                                 <span class="ml-2">{{cliente.name}}</span>
+                            </div>
+                        </ng-template>
+                    </p-multiSelect>
+                </div>
+                <div class="field col-12 md:col-12">
+                    <p-panel header="Abonos" [toggleable]="true" [collapsed]="true"   >
+                        <div class="grid formgrid">
+                            <div class="col-12 mb-2 lg:col-6 lg:mb-0">
+                                <input type="text" pInputText placeholder="Default">
+                            </div>
+                            <div class="col-12 mb-2 lg:col-6 lg:mb-0">
+                                <input type="text" pInputText />
+                            </div>
+                        </div>
+                    </p-panel>
+                </div>
+                
                 <div class="field col-12 md:col-6">
                     <label>Fecha Inicio </label>
                     <p-calendar inputId="fechaInicio" [(ngModel)]="fechaInicio" class="ng-invalid ng-dirty" [showIcon]="true"></p-calendar>

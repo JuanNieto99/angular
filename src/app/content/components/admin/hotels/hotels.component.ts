@@ -102,7 +102,7 @@ export class HotelsComponent implements OnInit {
         console.log(this.dataUser.usuario.id);
         // Inicializamos la consulta de hoteles
         this.getIndex();
-        this.hotelsService.data.subscribe(hotels => {
+      /*  this.hotelsService.data.subscribe(hotels => {
             this.hotels = hotels;
             this.changeDetector.detectChanges();
         });
@@ -123,7 +123,7 @@ export class HotelsComponent implements OnInit {
             console.log(this.cities$);
         }, error => {
             console.log('Error:', error);
-        })
+        })*/
     }
     ///// Datos de Usuario /////
     getCurrentUser(): any {

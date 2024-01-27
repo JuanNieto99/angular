@@ -6,6 +6,7 @@ import { OverlayPanel } from 'primeng/overlaypanel';
 import { ThirdPartyDraggable } from '@fullcalendar/interaction';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';  
+import { MultiSelectModule } from 'primeng/multiselect';
 
 interface HotelData {
   hotel_id: number; // Adjust the type accordingly
@@ -24,6 +25,11 @@ interface dataRoom {
   id: number,
   detalle: any;
 }
+
+interface dataProducto {
+  nombre: string, 
+  id: number, 
+}
 @Component({
   selector: 'app-dashboard-rooms',
   templateUrl: './dashboard-rooms.component.html',
@@ -32,12 +38,12 @@ interface dataRoom {
 
 export class DashboardRoomsComponent implements OnInit  {
   @ViewChild('op1') op1: OverlayPanel;
-
+ 
   public menuHabitacion: MenuItem [];
   public fechaInicio: any;
   public fechaFinal: any;
   public selectedMulti: any[] = [];
-
+  public nombreHabitacionReservada: string;
   private hotelId: number;
   private pisoId: number;
   private primerPiso: number = 1; 
@@ -47,9 +53,11 @@ export class DashboardRoomsComponent implements OnInit  {
   private estadoHabitacion: number;
   private habitacionId: number;
   public reservacionModalVisible: boolean = false;
-  public formReservacion: FormGroup; 
-  public cliente: any;
+  public formReservacion: FormGroup;  
   public clienteData: any;
+  public ProductoServicioData: any; 
+  public ProductoServicio: any; 
+  public ProductoServicioDataSeleccionados: dataProducto [] =[] ;
 
   ngOnInit(): void {
     this.pisoId = 1; 
@@ -60,6 +68,7 @@ export class DashboardRoomsComponent implements OnInit  {
     //this.buildForm();
     this.getRoomsDashboardPisos();
     this.clienteData = [];
+    this.ProductoServicioData = [];
   }
 
   constructor( 
@@ -160,6 +169,7 @@ export class DashboardRoomsComponent implements OnInit  {
     console.log("habitacion")  
     console.log(habitacion)
     this.habitacionId = habitacion.id;
+    this.nombreHabitacionReservada = habitacion.nombre;
     
   }
 
@@ -382,6 +392,7 @@ export class DashboardRoomsComponent implements OnInit  {
   reservar(){
     
     this.getReserva();
+    this.getProducto();
     //sacar modal
   }
 
@@ -530,7 +541,7 @@ export class DashboardRoomsComponent implements OnInit  {
         this.clienteData = [];
         data.forEach(element => {
           this.clienteData.push({
-            name: element.nombres +  element.apellidos,
+            name: element.numero_documento +' '+element.nombres +' '+ element.apellidos ,
             code: element.numero_documento
           }) 
         });
@@ -546,6 +557,59 @@ export class DashboardRoomsComponent implements OnInit  {
     let clienteBusqueda = $event.filter; 
     this.getReserva(clienteBusqueda);
   }
+
+/*
+  busquedaProductoServicio($event){
+    let productoBusqueda = $event.filter; 
+    this.getProducto(productoBusqueda);
+  }*/
+
+  getProducto(productoBusqueda: string = '') {
+    this.spinner.show();  
+    let data = {
+      'hotel_id':this.hotelId,
+      'producto_busqueda': productoBusqueda,
+    };
+
+    this.dashboardRoomsService.getProductoServicio(data).subscribe(
+      (response: any) => {   
+        this.spinner.hide();   
+        let data = response.productos;
+        this.ProductoServicioData = [];
+        console.log(data)
+        data.forEach(element => { 
+          console.log(element)
+          this.ProductoServicioData.push({
+            name: element.nombre,
+            code: element.id
+          }) 
+        });
+        this.ProductoServicio = this.ProductoServicioData;
+      },
+      (error) => {
+        this.spinner.hide();
+          console.log('Error: ', error);
+      }
+    );
+  }
+
+  checkProductoServicio($event){   
+     
+   /*
+    this.ProductoServicioDataSeleccionados.push(
+      {
+        'nombre':$event.itemValue.name,
+        'id':$event.itemValue.code,
+      }
+    )
+        
+    this.ProductoServicioData = [];
+    setTimeout(() => {
+      this.getProducto();
+    }, 500);*/
+    //this.ProductoServicioData = this.ProductoServicio; 
+    
+  } 
 
 
 }

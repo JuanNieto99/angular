@@ -31,9 +31,11 @@ import { MenuModule } from 'primeng/menu';
 import { MultiSelectModule } from "primeng/multiselect";
 import { ChipModule } from "primeng/chip";
 import { ChipsModule } from "primeng/chips";
+import { PanelModule } from 'primeng/panel';
 
 @NgModule({ 
   imports: [
+    PanelModule,
     CommonModule, 
     TableModule,
     FileUploadModule,
