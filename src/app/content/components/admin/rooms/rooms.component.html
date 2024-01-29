@@ -37,10 +37,7 @@
                     </div>
                 </ng-template>
                 <ng-template pTemplate="header">
-                    <tr>
-                        <th style="width: 3rem">
-                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                        </th>
+                    <tr> 
                         <th>Hotel</th>
                         <th>Piso</th>
                         <th>Tipo Habitación</th>
@@ -53,9 +50,6 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-room>
                     <tr>
-                        <td>
-                            <p-tableCheckbox [value]="roomsData"></p-tableCheckbox>
-                        </td>
                         <td>{{ room.hotel.nombre }}</td>
                         <td>{{ room.piso }}</td>
                         <td>{{ room.tipo_habitacion.nombre }}</td>
@@ -128,11 +122,7 @@
                     <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="descripcion">
                     <div style="color: red;" *ngIf="formCreateRooms.get('descripcion').hasError('required')">Campo requerido</div>
                 </div>
-                <div class="field col-12 md:col-12">
-                    <label>json archive</label>
-                    <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="diseno_json">
-                    <div style="color: red;" *ngIf="formCreateRooms.get('diseno_json').hasError('required')">Campo requerido</div>
-                </div>
+        
                 <div class="field col-12 md:col-12">
                     <button pButton pRipple label="Crear Habitación" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>
@@ -149,8 +139,8 @@
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-6">
 					<label>Hotel</label>
-					 <p-dropdown [options]="hotel" optionLabel="nombre" formControlName="hotel_id" ></p-dropdown>
-                     <div style="color: red;" *ngIf="formEditRooms.get('hotel_id').hasError('required')">Campo requerido</div>
+					<p-dropdown [options]="hotel" optionLabel="nombre" formControlName="hotel_id" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formEditRooms.get('hotel_id').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>Piso</label>
@@ -182,11 +172,7 @@
                     <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="descripcion">
                     <div style="color: red;" *ngIf="formEditRooms.get('descripcion').hasError('required')">Campo requerido</div>
                 </div>
-                <div class="field col-12 md:col-12">
-                    <label>json archive</label>
-                    <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="diseno_json">
-                    <div style="color: red;" *ngIf="formEditRooms.get('diseno_json').hasError('required')">Campo requerido</div>
-                </div>
+    
                 <div class="field col-12 md:col-12">
                     <button pButton pRipple label="Editar Tipo de Habitación" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>

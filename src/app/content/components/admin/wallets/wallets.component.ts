@@ -33,7 +33,7 @@ export class WalletsComponent implements OnInit {
     public selectedHotel: any;
     public tipo:any = 1;
 
-    public loadingTable :boolean = false;
+    public loadingTable :boolean = true;
     public first:number = 0;
     public rows:number = 8;
     public pageCount: number = 10;
@@ -98,12 +98,10 @@ export class WalletsComponent implements OnInit {
     //////// Lista de Hoteles ////////
     getIndex(search:string = '', pageCount:number = this.pageCount, page: number = 1): void {
         this.spinner.show();
-        this.loadingTable = true;
         this.hotelsService.getHotels(pageCount, search, page).subscribe(
             (response: any) => {
-                /* console.log('Response: ', response); */
-                this.hotels = response.data;
-                console.log(this.hotels);
+                this.loadingTable = false;
+                this.hotels = response.data; 
             },
             (error) => {
                 console.log('Error: ', error);

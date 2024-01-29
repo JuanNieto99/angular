@@ -42,7 +42,7 @@ export class RoomsComponent {
     public pageActual:number = 1;
     public ultimaPage:number = 1;
     public disablePageLeft: boolean = false;
-    public disablePageRight: boolean = true;
+    public disablePageRight: boolean = false;
 
     constructor(
         private FB: FormBuilder,
@@ -112,6 +112,7 @@ export class RoomsComponent {
         dataRooms.piso = dataRooms.pisos;
         dataRooms.tipo = dataRooms.tipo['id'];
         dataRooms.estado = 1;
+        dataRooms.diseno_json = "{}";
 
         this.RoomsService.createRooms(dataRooms).subscribe(
             (response: any) => {
@@ -231,12 +232,12 @@ export class RoomsComponent {
 
     confirmDelete(id:number){
         Swal.fire({
-          title: "¿Estas seguro que deseas eliminar esta habitación?",
-          text: "Ten cuidado esta acción no se prodrá reversar",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Sí, Confirmar",
-          cancelButtonText: "Cancelar",
+            title: "¿Estas seguro que deseas eliminar esta habitación?",
+            text: "Ten cuidado esta acción no se prodrá reversar",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, Confirmar",
+            cancelButtonText: "Cancelar",
         }).then((result) => {
             if (result.isConfirmed) {
                 this.spinner.show();
@@ -310,7 +311,12 @@ export class RoomsComponent {
                 this.loadingTable = false;
                 this.roomsData = response.data;
                 this.countRegisters = response.total;
-                this.ultimaPage = response.last_page
+                this.ultimaPage = response.last_page;
+
+                if(response.total>pageCount){
+                    this.disablePageRight = true;
+                }
+                this.validatePage();
                 this.spinner.hide();
             },
             (error) => {
@@ -331,13 +337,13 @@ export class RoomsComponent {
         this.pageActual = this.pageActual - 1;
         this.getIndex('', this.pageCount, this.pageActual);
         this.validatePage();
-      }
+    }
 
-      rightTable(){
-          this.pageActual = this.pageActual + 1;
-          this.getIndex('', this.pageCount, this.pageActual);
-          this.validatePage();
-      }
+    rightTable(){
+        this.pageActual = this.pageActual + 1;
+        this.getIndex('', this.pageCount, this.pageActual);
+        this.validatePage();
+    }
 
     validatePage(){
         if(this.pageActual == 1 ){

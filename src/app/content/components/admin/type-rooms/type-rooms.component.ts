@@ -37,6 +37,7 @@ export class TypeRoomsComponent {
     public ultimaPage:number = 1;
     public disablePageLeft: boolean = false;
     public disablePageRight: boolean = true;
+    public valPuerta: string = '';  
 
     constructor(
         private FB: FormBuilder,
@@ -57,7 +58,7 @@ export class TypeRoomsComponent {
 
         this.formCreateTypeRoom = this.FB.group({
             nombre: ['', [Validators.required]],
-            hotel_id: ['', [Validators.required]],
+            hotel_id: ['', [Validators.required]], 
         });
 
         this.formEditTypeRoom = this.FB.group({
@@ -70,7 +71,7 @@ export class TypeRoomsComponent {
         this.onCreate();
     }
 
-    onCreate() {
+    onCreate() { 
         this.formCreateTypeRoom.reset();
         this.typeRoomService.getTypeRoom(0).subscribe(
             (response: any) => {
@@ -97,6 +98,7 @@ export class TypeRoomsComponent {
     }
 
     submitCreate() {
+        console.log (this.formCreateTypeRoom.valid)
         if (this.formCreateTypeRoom.valid) {
             this.newTypeRoom();
         } else {
@@ -107,9 +109,16 @@ export class TypeRoomsComponent {
     newTypeRoom() {
         this.visibleModalTypeRoom = true;
         this.spinner.show();
+
+        let json = {
+            puerta:this.valPuerta,
+        }
+
         let dataTypeRoom = this.formCreateTypeRoom.value;
         dataTypeRoom.hotel_id = dataTypeRoom.hotel_id['id'];
         dataTypeRoom.estado = 1;
+        
+        dataTypeRoom.diseno_json = JSON.stringify(json); 
 
         this.typeRoomService.createProduct(dataTypeRoom).subscribe(
             (response: any) => {
@@ -151,7 +160,8 @@ export class TypeRoomsComponent {
                     .get('nombre')
                     .setValue(response.tiposHabitaciones.nombre);
                 let hotel: any = null;
-
+                this.valPuerta = (JSON.parse(response.tiposHabitaciones.diseno_json).puerta)
+                //this.valPuerta = 
                 setTimeout(() => {
                     this.visibleModalTypeRoomEditar = true;
                 }, 1);
@@ -168,6 +178,11 @@ export class TypeRoomsComponent {
         dataTypeRoom.hotel_id = dataTypeRoom.hotel_id['id'];
         dataTypeRoom.id = this.idEditando;
         dataTypeRoom.estado = 1;
+        let json = {
+            puerta:this.valPuerta,
+        }
+
+        dataTypeRoom.diseno_json = JSON.stringify(json); 
 
         this.typeRoomService.updateTypeRoom(dataTypeRoom).subscribe(
             (response: any) => {

@@ -22,7 +22,7 @@ export class DashboardRoomsService {
   private endpointLimpieza: string; 
   private endpointAnularLimpieza: string; 
   private endpointGetProductoReserva: string; 
-
+  private endpointGetEmpleadoHabitacion: string;
   
   constructor(private httpClient: HttpClient) {
       this.baseUrl = Config.url;
@@ -37,7 +37,8 @@ export class DashboardRoomsService {
       this.endpointDesocupar = '/';
       this.endpointLimpieza = '/';
       this.endpointAnularLimpieza = '/';
-      this.endpointGetProductoReserva ='/gatProductosServicio'
+      this.endpointGetProductoReserva ='/gatProductosServicio';
+      this.endpointGetEmpleadoHabitacion ='/getEmpleadosHabitacion'
   }
 
   getDashboardRooms(parametros:any): Observable<dashboardRooms[]> { 
@@ -86,5 +87,9 @@ export class DashboardRoomsService {
 
   getProductoServicio(parametros:any){
     return this.httpClient.post<any[]>(`${this.baseUrl+this.endpointGetProductoReserva}`, parametros); 
+  }
+
+  getEmpleadoHabitacion(parametros:any){
+    return this.httpClient.post<any[]>(`${this.baseUrl+this.endpointGetEmpleadoHabitacion}`, parametros); 
   }
 }
