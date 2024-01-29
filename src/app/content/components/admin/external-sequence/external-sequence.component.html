@@ -106,14 +106,13 @@
                     <div style="color: red;" *ngIf="formCreateExternalSequence.get('prefijo').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
-                    <label>Fecha Inicio</label>
-                    <input type="date"  pInputText class="w-full mb-3 border-round-3xl" formControlName="fecha_inicio">
-                    <div style="color: red;" *ngIf="formCreateExternalSequence.get('fecha_inicio').hasError('required')">Campo requerido</div>
-                </div>
+                    <label>Fecha Inicio </label>
+                    <!--ng-invalid-->
+                    <p-calendar inputId="fechaInicio"   class="ng-dirty" [showIcon]="true"></p-calendar>
+                </div>             
                 <div class="field col-12 md:col-6">
-                    <label>Fecha Final</label>
-                    <input type="date"  pInputText class="w-full mb-3 border-round-3xl" formControlName="fecha_final">
-                    <div style="color: red;" *ngIf="formCreateExternalSequence.get('fecha_final').hasError('required')">Campo requerido</div>
+                    <label for="fechaFinal">Fecha Final</label>
+                    <p-calendar inputId="fechaFinal" class="ng-dirty" [showIcon]="true"></p-calendar>
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>Secuencia Inicial</label>

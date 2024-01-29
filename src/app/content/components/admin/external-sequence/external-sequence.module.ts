@@ -17,6 +17,7 @@ import { RatingModule } from 'primeng/rating';
 import { RippleModule } from 'primeng/ripple';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
+import { CalendarModule } from "primeng/calendar";
 import { ToolbarModule } from 'primeng/toolbar';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AdminInterceptor } from 'src/app/content/interceptors/admin.interceptor';
@@ -34,6 +35,7 @@ import { ExternalSequenceComponent } from './external-sequence.component';
     ButtonModule,
     RippleModule,
     ToastModule,
+    CalendarModule,
     ToolbarModule,
     RatingModule,
     InputTextModule,

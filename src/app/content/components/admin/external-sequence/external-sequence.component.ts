@@ -65,11 +65,18 @@ export class ExternalSequenceComponent {
             (response: any) => {
                 this.hotel = response.hotel;
                 this.prefijo = response.prefijo;
-                this.fechaInicial = response.fecha_inicio;
+    
+                // Obtener la fecha actual y formatearla
+                const fechaActual = new Date();
+                const fechaFormateada = `${fechaActual.getDate()}/${fechaActual.getMonth() + 1}/${fechaActual.getFullYear()}`;
+    
+                // Asignar la fecha formateada a la variable
+                this.fechaInicial = fechaFormateada;
                 this.fechaFinal = response.fecha_final;
                 this.secuenciaInicial = response.secuensia_incial;
                 this.secuenciaActual = response.secuensia_actual;
                 this.secuenciaFinal = response.secuencia_final;
+    
                 this.visibleModalExternalSequence = true;
             },
             (error) => {
@@ -77,7 +84,7 @@ export class ExternalSequenceComponent {
             }
         );
     }
-
+   
     onRemove(event) {
         this.imagen = null;
     }
