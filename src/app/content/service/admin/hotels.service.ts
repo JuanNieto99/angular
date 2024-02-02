@@ -88,11 +88,11 @@ export class HotelsService {
     );
   }
 
-  getCountries(per_page):Observable<country[]>{
+  getCountries():Observable<country[]>{
     const parametros = {
       id: ''
     };
-    return this.httpClient.post<any>(`${this.baseUrl+this.endpointCountry}?per_page=${per_page}`, parametros).pipe(
+    return this.httpClient.post<any>(`${this.baseUrl+this.endpointCountry}`, parametros).pipe(
       map(response => response.data)
     );
   }

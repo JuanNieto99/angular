@@ -231,12 +231,11 @@ export class HotelsComponent implements OnInit {
     }
 
     getCountries() {
-        this.hotelsService.getCountries(10).subscribe(response => {
+        this.hotelsService.getCountries().subscribe(response => {
            this.countries$ = response;
-
         });
-       }
-       getStates() {
+    }
+    getStates() {
         this.hotelsService.getStates(this.selectedCountry).subscribe(response => {
             this.states$ = response;
         });

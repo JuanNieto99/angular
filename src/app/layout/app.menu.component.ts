@@ -77,7 +77,8 @@ export class AppMenuComponent implements OnInit {
                             { label: 'Secuencia Interna', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/internalSequence'] },
                             { label: 'Secuencia Externa', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/externalSequence'] },
                             { label: 'Habitaciones', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/rooms'] },
-                            {label: 'Recetas', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/recipes']}
+                            {label: 'Recetas', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/recipes']},
+                            {label: 'Clientes', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/customers']}
                         ]
                     },
                 ]
