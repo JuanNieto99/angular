@@ -32,6 +32,8 @@ import { MultiSelectModule } from "primeng/multiselect";
 import { ChipModule } from "primeng/chip";
 import { ChipsModule } from "primeng/chips";
 import { PanelModule } from 'primeng/panel';
+import { MessageModule } from 'primeng/message'; 
+import { DatePipe } from '@angular/common';
 
 @NgModule({ 
   imports: [
@@ -63,7 +65,8 @@ import { PanelModule } from 'primeng/panel';
     CalendarModule, 
     MultiSelectModule,
     ChipModule,
-    ChipsModule
+    ChipsModule,
+    MessageModule, 
   ],
     providers: [
     {
@@ -72,6 +75,7 @@ import { PanelModule } from 'primeng/panel';
         multi:true
       }, 
       DashboardRoomsService,
+      DatePipe,
   ],
   declarations: [ DashboardRoomsComponent]
 })

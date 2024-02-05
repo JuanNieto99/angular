@@ -4,11 +4,10 @@ import { PagesRoutingModule } from './admin-routing.module';
 import { AdminInterceptor } from '../../interceptors/admin.interceptor';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RecipesComponent } from './recipes/recipes.component';
-import { CustomersComponent } from './customers/customers.component';
 @NgModule({
     declarations: [ 
-    RecipesComponent, CustomersComponent
-  ],
+        RecipesComponent, 
+    ],
     imports: [
         CommonModule,
         PagesRoutingModule

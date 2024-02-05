@@ -25,11 +25,6 @@ export class RoomsService {
     }
 
     getAll(per_page:number, search:string = '', page:number = 1): Observable<rooms[]> {
-        const httpOptions = {
-            headers: new HttpHeaders({
-             'Content-Type': 'application/json',
-            })
-        };
         const parametros = {};
         return this.httpClient.post<rooms[]>(`${this.baseUrl+this.endpointListar}?per_page=${per_page}&page=${page}&search=${search}`, parametros);
     }

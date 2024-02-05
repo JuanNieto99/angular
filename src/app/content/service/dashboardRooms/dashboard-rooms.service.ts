@@ -29,14 +29,14 @@ export class DashboardRoomsService {
       this.endpointListar = '/habitacionesDashboard'; 
       this.endpointPisos = '/habitacionesDashboardPisos'; 
       this.endpointGetReservar = '/getReserva'; 
-      this.endpointReservar = '/'; 
-      this.endpointAnularReserva = '/';
-      this.endpointMantenimiento = '/';
-      this.endpointAnularMantenimiento = '/';
-      this.endpointOcupar = '/';
-      this.endpointDesocupar = '/';
-      this.endpointLimpieza = '/';
-      this.endpointAnularLimpieza = '/';
+      this.endpointReservar = '/habitacionesReservar'; 
+      this.endpointAnularReserva = '/habitacionesReservarAnular';
+      this.endpointMantenimiento = '/habitacionesMantenimiento';
+      this.endpointAnularMantenimiento = '/habitacionesMantenimientoAnular';
+      this.endpointOcupar = '/ocuparHabitacionCliente';
+      this.endpointDesocupar = '/desocuparHabitacionCliente';
+      this.endpointLimpieza = '/habitacionesLimpieza';
+      this.endpointAnularLimpieza = '/habitacionesLimpiezaAnular';
       this.endpointGetProductoReserva ='/gatProductosServicio';
       this.endpointGetEmpleadoHabitacion ='/getEmpleadosHabitacion'
   }

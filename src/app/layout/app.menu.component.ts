@@ -19,14 +19,14 @@ export class AppMenuComponent implements OnInit {
                 items: [
                     { label: 'Habitaciones', icon: 'pi pi-fw pi-home', routerLink: ['/dashboard/dashboardRooms'] },
                     { label: 'Reservas', icon: 'pi pi-fw pi-calendar', routerLink: ['/dashboard/calendar'] },
-                    { label: 'Clientes', icon: 'pi pi-fw pi-user', routerLink: ['/dashboard/clients'] },
-                    { label: 'Facturación', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/cash-register'] }
+                  //  { label: 'Clientes', icon: 'pi pi-fw pi-user', routerLink: ['/dashboard/clients'] },
+                  //  { label: 'Facturación', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/cash-register'] }
                 ]
             },
             {
                 label: 'Configurar',
                 items: [
-                    { label: 'Hotel', icon: 'pi pi-fw pi-building',
+                    /*{ label: 'Hotel', icon: 'pi pi-fw pi-building',
                         items: [
                             {
                                 label: 'Habitaciones',
@@ -49,7 +49,7 @@ export class AppMenuComponent implements OnInit {
                                 routerLink: ['/dashboard/roles']
                             }
                         ]
-                    },
+                    },*/
                     { label: 'Inventario', icon: 'pi pi-fw pi-cart-plus',
                         items: [
                             {
@@ -70,15 +70,15 @@ export class AppMenuComponent implements OnInit {
                         items: [
                             { label: 'Hoteles', icon: 'pi pi-fw pi-plus-circle', routerLink: ['/dashboard/admin/hotels'] },
                             { label: 'Usuarios', icon: 'pi pi-fw pi-user-plus', routerLink: ['/dashboard/admin/users'] },
-                            { label: 'Roles', icon: 'pi pi-fw pi-id-card', routerLink: ['/dashboard/admin/roles'] },
-                            { label: 'Permisos', icon: 'pi pi-fw pi-lock-open', routerLink: ['/dashboard/admin/permissions'] },
-                            { label: 'Cajas', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/wallets'] },
+                            { label: 'Roles', icon: 'pi pi-users', routerLink: ['/dashboard/admin/roles'] },
+                            { label: 'Permisos', icon: 'pi pi-key', routerLink: ['/dashboard/admin/permissions'] },
+                            { label: 'Cajas', icon: 'pi pi-wallet', routerLink: ['/dashboard/admin/wallets'] },
                             { label: 'Tipo Habitación', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/typeRooms'] },
                             { label: 'Secuencia Interna', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/internalSequence'] },
                             { label: 'Secuencia Externa', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/externalSequence'] },
-                            { label: 'Habitaciones', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/rooms'] },
-                            {label: 'Recetas', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/recipes']},
-                            {label: 'Clientes', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/customers']}
+                            { label: 'Habitaciones', icon: 'pi pi-home', routerLink: ['/dashboard/admin/rooms'] },
+                            {label: 'Recetas', icon: 'pi pi-book', routerLink: ['/dashboard/admin/recipes']},
+                            {label: 'Tarifa', icon: 'pi pi-tag', routerLink: ['/dashboard/admin/tarifas']}
                         ]
                     },
                 ]

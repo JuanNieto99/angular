@@ -31,7 +31,7 @@
                         <div class="flex flex-wrap gap-2" style="margin-left: 20%; " >  
                             <ng-container *ngFor="let estados of habitaciones.detalle"> 
                                 <div *ngIf="estados.estado_id == 5" >
-                                    <p-tag icon="pi pi-calendar-times" ></p-tag>
+                                    <p-tag icon="pi pi-calendar-times"></p-tag>
                                 </div>
                                 <div *ngIf="estados.estado_id == 3" >
                                     <p-tag icon="pi pi-lock-open" severity="success" ></p-tag>
@@ -54,14 +54,14 @@
     </p-accordion>
 </div>
 
-<p-dialog header="Total reserva ${{totalPagarReserva}}" [(visible)]="reservacionModalVisible" [modal]="true" [style]="{ width: '70vw' }" [draggable]="false" [resizable]="false">
+<p-dialog header="Reservar" [(visible)]="reservacionModalVisible" [modal]="true" [style]="{ width: '70vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12"> 
         <div  (ngSubmit)="reservarSubmit()">
             <h2 style="text-align: center;">{{ nombreHabitacionReservada }} </h2>
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-12">
                     <label for="cliente">Cliente</label>
-                    <p-multiSelect [options]="clienteData"  selectionLimit="1" (onFilter)="busquedaCliente($event)" optionLabel="name" placeholder="Buscar cliente" optionLabel="name" class="multiselect-custom" display="chip" emptyMessage="Cliente no encontrado">
+                    <p-multiSelect [options]="clienteData" #clienteMultiSelectReservar selectionLimit="1" (onFilter)="busquedaCliente($event)" optionLabel="name" placeholder="Buscar cliente" optionLabel="name" class="multiselect-custom" display="chip" emptyMessage="Cliente no encontrado">
                         <ng-template let-cliente pTemplate="item">
                             <div class="flex align-items-center">
                                 <span class="ml-2">{{cliente.name}}</span>
@@ -70,25 +70,42 @@
                     </p-multiSelect>
                 </div>
                 <div class="field col-12 md:col-12">
+                    <label for="cliente">Tarifa</label>
+                    <!-- (onFilter)="busquedaProductoServicio($event)" (onChange)="checkProductoServicio($event)"-->
+                    <p-multiSelect [options]="tarifaData"  #clienteMultiSelectTarifa optionLabel="nombre" (onChange)="checkTarifaReserva($event)" placeholder="Buscar Tarifa" optionLabel="nombre" class="multiselect-custom"   emptyMessage="Tarifa no encontrada" display="chip">
+                        <ng-template let-tarifa pTemplate="item">
+                            <div class="flex align-items-center">
+                                <span class="ml-2">
+                                    {{ tarifa.nombre }}   
+                                    <p-tag icon="{{tarifa.icon}}"  class="padding" value="{{ tarifa.valor }}"></p-tag>  
+                                    <div *ngIf="tarifa.tipo==1"><h5>Hora</h5></div> 
+                                    <div *ngIf="tarifa.tipo==2"><h5>Noche</h5></div>
+                                </span> 
+                            </div>
+                        </ng-template>
+                    </p-multiSelect>
+                </div>
+
+                <div class="field col-12 md:col-12">
                     <label for="cliente">Producto / Servicio</label>
                     <!-- (onFilter)="busquedaProductoServicio($event)" (onChange)="checkProductoServicio($event)"-->
-                    <p-multiSelect [options]="ProductoServicioData"  optionLabel="name" placeholder="Buscar Producto/Servicio" optionLabel="name" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
+                    <p-multiSelect [options]="ProductoServicioData" #clienteMultiSelectProducto   optionLabel="name" (onChange)="checkProducto($event)"  placeholder="Buscar Producto/Servicio" optionLabel="name" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
                         <ng-template let-producto pTemplate="item">
                             <div class="flex align-items-center">
-                                <span class="ml-2">{{producto.name}}</span>
+                                <span class="ml-2">{{producto.name}} <p-tag class="padding" value="{{ producto.valor }}"></p-tag>  </span>
                             </div>
                         </ng-template>
                     </p-multiSelect>
                 </div>
                 <div class="field col-12 md:col-12">
-                    <p-panel header="Abonos" [toggleable]="true" [collapsed]="true"   >
+                    <p-panel header="Abonos $ {{abonosTotal}}" [toggleable]="true" [collapsed]="true"   >
                         <button pButton pRipple type="button" (click)="agregarAbono()" icon="pi pi-plus" class="p-button-rounded"></button>
                         
                         <div style="margin-top: 5%;" class="grid formgrid" *ngFor="let formGroup of formReservacionArray.controls; let i = index" [formGroup]="formGroup">
                             <div class="col-12 mb-2 lg:col-5 lg:mb-0">
                                 <label for="monto">Monto</label>
                                 <br>
-                                <input type="number" id="monto" formControlName="monto"  pInputText placeholder="Valor">
+                                <input type="number" id="monto" formControlName="monto" (input)="changeMedioPagoReserva()"  pInputText placeholder="Valor">
                                 <br>
                                 <div *ngIf="formGroup?.controls['monto']?.errors?.['required']" style="color: red;">Nombre es requerido.</div>
                                 
@@ -110,47 +127,140 @@
                 <div class="field col-12 md:col-6">
                     <label>Fecha Inicio </label>
                     <!--ng-invalid-->
-                    <p-calendar inputId="fechaInicio" [(ngModel)]="fechaInicio" class="  ng-dirty" [showIcon]="true"></p-calendar>
+                    <p-calendar [minDate]="hoy" inputId="fechaInicio"  showTime="true"  [(ngModel)]="fechaInicio" (onSelect)="fechaInicioChange()" dateFormat="dd/mm/yy" class="ng-dirty" [showIcon]="true"></p-calendar>
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>Fecha Final</label>
-                    <p-calendar inputId="fechaFinal" [(ngModel)]="fechaFinal" class=" ng-dirty" [showIcon]="true"></p-calendar>
+                    <p-calendar [minDate]="hoy" inputId="fechaFinal"  showTime="true"  [(ngModel)]="fechaFinal" (onSelect)="fechaFinalChange()" class="ng-dirty" [showIcon]="true"></p-calendar>
                 </div> 
                 <div class="field col-12 md:col-12">
                     <label>Descripcion</label>
-                    <textarea   pInputTextarea  required rows="3" cols="20"></textarea>
-                </div>
-        
+
+                    <form [formGroup]="formReserva">
+                        <textarea formControlName="descripcionReserva"   (input)="descripcionReservaInput($event.target.value)" pInputTextarea required rows="3" cols="20"></textarea>
+                    </form>
+                </div>  
+                <p-message severity="error" class="padding" text="La fecha final es necesaria" *ngIf="!fechaFinal"></p-message> 
+                <p-message severity="error" class="padding" text="La fecha inicial es necesaria" *ngIf="!fechaInicio"></p-message> 
+                <p-message severity="error" class="padding" text="La fecha final no puede ser mayor a la fecha de inicio" *ngIf="fechaFinal < fechaInicio"></p-message> 
+                <p-message severity="error" class="padding" text="El abono es mayor a la cantidad agregada" *ngIf="abonosTotal > totalPagarReserva"></p-message> 
+                <p-message severity="error" class="padding" text="El total a reservar debe ser mayor a 0" *ngIf="totalPagarReserva <= 0"></p-message>   
+                <p-message severity="error" class="padding" text="La tarifa es obligatoria" *ngIf="tarifasAgregadasReserva.length <= 0"></p-message>   
                 <div class="field col-12 md:col-12">
-                    <button pButton pRipple label="Crear Reserva" icon="pi pi-calendar-times" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                    <table>
+                        <tr>
+                            <th style="width: 20%;">Nombre</th>
+                            <th>Valores</th>
+                            <td>Detalle</td>
+                        </tr>
+                        <tr>
+                            <th> Productos / Servicios</th>
+                            <th> $ {{ productosTotal }} </th>
+                            <td>
+                                <table>
+                                    <thead>
+                                        <th>Nombre</th>
+                                        <th>Precio</th>
+                                    </thead>
+                                    <tbody *ngFor="let productosArray of productosAgregadosReserva; let i = index">
+                                        <td>
+                                            {{ productosArray.name }}
+                                        </td>
+                                        <td>
+                                            {{ productosArray.valor }}
+                                        </td>
+                                    </tbody>
+                                </table>
+
+                            </td> 
+                        </tr>
+                        <tr>
+                            <th> Tarifas</th>
+                            <th> $ {{ tarifasTotal }} </th>
+                            <td>
+                            <table>
+                                <thead>
+                                    <th>Nombre</th>
+                                    <th>Precio</th>
+                                </thead>
+                                <tbody *ngFor="let tarifasArray of tarifasAgregadasReserva; let i = index">
+                                    <td>
+                                        {{ tarifasArray.nombre }}
+                                    </td>
+                                    <td>
+                                        {{ tarifasArray.valor }}
+                                    </td>
+                                </tbody>
+                            </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th> Abonos</th>
+                            <th> $ {{ abonosTotal }} </th>
+                            <td>
+                            <table>
+                                <thead>
+                                    <th>Monto</th>
+                                    <th>Metodo Pago</th>
+                                </thead>
+                                <tbody *ngFor="let metodosPagoArray of formReservacionArray.value; let i = index">
+                                    <td>
+                                        {{ metodosPagoArray.monto }}
+                                    </td>
+                                    <td>
+                                        {{ metodosPagoArray.medio_pago.nombre }}
+                                    </td>
+                                </tbody>
+                            </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th> Sub Total</th>
+                            <th> $ {{ totalPagarReserva <= 0?0: totalPagarReserva}} </th>
+                            <td> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <th> Total</th>
+                            <th> $ {{ totalPagarReserva - abonosTotal <= 0?0: totalPagarReserva - abonosTotal}} </th>
+                            <td> 
+                            </td>
+                        </tr>
+                    </table> 
+                </div>
+
+
+                <div class="field col-12 md:col-12">
+                    <button pButton pRipple label="Crear Reserva"  showTime="true"  [disabled]="disableReserva" icon="pi pi-calendar-times" class="w-full bg-admin boder-admin mb-5 border-round-3xl" (click)="submitReserva()" type="submit"></button>
                 </div>
             </div>
         </div>
 	</div>
 </p-dialog>
 
-<p-dialog header="Asignar Limpieza" [(visible)]="visibleModalLimpieza" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+<p-dialog header="Asignar Limpieza" [(visible)]="visibleModalLimpieza" [modal]="true" [style]="{ width: '50vw', height:'150vw' }" dateFormat="dd/mm/yy" [draggable]="false" [resizable]="false">
     <div class="col-12">
         <h5>Completa el formulario</h5>
         <form [formGroup]="formLimpieza" (ngSubmit)="submitAsignarLimpieza()">
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-12">
-                    <p-multiSelect [options]="empleadosData"  selectionLimit="1" optionLabel="name" placeholder="Buscar Empleados" optionLabel="name" class="multiselect-custom" display="chip" emptyMessage="Empleado no encontrado">
+                    <p-multiSelect [options]="empleadosData" formControlName="empleado"  selectionLimit="1" optionLabel="name" placeholder="Buscar Empleados" optionLabel="name" class="multiselect-custom" display="chip" emptyMessage="Empleado no encontrado">
                         <ng-template let-empleado pTemplate="item">
                             <div class="flex align-items-center">
                                 <span class="ml-2">{{empleado.name}}</span>
                             </div>
                         </ng-template>
                     </p-multiSelect>
+                    <div style="color: red;" *ngIf="formLimpieza.get('empleado').hasError('required')">Campo requerido</div>
                 </div>  
                 <div class="field col-12 md:col-6">
                     <label>Fecha Inicio </label>
                     <!--ng-invalid-->
-                    <p-calendar inputId="fechaInicioLimpieza"   class="ng-dirty" [showIcon]="true"></p-calendar>
+                    <p-calendar inputId="fechaInicioLimpieza" formControlName="fechaInicio" (onSelect)="changeFechaLimpieza($event)" showTime="true"  class="ng-dirty" [showIcon]="true"></p-calendar>
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>Fecha Final</label>
-                    <p-calendar inputId="fechaFinalLimpieza"   class="ng-dirty" [showIcon]="true"></p-calendar>
+                    <p-calendar inputId="fechaFinalLimpieza"  formControlName="fechaFinal"  (onSelect)="changeFechaLimpieza($event)" showTime="true"  class="ng-dirty" [showIcon]="true"></p-calendar>
                 </div>  
 
                 <div class="field col-12 md:col-12">
@@ -158,9 +268,9 @@
                     <textarea formControlName="descripcion" pInputTextarea  required rows="3" cols="20"></textarea>
                     <div style="color: red;" *ngIf="formLimpieza.get('descripcion').hasError('required')">Campo requerido</div>
                 </div>
-        
+                <p-message severity="error" class="padding" *ngIf="formLimpieza.get('fechaInicio').value > formLimpieza.get('fechaFinal').value" text="La fecha final es mayor a la fecha inicial" ></p-message> 
                 <div class="field col-12 md:col-12">
-                    <button pButton pRipple label="Asignar limpieza"   class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                    <button pButton pRipple label="Asignar limpieza"  [disabled]="formLimpieza.invalid  || disableButtonLimpieza"  class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>
             </div>
             <br>
@@ -168,35 +278,37 @@
 	</div>
 </p-dialog>
 
-<p-dialog header="Asignar Mantenimiento" [(visible)]="visibleModalMantenimiento" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+<p-dialog header="Asignar Mantenimiento" [(visible)]="visibleModalMantenimiento" [modal]="true" [style]="{ width: '50vw', height:'150vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12"> 
         <form [formGroup]="formMantenimiento" (ngSubmit)="submitAsignarMantenimiento()">
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-12">
-                    <p-multiSelect [options]="empleadosData"  selectionLimit="1" optionLabel="name" placeholder="Buscar Empleados" optionLabel="name" class="multiselect-custom" display="chip" emptyMessage="Empleado no encontrado">
+                    <p-multiSelect [options]="empleadosData" formControlName="empleado" selectionLimit="1" optionLabel="name" placeholder="Buscar Empleados" optionLabel="name" class="multiselect-custom" display="chip" emptyMessage="Empleado no encontrado">
                         <ng-template let-empleado pTemplate="item">
                             <div class="flex align-items-center">
                                 <span class="ml-2">{{empleado.name}}</span>
                             </div>
                         </ng-template>
                     </p-multiSelect>
+                    <div style="color: red;" *ngIf="formMantenimiento.get('empleado').hasError('required')">Campo requerido</div>
                 </div>   
                 <div class="field col-12 md:col-6">
                     <label>Fecha Inicio </label>
                     <!--ng-invalid-->
-                    <p-calendar inputId="fechaInicioMantenimiento"    class="ng-dirty" [showIcon]="true"></p-calendar>
+                    <p-calendar inputId="fechaInicioMantenimiento" (onSelect)="changeFechaMantenimiento()" formControlName="fechaInicio"  showTime="true" class="ng-dirty" [showIcon]="true"></p-calendar>
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>Fecha Final</label>
-                    <p-calendar inputId="fechaFinalMantenimiento"   class="ng-dirty" [showIcon]="true"></p-calendar>
+                    <p-calendar inputId="fechaFinalMantenimiento" (onSelect)="changeFechaMantenimiento()"  formControlName="fechaFinal"  showTime="true" class="ng-dirty" [showIcon]="true"></p-calendar>
                 </div>  
                 <div class="field col-12 md:col-12">
                     <label>Descripcion</label>
                     <textarea formControlName="descripcion" pInputTextarea  required rows="3" cols="20"></textarea>
                     <div style="color: red;" *ngIf="formMantenimiento.get('descripcion').hasError('required')">Campo requerido</div>
                 </div> 
+                <p-message severity="error" class="padding" *ngIf="this.formMantenimiento.get('fechaInicio').value > this.formMantenimiento.get('fechaFinal').value" text="La fecha final es mayor a la fecha inicial" ></p-message> 
                 <div class="field col-12 md:col-12">
-                    <button pButton pRipple label="Asignar Mantenimiento"   class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                    <button pButton pRipple label="Asignar Mantenimiento" [disabled]="formMantenimiento.invalid || disableButtonMantenimiento"  class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>
             </div>
             <br>
@@ -204,14 +316,14 @@
 	</div>
 </p-dialog>
 
-<p-dialog header="Total Ocupacion ${{totalPagarReserva}}" [(visible)]="ocuparModalVisible" [modal]="true" [style]="{ width: '70vw' }" [draggable]="false" [resizable]="false">
+<p-dialog header="Ocupar "  [(visible)]="ocuparModalVisible" [modal]="true" [style]="{ width: '70vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12"> 
         <div >
             <h2 style="text-align: center;">{{ nombreHabitacionReservada }} </h2>
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-12">
                     <label for="cliente">Cliente</label>
-                    <p-multiSelect [options]="clienteData"  selectionLimit="1" (onFilter)="busquedaCliente($event)" optionLabel="name" placeholder="Buscar cliente" optionLabel="name" class="multiselect-custom" display="chip" emptyMessage="Cliente no encontrado">
+                    <p-multiSelect [options]="clienteData" #clienteMultiSelectOcupar  selectionLimit="1" (onFilter)="busquedaCliente($event)" optionLabel="name" placeholder="Buscar cliente" optionLabel="name" class="multiselect-custom" display="chip" emptyMessage="Cliente no encontrado">
                         <ng-template let-cliente pTemplate="item">
                             <div class="flex align-items-center">
                                 <span class="ml-2">{{cliente.name}}</span>
@@ -219,10 +331,28 @@
                         </ng-template>
                     </p-multiSelect>
                 </div>
+
+                <div class="field col-12 md:col-12">
+                    <label for="cliente">Tarifa</label>
+                    <!-- (onFilter)="busquedaProductoServicio($event)" (onChange)="checkProductoServicio($event)"-->
+                    <p-multiSelect [options]="tarifaData" #tarifaMultiSelectOcupar  optionLabel="nombre" (onChange)="checkTarifaOcupar($event)" placeholder="Buscar Tarifa" optionLabel="nombre" class="multiselect-custom"   emptyMessage="Tarifa no encontrada" display="chip">
+                        <ng-template let-tarifa pTemplate="item">
+                            <div class="flex align-items-center">
+                                <span class="ml-2">
+                                    {{ tarifa.nombre }}   
+                                    <p-tag icon="{{tarifa.icon}}"  class="padding" value="{{ tarifa.valor }}"></p-tag>  
+                                    <div *ngIf="tarifa.tipo==1"><h5>Hora</h5></div> 
+                                    <div *ngIf="tarifa.tipo==2"><h5>Noche</h5></div>
+                                </span> 
+                            </div>
+                        </ng-template>
+                    </p-multiSelect>
+                </div>
+
                 <div class="field col-12 md:col-12">
                     <label for="cliente">Producto / Servicio</label>
                     <!-- (onFilter)="busquedaProductoServicio($event)" (onChange)="checkProductoServicio($event)"-->
-                    <p-multiSelect [options]="ProductoServicioData"  optionLabel="name" placeholder="Buscar Producto/Servicio" optionLabel="name" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
+                    <p-multiSelect [options]="ProductoServicioData" #productoMultiSelectOcupar (onChange)="checkProductoOcupar($event)" optionLabel="name" placeholder="Buscar Producto/Servicio" optionLabel="name" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
                         <ng-template let-producto pTemplate="item">
                             <div class="flex align-items-center">
                                 <span class="ml-2">{{producto.name}}</span>
@@ -230,6 +360,7 @@
                         </ng-template>
                     </p-multiSelect>
                 </div>
+
                 <div class="field col-12 md:col-12">
                     <p-panel header="Abonos" [toggleable]="true" [collapsed]="true"   >
                         <button pButton pRipple type="button" (click)="agregarAbonoOcupar()" icon="pi pi-plus" class="p-button-rounded"></button>
@@ -238,7 +369,7 @@
                             <div class="col-12 mb-2 lg:col-5 lg:mb-0">
                                 <label for="monto">Monto</label>
                                 <br>
-                                <input type="number" id="monto" formControlName="monto"  pInputText placeholder="Valor">
+                                <input type="number" id="monto" formControlName="monto" (input)="changeMedioPagoOcupar()"  pInputText placeholder="Valor">
                                 <br>
                                 <div *ngIf="formGroupOcupar?.controls['monto']?.errors?.['required']" style="color: red;">Nombre es requerido.</div>
                                 
@@ -256,14 +387,103 @@
                         </div>
                     </p-panel>
                 </div>                
- 
+
                 <div class="field col-12 md:col-12">
                     <label>Descripcion</label>
-                    <textarea   pInputTextarea  required rows="3" cols="20"></textarea>
+                    <form [formGroup]="formOcupar">
+                        <textarea formControlName="descripcionReserva"   (input)="descripcionReservaInput($event.target.value)" pInputTextarea required rows="3" cols="20"></textarea>
+                    </form>
+                </div>
+
+                <p-message severity="error" class="padding" text="El abono es mayor a la cantidad agregada" *ngIf="abonosTotalOcupar > totalPagarOcupar"></p-message> 
+                <p-message severity="error" class="padding" text="El total a reservar debe ser mayor a 0" *ngIf="totalPagarOcupar <= 0"></p-message>   
+                <p-message severity="error" class="padding" text="La tarifa es obligatoria" *ngIf="tarifasAgregadasOcupar.length <= 0"></p-message>   
+
+                <div class="field col-12 md:col-12">
+                    <table>
+                        <tr>
+                            <th style="width: 20%;">Nombre</th>
+                            <th>Valores</th>
+                            <td>Detalle</td>
+                        </tr>
+                        <tr>
+                            <th> Productos / Servicios</th>
+                            <th> $ {{ productosTotalOcupar }} </th>
+                            <td>
+                                <table>
+                                    <thead>
+                                        <th>Nombre</th>
+                                        <th>Precio</th>
+                                    </thead>
+                                    <tbody *ngFor="let productosArray of productosAgregadosOcupar; let i = index">
+                                        <td>
+                                            {{ productosArray.name }}
+                                        </td>
+                                        <td>
+                                            {{ productosArray.valor }}
+                                        </td>
+                                    </tbody>
+                                </table>
+
+                            </td> 
+                        </tr>
+                        <tr>
+                            <th> Tarifas</th>
+                            <th> $ {{ tarifasTotalOcupar }} </th>
+                            <td>
+                            <table>
+                                <thead>
+                                    <th>Nombre</th>
+                                    <th>Precio</th>
+                                </thead>
+                                <tbody *ngFor="let tarifasArray of tarifasAgregadasOcupar; let i = index">
+                                    <td>
+                                        {{ tarifasArray.nombre }}
+                                    </td>
+                                    <td>
+                                        {{ tarifasArray.valor }}
+                                    </td>
+                                </tbody>
+                            </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th> Abonos</th>
+                            <th> $ {{ abonosTotalOcupar }} </th>
+                            <td>
+                            <table>
+                                <thead>
+                                    <th>Monto</th>
+                                    <th>Metodo Pago</th>
+                                </thead>
+                                <tbody *ngFor="let metodosPagoArray of formOcuparArray.value; let i = index">
+                                    <td>
+                                        {{ metodosPagoArray.monto }}
+                                    </td>
+                                    <td>
+                                        {{ metodosPagoArray.medio_pago.nombre }}
+                                    </td>
+                                </tbody>
+                            </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th> Sub Total</th>
+                            <th> $ {{ totalPagarOcupar <= 0?0: totalPagarOcupar}} </th>
+                            <td> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <th> Total</th>
+                            <th> $ {{ totalPagarOcupar - abonosTotalOcupar <= 0?0: totalPagarOcupar - abonosTotalOcupar}} </th>
+                            <td> 
+                            </td>
+                        </tr>
+                    </table> 
                 </div>
         
                 <div class="field col-12 md:col-12">
-                    <button pButton pRipple label="Crear Reserva" icon="pi pi-calendar-times" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                    <button pButton pRipple label="Crear Ocupacion" (click)="submitOcupar()"  [disabled]="disableOcupar" icon="pi pi-calendar-times" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>
             </div>
         </div>

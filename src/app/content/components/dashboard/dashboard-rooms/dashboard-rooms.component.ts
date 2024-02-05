@@ -6,9 +6,11 @@ import { OverlayPanel } from 'primeng/overlaypanel';
 import { ThirdPartyDraggable } from '@fullcalendar/interaction';
 import { Validators } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';  
-import { MultiSelectModule } from 'primeng/multiselect';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
-
+import { MultiSelect } from 'primeng/multiselect';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms'; 
+import { CommonModule, DatePipe } from '@angular/common';
+import Swal from 'sweetalert2';
+import { InputTextarea } from 'primeng/inputtextarea';
 interface HotelData {
   hotel_id: number; // Adjust the type accordingly
   piso_id: number; 
@@ -27,6 +29,8 @@ interface dataRoom {
   detalle: any;
   tipoHabitacion: any;
   habitacionNombre: any;
+  piso: number,
+  habitacionEstado: any,
 }
 
 interface dataProducto {
@@ -46,9 +50,15 @@ interface dataMedioPago {
 
 export class DashboardRoomsComponent implements OnInit  {
   @ViewChild('op1') op1: OverlayPanel;
+  @ViewChild('clienteMultiSelectReservar') clienteMultiSelectReservar: MultiSelect;
+  @ViewChild('clienteMultiSelectTarifa') clienteMultiSelectTarifa: MultiSelect;
+  @ViewChild('clienteMultiSelectProducto') clienteMultiSelectProducto: MultiSelect;
+  @ViewChild('clienteMultiSelectOcupar') clienteMultiSelectOcupar: MultiSelect;
+  @ViewChild('tarifaMultiSelectOcupar') tarifaMultiSelectOcupar: MultiSelect;
+  @ViewChild('productoMultiSelectOcupar') productoMultiSelectOcupar: MultiSelect; 
 
   public menuHabitacion: MenuItem [];
-  public totalPagarReserva: number = 48.100;
+  public totalPagarReserva: number = 0;
   public fechaInicio: any;
   public fechaFinal: any;
   public fechaInicioLimpieza: any;
@@ -60,6 +70,7 @@ export class DashboardRoomsComponent implements OnInit  {
   private hotelId: number;
   private pisoId: number;
   private primerPiso: number = 1; 
+  private pisoSeleccionado: number = 1; 
   public dataRoomsPisos: any[];
   public htmlContent: string;
   public dataRoom: dataRoomPiso [] = [];
@@ -67,15 +78,16 @@ export class DashboardRoomsComponent implements OnInit  {
   private habitacionId: number;
   public reservacionModalVisible: boolean = false;
   public formReservacion: FormGroup;  
+  public formOcupar: FormGroup;  
   public formLimpieza: FormGroup;  
   public formMantenimiento: FormGroup;  
-
+  public formReserva: FormGroup;  
   public formReservacionArray: FormArray ;  
   public formOcuparArray: FormArray ;  
 
   public clienteData: any;
   public ProductoServicioData: any; 
-  public ProductoServicio: any; 
+  public tarifaData: any;  
   public ProductoServicioDataSeleccionados: dataProducto [] =[] ; 
   public selectMedioPago: dataMedioPago [] =[] ;
   public metodosPago: any;
@@ -83,6 +95,25 @@ export class DashboardRoomsComponent implements OnInit  {
   public visibleModalLimpieza: boolean = false;
   public visibleModalMantenimiento: boolean = false;
   public ocuparModalVisible: boolean = false;
+  private tipoHabitacionId: number;
+  public tarifasAgregadasReserva: any[] =[] ;
+  public productosAgregadosReserva: any[] =[] ;
+  public tarifasAgregadasOcupar: any[] =[] ;
+  public productosAgregadosOcupar: any[] =[] ;
+  public tarifasTotal = 0;
+  public productosTotal = 0; 
+  public abonosTotal = 0; 
+  public tarifasTotalOcupar = 0;
+  public productosTotalOcupar = 0; 
+  public abonosTotalOcupar = 0; 
+  public totalPagarOcupar = 0; 
+  public disableReserva: boolean = false;
+  public disableOcupar: boolean = false;
+  public descripcionReserva: string;
+  public hoy: Date;
+  public disableButtonMantenimiento: boolean = false;
+  public disableButtonLimpieza: boolean = false;
+  public estadoHabitacionActual: any;
 
   ngOnInit(): void {
     this.buildForm();
@@ -95,13 +126,15 @@ export class DashboardRoomsComponent implements OnInit  {
     this.clienteData = [];
     this.ProductoServicioData = [];
     this.empleadosData = [];
-  
+    this.tarifaData = [];
+    this.hoy = new Date();
   }
 
   constructor( 
     private dashboardRoomsService:DashboardRoomsService, 
     private FB: FormBuilder,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private datePipe: DatePipe,
   ){
     this.formReservacionArray = this.FB.array([]); 
     this.formOcuparArray = this.FB.array([]); 
@@ -111,11 +144,17 @@ export class DashboardRoomsComponent implements OnInit  {
 
     this.formLimpieza = this.FB.group({
       descripcion: ['',[Validators.required]],
+      empleado: ['',[Validators.required]],
+      fechaInicio: ['',[Validators.required]],
+      fechaFinal: ['',[Validators.required]],
     });
 
 
     this.formMantenimiento = this.FB.group({
       descripcion: ['',[Validators.required]],
+      empleado: ['',[Validators.required]],
+      fechaInicio: ['',[Validators.required]],
+      fechaFinal: ['',[Validators.required]],
     });
     
 
@@ -128,12 +167,21 @@ export class DashboardRoomsComponent implements OnInit  {
     }); 
 
 
+    this.formReserva =  this.FB.group({
+      descripcionReserva: ['', Validators.required]
+    });
+
+    this.formOcupar =  this.FB.group({
+      descripcionReserva: ['', Validators.required]
+    });
+
   }
 
-  agregarAbono(){
+  agregarAbono(){ 
+
     let form =  this.FB.group({ 
       monto: ['', [Validators.required, Validators.min(0)]],
-      medio_pago: ['', [Validators.required, Validators.min(0)]],
+      medio_pago: [this.selectMedioPago[0], [Validators.required, Validators.min(0)]],
     }); 
 
     this.formReservacionArray.push(
@@ -143,10 +191,9 @@ export class DashboardRoomsComponent implements OnInit  {
   }
 
   agregarAbonoOcupar(){
-
     let form =  this.FB.group({ 
       monto: ['', [Validators.required, Validators.min(0)]],
-      medio_pago: ['', [Validators.required, Validators.min(0)]],
+      medio_pago: [this.selectMedioPago[0], [Validators.required, Validators.min(0)]],
     }); 
 
     this.formOcuparArray.push(
@@ -155,13 +202,14 @@ export class DashboardRoomsComponent implements OnInit  {
   }
 
   getRoomsDashboard(){
+    
     let data : HotelData = {
       hotel_id: this.hotelId,
       piso_id: this.pisoId
     }; 
 
     this.dashboardRoomsService.getDashboardRooms(data).subscribe(
-        (response: any) => {
+        (response: any) => { 
           
           this.dataRoom.forEach(element => {
             if(this.pisoId == element.piso){
@@ -181,6 +229,8 @@ export class DashboardRoomsComponent implements OnInit  {
                       detalle: habitaciones.habitacion_estado,
                       tipoHabitacion: habitaciones.tipo_habitacion,
                       habitacionNombre: JSON.parse(habitaciones.tipo_habitacion.diseno_json)['puerta'] ,
+                      piso: habitaciones.piso,
+                      habitacionEstado: habitaciones.habitacion_estado,
                   }
                 )
             });
@@ -205,7 +255,9 @@ export class DashboardRoomsComponent implements OnInit  {
     }; 
 
     this.dashboardRoomsService.getPisos(data).subscribe(
-        (response: any) => {       
+        (response: any) => {     
+          this.dataRoomsPisos = [];
+  
           this.dataRoomsPisos = response.pisos;
           this.dataRoomsPisos.forEach(element => {
   
@@ -233,8 +285,8 @@ export class DashboardRoomsComponent implements OnInit  {
   }
 
   opcionesHabitacion(habitacion){ 
-   
-    
+  
+  
   }
 
   opcionSeleccionada($event, habitacion){
@@ -255,60 +307,90 @@ export class DashboardRoomsComponent implements OnInit  {
     if(this.estadoHabitacion == 5){
       //reserva
       this.reservar();
-    } else if(this.estadoHabitacion == 4) {
-        //Limpieza
-        parametros = {
-          id_habitacion: this.habitacionId, 
-          estado: this.estadoHabitacion,
-          hotel_id: this.hotelId,
-        }; 
 
-        this.getDataEmpleado(parametros);
-      //  this.limpieza(parametros);
+    } else if(this.estadoHabitacion == 4) {
+
+      
     }  else if(this.estadoHabitacion == 6) {
         //Mantenimiento
         parametros = {
           id_habitacion: this.habitacionId, 
-          estado: this.estadoHabitacion,
-          hotel_id: this.hotelId,
         }; 
 
-        this.getDataEmpleado(parametros);
+        Swal.fire({
+          title: "¿Estas seguro que deseas Anular el mantenimiento?",
+          text: "",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Sí, Confirmar",
+          cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (result.isConfirmed) { 
+                this.enviarAnularMantenimiento(parametros);
+            }
+        });
         //this.enviarMantenimiento(parametros);
     } else if(this.estadoHabitacion == 2) {
-      //Ocupar
-      this.ocupar()
+      this.ocupar();
     } else if(this.estadoHabitacion == 20) {
-        //Desocupar
-        parametros = {
-          id_habitacion: this.habitacionId,
-          id_detalle: 1,
-        }; 
-        this.enviarDesocupar(parametros);
-    } else if(this.estadoHabitacion == 50) {
-        //anular resrva 
-
-        parametros = {
-          id_habitacion: this.habitacionId,
-          id_reserva: 1,
-        }; 
-
-        this.enviarAnularReserva(parametros);
-    } else if(this.estadoHabitacion == 40) { 
-      
-      parametros = {
-        id_habitacion: this.habitacionId, 
-      }; 
-
-      this.enviarAnularLimpieza(parametros);
-    } else if(this.estadoHabitacion == 60) { 
-        //anular Mantenimiento 
-
+        //Limpieza
         parametros = {
           id_habitacion: this.habitacionId, 
         }; 
 
-        this.enviarAnularMantenimiento(parametros);
+        Swal.fire({
+          title: "¿Estas seguro que deseas desocupar?",
+          text: "",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Sí, Confirmar",
+          cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (result.isConfirmed) { 
+                this.enviarDesocupar(parametros);
+            }
+        });
+
+    } else if(this.estadoHabitacion == 50) {
+      parametros = {
+        id_habitacion: this.habitacionId, 
+      }; 
+
+      Swal.fire({
+        title: "¿Estas seguro que deseas Anular la reserva?",
+        text: "",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, Confirmar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+          if (result.isConfirmed) { 
+              this.enviarAnularReserva(parametros);
+          }
+      });
+
+    } else if(this.estadoHabitacion == 40) { 
+        //Limpieza
+        parametros = {
+          id_habitacion: this.habitacionId, 
+        }; 
+
+        Swal.fire({
+          title: "¿Estas seguro que deseas Anular La limpieza?",
+          text: "",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Sí, Confirmar",
+          cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (result.isConfirmed) { 
+                this.enviarAnularLimpieza(parametros);
+            }
+        });
+    } else if(this.estadoHabitacion == 60) { 
+
+      console.log("LOL")
+
     } else {
       console.log("Ninguno")
     }
@@ -316,19 +398,21 @@ export class DashboardRoomsComponent implements OnInit  {
   }
 
   abrirMenu($event, habitacion){
-    this.op1.toggle($event)  
-    console.log(habitacion)
+    this.op1.toggle($event)    
     let estadoHabitaciones = [];
     this.habitacionId = habitacion.id;
     this.nombreHabitacionReservada = habitacion.nombre;
-    
+    this.tipoHabitacionId = habitacion.tipoHabitacion.id;
+    this.pisoSeleccionado = habitacion.piso; 
+    this.estadoHabitacionActual =  habitacion.habitacionEstado; 
+
+    this.estadoHabitacionActual.forEach(element => {
+        console.log(element.estado_id)
+    });
+
     let letItem: MenuItem[] = [];  // Corrected the declaration and initialization
     
-    if(habitacion.detalle){
-      habitacion.detalle.forEach(element => {
-        estadoHabitaciones.push(element.estado_id);
-      }); 
-    }
+
 
     if(!estadoHabitaciones.includes(5)){ //no esta reservada entonces reservemosla
       letItem.push(
@@ -357,6 +441,28 @@ export class DashboardRoomsComponent implements OnInit  {
     }
 
     if(!estadoHabitaciones.includes(2)){ //no ocupado
+      let habilitar_desocupado_por_reservado = false;
+     /* if(habitacion.detalle){
+        habitacion.detalle.forEach(element => {
+            if(element.estado_id == 5 ){
+
+              let fecha_inicio = new Date(element.fecha_inicio);
+              let fecha_actual = new Date(fecha_inicio.getFullYear(), fecha_inicio.getMonth(), fecha_inicio.getDate());              
+              let hoydate = new Date(); // Obtiene la fecha y hora actual
+              hoydate.setHours(0, 0, 0, 0); // Establece la hora, minutos, segundos y milisegundos a cero
+
+              let hoy = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+          
+            
+            if(hoy == fecha_actual){
+                habilitar_desocupado_por_reservado = true;
+              } 
+            }
+        }); 
+      }
+      
+      console.log(habilitar_desocupado_por_reservado)*/
+
       letItem.push(
         {
           label: 'Ocupar',
@@ -467,7 +573,7 @@ export class DashboardRoomsComponent implements OnInit  {
   reservar(){
     
     this.getReserva();
-    this.getProducto();
+    //this.getProducto();
     //sacar modal
   }
 
@@ -476,7 +582,30 @@ export class DashboardRoomsComponent implements OnInit  {
     this.dashboardRoomsService.reservar(parametros).subscribe(
       (response: any) => {       
         let data = response;
+        this.reservacionModalVisible = false;
+        if(data.code == "success"){
 
+          Swal.fire({
+            title: "Exito",
+            text: "Reservacion exitosa.",
+            icon: "success"
+          });
+          
+          this.openTag(this.pisoSeleccionado)
+
+        } else  if(data.code == "warning"){
+          Swal.fire({
+            title: "Advertencia",
+            text: data.error,
+            icon: "warning"
+          });
+        }   else {
+          Swal.fire({
+            title: "Error",
+            text: "Error al generar la reserva.",
+            icon: "error"
+          });
+        }
       },
       (error) => {
           console.log('Error: ', error);
@@ -496,6 +625,28 @@ export class DashboardRoomsComponent implements OnInit  {
       (response: any) => {       
         let data = response;
 
+        if(data.code == "success"){
+          Swal.fire({
+            title: "Exito",
+            text: "Anulacion Exitosa.",
+            icon: "success"
+          });
+          
+          this.openTag(this.pisoSeleccionado)
+
+        } else  if(data.code == "warning"){
+          Swal.fire({
+            title: "Advertencia",
+            text: data.error,
+            icon: "warning"
+          });
+        }  else {
+          Swal.fire({
+            title: "Error",
+            text: "Error al anular.",
+            icon: "error"
+          });
+        }
       },
       (error) => {
           console.log('Error: ', error);
@@ -506,10 +657,32 @@ export class DashboardRoomsComponent implements OnInit  {
       
   enviarAnularReserva(parametros){
 
-    this.dashboardRoomsService.desocupar(parametros).subscribe(
+    this.dashboardRoomsService.anularReserva(parametros).subscribe(
       (response: any) => {       
         let data = response;
 
+        if(data.code == "success"){
+          Swal.fire({
+            title: "Exito",
+            text: "Anulacion Exitosa.",
+            icon: "success"
+          });
+          
+          this.openTag(this.pisoSeleccionado)
+
+        } else  if(data.code == "warning"){
+          Swal.fire({
+            title: "Advertencia",
+            text: data.error,
+            icon: "warning"
+          });
+        }   else {
+          Swal.fire({
+            title: "Error",
+            text: "Error al anular.",
+            icon: "error"
+          });
+        }
       },
       (error) => {
           console.log('Error: ', error);
@@ -520,10 +693,32 @@ export class DashboardRoomsComponent implements OnInit  {
 
   enviarAnularLimpieza(parametros){
 
-    this.dashboardRoomsService.desocupar(parametros).subscribe(
+    this.dashboardRoomsService.anularLimpieza(parametros).subscribe(
       (response: any) => {       
         let data = response;
 
+        if(data.code == "success"){
+          Swal.fire({
+            title: "Exito",
+            text: "Anulacion Exitosa.",
+            icon: "success"
+          });
+          
+          this.openTag(this.pisoSeleccionado)
+
+        } else  if(data.code == "warning"){
+          Swal.fire({
+            title: "Advertencia",
+            text: data.error,
+            icon: "warning"
+          });
+        }   else {
+          Swal.fire({
+            title: "Error",
+            text: "Error al anular.",
+            icon: "error"
+          });
+        }
       },
       (error) => {
           console.log('Error: ', error);
@@ -534,10 +729,36 @@ export class DashboardRoomsComponent implements OnInit  {
 
   enviarAnularMantenimiento(parametros){
 
-    this.dashboardRoomsService.anularMantenimiento(parametros).subscribe(
-      (response: any) => {       
-        let data = response;
+    this.spinner.show();
 
+    this.dashboardRoomsService.anularMantenimiento(parametros).subscribe(
+      (response: any) => {     
+        this.spinner.hide();
+
+        let data = response; 
+
+        if(data.code == "success"){
+          Swal.fire({
+            title: "Exito",
+            text: "Anulacion Exitosa.",
+            icon: "success"
+          });
+          
+          this.openTag(this.pisoSeleccionado)
+
+        } else  if(data.code == "warning"){
+          Swal.fire({
+            title: "Advertencia",
+            text: data.error,
+            icon: "warning"
+          });
+        }   else {
+          Swal.fire({
+            title: "Error",
+            text: "Error al anular.",
+            icon: "error"
+          });
+        }
       },
       (error) => {
           console.log('Error: ', error);
@@ -547,11 +768,36 @@ export class DashboardRoomsComponent implements OnInit  {
   } 
 
   enviarMantenimiento(parametros){
-
+    this.spinner.show();
     this.dashboardRoomsService.mantenimiento(parametros).subscribe(
-      (response: any) => {       
-        let data = response;
+      (response: any) => {      
+        this.spinner.hide();
 
+        this.visibleModalMantenimiento = false;
+        let data = response; 
+
+        if(data.code == "success"){
+          Swal.fire({
+            title: "Exito",
+            text: "Registro exitoso.",
+            icon: "success"
+          });
+          
+          this.openTag(this.pisoSeleccionado)
+
+        } else  if(data.code == "warning"){
+          Swal.fire({
+            title: "Advertencia",
+            text: data.error,
+            icon: "warning"
+          });
+        }   else {
+          Swal.fire({
+            title: "Error",
+            text: "Error al registrar.",
+            icon: "error"
+          });
+        }
       },
       (error) => {
           console.log('Error: ', error);
@@ -561,10 +807,36 @@ export class DashboardRoomsComponent implements OnInit  {
   } 
 
   enviarOcupar(parametros){
+    this.spinner.show();
 
-    this.dashboardRoomsService.mantenimiento(parametros).subscribe(
-      (response: any) => {       
+    this.dashboardRoomsService.ocupar(parametros).subscribe(
+      (response: any) => {    
+        this.spinner.hide();   
         let data = response;
+        this.ocuparModalVisible = false;
+        if(data.code == "success"){
+          Swal.fire({
+            title: "Exito",
+            text: "Ocupacion exitosa.",
+            icon: "success"
+          });
+          
+            
+          this.openTag(this.pisoSeleccionado)
+
+        } else  if(data.code == "warning"){
+          Swal.fire({
+            title: "Advertencia",
+            text: data.error,
+            icon: "warning"
+          });
+        }   else {
+          Swal.fire({
+            title: "Error",
+            text: "Error al generar la ocupacion.",
+            icon: "error"
+          });
+        }
 
       },
       (error) => {
@@ -574,11 +846,38 @@ export class DashboardRoomsComponent implements OnInit  {
   
   } 
 
-  limpieza(parametros){
+  enviarLimpieza(parametros){
+    this.spinner.show();
+
     this.dashboardRoomsService.limpieza(parametros).subscribe(
       (response: any) => {   
-            
+        this.spinner.hide();
+
         let data = response;
+        this.visibleModalLimpieza = false;
+
+        if(data.code == "success"){
+          Swal.fire({
+            title: "Exito",
+            text: "Registro exitoso.",
+            icon: "success"
+          });
+          
+          this.openTag(this.pisoSeleccionado)
+
+        } else  if(data.code == "warning"){
+          Swal.fire({
+            title: "Advertencia",
+            text: data.error,
+            icon: "warning"
+          });
+        }   else {
+          Swal.fire({
+            title: "Error",
+            text: "Error al registrar.",
+            icon: "error"
+          });
+        }
 
       },
       (error) => {
@@ -589,18 +888,7 @@ export class DashboardRoomsComponent implements OnInit  {
   } 
 
   ocupar(){ 
-    //sacar modal 
-    let parametros = {
-      id_habitacion: this.habitacionId,
-      cliente_id: 1,
-      hotel_id: 1,
-    }; 
-
-        
-    this.getReserva();
-    this.getProducto();
-
-   // this.enviarOcupar(parametros);
+    this.getReserva();  
   }
 
 
@@ -609,36 +897,94 @@ export class DashboardRoomsComponent implements OnInit  {
     let data = {
       'hotel_id':this.hotelId,
       'cliente_busqueda': clienteBusqueda,
+      'tipo_habitacion': this.tipoHabitacionId,
     };
 
     this.dashboardRoomsService.getReserva(data).subscribe(
       (response: any) => {   
-        this.spinner.hide();  
+        this.spinner.hide();   
+        this.clienteMultiSelectReservar.checkAll(); 
+        this.clienteMultiSelectReservar.uncheckAll();
+        this.clienteMultiSelectTarifa.checkAll(); 
+        this.clienteMultiSelectTarifa.uncheckAll();
+        this.clienteMultiSelectProducto.checkAll(); 
+        this.clienteMultiSelectProducto.uncheckAll();
+        this.clienteMultiSelectOcupar.checkAll(); 
+        this.clienteMultiSelectOcupar.uncheckAll(); 
+        this.tarifaMultiSelectOcupar.checkAll();
+        this.tarifaMultiSelectOcupar.uncheckAll();
+        this.productoMultiSelectOcupar.checkAll(); 
+        this.productoMultiSelectOcupar.uncheckAll(); 
         
+        this.selectMedioPago = []; 
+        this.tarifaData = [];
+        this.ProductoServicioData = [];
+        this.clienteData = [];
+        this.formReservacionArray = this.FB.array([]); 
+        this.formOcuparArray = this.FB.array([]);  
+        this.fechaFinal = "";
+        this.fechaInicio = ""; 
+        this.descripcionReserva = "";
+        this.totalPagarOcupar = 0;
+        this.totalPagarReserva = 0;
+        this.abonosTotal = 0;
+        this.abonosTotalOcupar = 0;
+        this.formReserva.reset();
+        this.formOcupar.reset();
+
         if(this.estadoHabitacion == 5){
+          //reservar
           this.reservacionModalVisible = true; 
+          this.validacionesReserva();
         }
 
         if(this.estadoHabitacion == 2){
+          //ocupar
+          this.validacionesOcupacion();
+
           this.ocuparModalVisible = true;  
         }
+        
         let dataCliente = response.cliente;
         let dataMedioPago = response.metodos_pago;
-        this.clienteData = [];
+        let dataTarifa = response.tarifa;
+
+
         dataCliente.forEach(element => {
           this.clienteData.push({
             name: element.numero_documento +' '+element.nombres +' '+ element.apellidos ,
-            code: element.numero_documento
+            code: element.numero_documento,
+            id: element.id,
           }) 
         });
 
-        this.selectMedioPago = [];
         dataMedioPago.forEach(element => {
           this.selectMedioPago.push({
             nombre: element.nombre,
             id: element.id
           }) 
         });
+
+        dataTarifa.forEach(element => {
+          this.tarifaData.push({
+            nombre: element.nombre,
+            id: element.id,
+            tipo: element.tipo,
+            valor: element.valor,
+            icon: element.tipo==1?'pi pi-hourglass':'pi pi-moon',
+          }) 
+        })
+
+        let dataProducto = response.productos; 
+
+        dataProducto.forEach(element => {  
+          this.ProductoServicioData.push({
+            name: element.nombre,
+            code: element.id,
+            valor: element.precio,
+            tipo: element.tipo_producto
+          }) 
+        }); 
       },
       (error) => {
         this.spinner.hide();
@@ -652,36 +998,19 @@ export class DashboardRoomsComponent implements OnInit  {
     this.getReserva(clienteBusqueda);
   } 
 
-  getProducto(productoBusqueda: string = '') {
-    this.spinner.show();  
-    let data = {
-      'hotel_id':this.hotelId,
-      'producto_busqueda': productoBusqueda,
-    };
+  submitAsignarLimpieza(){ 
+    if(this.formLimpieza.valid){
+      let data = {
+        empleado_id: this.formLimpieza.value.empleado[0].code,
+        descripcion: this.formLimpieza.value.descripcion,
+        fecha_final: this.datePipe.transform(this.formLimpieza.value.fechaFinal, 'yyyy-MM-dd HH:mm:ss'),
+        fecha_inicio: this.datePipe.transform(this.formLimpieza.value.fechaInicio, 'yyyy-MM-dd HH:mm:ss'),
+        habitacion_id: this.habitacionId,
+      } 
 
-    this.dashboardRoomsService.getProductoServicio(data).subscribe(
-      (response: any) => {   
-        this.spinner.hide();   
-        let data = response.productos;
-        this.ProductoServicioData = [];
-        console.log(data)
-        data.forEach(element => {  
-          this.ProductoServicioData.push({
-            name: element.nombre,
-            code: element.id
-          }) 
-        });
-        this.ProductoServicio = this.ProductoServicioData;
-      },
-      (error) => {
-        this.spinner.hide();
-          console.log('Error: ', error);
-      }
-    );
-  }
-
-  submitAsignarLimpieza(){
-
+    this.enviarLimpieza(data);
+      
+    }
   }
 
   eliminarMedioPago(index: number){
@@ -708,9 +1037,11 @@ export class DashboardRoomsComponent implements OnInit  {
         });
 
         if(parametros.estado == 4){
+          this.formLimpieza.reset();
           this.visibleModalLimpieza = true; 
         } else if(parametros.estado == 6){
-          this.visibleModalMantenimiento = true; 
+          this.formMantenimiento.reset();
+          this.visibleModalMantenimiento = true;  
         }
           
       },
@@ -723,6 +1054,275 @@ export class DashboardRoomsComponent implements OnInit  {
   }
 
   submitAsignarMantenimiento(){
+    if(this.formMantenimiento.valid){
 
+      let data = {
+        empleado_id: this.formMantenimiento.value.empleado[0].code,
+        descripcion: this.formMantenimiento.value.descripcion,
+        fecha_final: this.datePipe.transform(this.formMantenimiento.value.fechaFinal, 'yyyy-MM-dd HH:mm:ss'),
+        fecha_inicio: this.datePipe.transform(this.formMantenimiento.value.fechaInicio, 'yyyy-MM-dd HH:mm:ss'),
+        habitacion_id: this.habitacionId,
+      } 
+
+      this.enviarMantenimiento(data);
+
+    }
+  }
+
+  checkTarifaReserva($event){ 
+
+    this.tarifasAgregadasReserva = [];
+    this.tarifasAgregadasReserva = $event.value;
+
+    //this.tarifasAgregadasReserva = this.tarifasAgregadasReserva.filter(item => item !== $event.itemValue);
+  
+    this.calcularTotalTarifaReserva();
+    this.calcularTotalReserva(); 
+
+  }
+
+  checkProducto($event){ 
+    this.productosAgregadosReserva  = $event.value;
+
+    this.calcularTotalProductosReserva(); 
+    this.calcularTotalReserva(); 
+  }
+
+  calcularTotalTarifaReserva() {
+    this.tarifasTotal = 0;
+
+    this.tarifasAgregadasReserva.forEach(element => {   
+      this.tarifasTotal = this.tarifasTotal  + parseFloat(element.valor);
+    })
+  }
+
+  calcularTotalReserva(){
+
+
+    this.totalPagarReserva = this.tarifasTotal + this.productosTotal;
+
+    this.validacionesReserva();
+  }
+
+
+
+  calcularTotalProductosReserva(){
+    this.productosTotal = 0;
+
+    this.productosAgregadosReserva.forEach(element => {   
+      this.productosTotal = this.productosTotal  + parseFloat(element.valor);
+    })
+  }
+
+  changeMedioPagoReserva(){
+
+    this.abonosTotal = 0;
+
+    this.formReservacionArray.value.forEach(element => {
+      this.abonosTotal = this.abonosTotal + parseFloat(element.monto)
+    })  
+
+    this.validacionesReserva();
+  }
+
+  validacionesReserva(){
+    let errores = false;
+    if(this.abonosTotal > this.totalPagarReserva){
+      this.disableReserva = true;
+      errores = true;
+    } 
+
+    if(this.fechaFinal < this.fechaInicio ){
+      this.disableReserva = true;
+      errores = true;
+    }  
+
+    if(this.totalPagarReserva <= 0){
+      this.disableReserva = true;
+      errores = true;
+    }
+
+    if(!this.fechaFinal){
+      this.disableReserva = true;
+      errores = true;
+    }
+
+    if(!this.fechaInicio){
+      this.disableReserva = true;
+      errores = true;
+    }
+
+    if(this.tarifasAgregadasReserva.length <= 0){
+      this.disableReserva = true;
+      errores = true;
+    }
+
+
+    if(!errores){
+      this.disableReserva = false;
+    }
+  }
+
+  fechaInicioChange(){
+
+    this.validacionesReserva();
+  }
+
+
+  fechaFinalChange(){ 
+    this.validacionesReserva(); 
+  }
+
+  /*ocupar */
+
+  checkTarifaOcupar($event){
+    this.tarifasAgregadasOcupar = [];
+    this.tarifasAgregadasOcupar = $event.value;
+
+    this.calcularTotalTarifaOcupar();
+    this.calcularTotalOcupar(); 
+  }
+
+  checkProductoOcupar($event){
+    this.productosAgregadosOcupar  = $event.value;
+
+    this.calcularTotalProductosOcupar(); 
+    this.calcularTotalOcupar(); 
+  }
+
+  calcularTotalProductosOcupar(){
+    this.productosTotalOcupar = 0;
+
+    this.productosAgregadosOcupar.forEach(element => {   
+      this.productosTotalOcupar = this.productosTotalOcupar  + parseFloat(element.valor);
+    })
+  }
+
+  calcularTotalTarifaOcupar(){ 
+    this.tarifasTotalOcupar = 0;
+
+    this.tarifasAgregadasOcupar.forEach(element => {   
+      this.tarifasTotalOcupar = this.tarifasTotalOcupar  + parseFloat(element.valor);
+    })
+  }
+
+
+  calcularTotalOcupar(){
+
+    this.totalPagarOcupar = this.tarifasTotalOcupar + this.productosTotalOcupar;
+    this.validacionesOcupacion();
+
+  }
+
+  validacionesOcupacion(){
+    let errores = false;
+    if(this.abonosTotalOcupar > this.totalPagarOcupar){
+      this.disableOcupar = true;
+      errores = true;
+    } 
+
+
+    if(this.totalPagarOcupar <= 0){
+      this.disableOcupar = true;
+      errores = true;
+    }
+
+    if(this.tarifasAgregadasOcupar.length<=0){
+      this.disableOcupar = true;
+      errores = true;
+    }
+
+    if(!errores){
+      this.disableOcupar = false;
+    }
+  }
+
+  changeMedioPagoOcupar(){
+    this.abonosTotalOcupar = 0;
+
+    this.formOcuparArray.value.forEach(element => {
+      this.abonosTotalOcupar = this.abonosTotalOcupar + parseFloat(element.monto)
+    })  
+
+    this.validacionesReserva();
+  }
+
+  /*ocupar */
+
+  submitReserva(){
+
+    let fechaInicio = this.datePipe.transform(this.fechaInicio, 'yyyy-MM-dd HH:mm:ss');
+    let fechaFinal = this.datePipe.transform(this.fechaFinal, 'yyyy-MM-dd HH:mm:ss');
+    let cliente = this.clienteMultiSelectReservar.value[0].id;
+    let subtotal = this.totalPagarReserva;
+    let total = this.totalPagarReserva - this.abonosTotal;
+    let tarifas = this.clienteMultiSelectTarifa.value;
+    let productos = this.clienteMultiSelectProducto.value;
+
+    let reservar = {
+      fecha_inicio: fechaInicio,
+      fecha_final: fechaFinal,
+      cliente_id: cliente,
+      total: total,
+      subtotal: subtotal,
+      tarifas: tarifas,
+      productos: productos,
+      descripcion: this.descripcionReserva,
+      habitacion_id: this.habitacionId,
+      hotel_id: this.hotelId,
+      abonos: this.formReservacionArray.value,
+    }
+
+    this.enviarReservar(reservar);
+
+  }
+
+  descripcionReservaInput(input){ 
+    this.descripcionReserva = input; 
+  }
+
+  submitOcupar(){
+
+    let cliente = this.clienteMultiSelectOcupar.value[0].id;
+    let total = this.totalPagarOcupar- this.abonosTotalOcupar;
+    let subtotal = this.totalPagarOcupar;
+    let tarifas = this.tarifaMultiSelectOcupar.value;
+    let productos = this.productoMultiSelectOcupar.value;
+  
+    let reservar = {
+      cliente_id: cliente,
+      total: total,
+      subtotal: subtotal,
+      tarifas: tarifas,
+      productos: productos,
+      descripcion: this.formReserva.get('descripcionReserva').value,
+      habitacion_id: this.habitacionId,
+      hotel_id: this.hotelId,
+      abonos: this.formOcuparArray.value,
+    }
+
+    this.enviarOcupar(reservar);
+  }
+
+  changeFechaMantenimiento(){ 
+    let fechaInicio = this.formMantenimiento.get('fechaInicio').value;
+    let fechaFinal = this.formMantenimiento.get('fechaFinal').value; 
+
+    if(fechaInicio>fechaFinal){
+      this.disableButtonMantenimiento = true;
+    } else {
+      this.disableButtonMantenimiento = false;
+    }
+  }
+
+  changeFechaLimpieza($event){
+    let fechaInicio = this.formLimpieza.get('fechaInicio').value;
+    let fechaFinal = this.formLimpieza.get('fechaFinal').value; 
+
+    if(fechaInicio>fechaFinal){
+      this.disableButtonLimpieza = true;
+    } else {
+      this.disableButtonLimpieza = false;
+    }
   }
 }
