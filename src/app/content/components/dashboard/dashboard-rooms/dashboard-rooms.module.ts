@@ -33,7 +33,7 @@ import { ChipModule } from "primeng/chip";
 import { ChipsModule } from "primeng/chips";
 import { PanelModule } from 'primeng/panel';
 import { MessageModule } from 'primeng/message'; 
-import { DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';   
 
 @NgModule({ 
   imports: [
@@ -69,10 +69,10 @@ import { DatePipe } from '@angular/common';
     MessageModule, 
   ],
     providers: [
-    {
+      {
         provide:HTTP_INTERCEPTORS,
         useClass:AdminInterceptor,
-        multi:true
+        multi:true 
       }, 
       DashboardRoomsService,
       DatePipe,

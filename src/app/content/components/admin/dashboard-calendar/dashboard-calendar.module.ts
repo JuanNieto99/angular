@@ -24,10 +24,23 @@ import { DashboardCalendarRoutingModule } from './dashboard-calendar-routing.mod
 import { DashboardCalendarService } from 'src/app/content/service/dashboard-calendar/dashboard-calendar.service';
 import { DashboardCalendarComponent } from './dashboard-calendar.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
-
+import { MultiSelectModule } from "primeng/multiselect";
+import { ChipModule } from "primeng/chip";
+import { ChipsModule } from "primeng/chips";
+import { PanelModule } from 'primeng/panel';
+import { MessageModule } from 'primeng/message'; 
+import { DatePipe } from '@angular/common';
+import { CalendarModule } from "primeng/calendar";
+import { DashboardRoomsService } from 'src/app/content/service/dashboardRooms/dashboard-rooms.service';
+import { TagModule } from 'primeng/tag';
 
 @NgModule({ 
   imports: [
+    TagModule,
+    ChipModule,
+    ChipsModule,
+    PanelModule,
+    MessageModule,
     CommonModule,
     DashboardCalendarRoutingModule,
     TableModule,
@@ -48,14 +61,18 @@ import { FullCalendarModule } from '@fullcalendar/angular';
     ReactiveFormsModule, // import ReactiveFormsModule
     NgxSpinnerModule,
     PaginatorModule,
-    FullCalendarModule
+    FullCalendarModule,
+    MultiSelectModule,
+    CalendarModule
   ],providers: [
     {
         provide:HTTP_INTERCEPTORS,
         useClass:AdminInterceptor,
         multi:true
     },
-    DashboardCalendarService,
+    [DashboardCalendarService, DashboardRoomsService],
+    
+    DatePipe
   ],
   declarations: [DashboardCalendarComponent]
 })

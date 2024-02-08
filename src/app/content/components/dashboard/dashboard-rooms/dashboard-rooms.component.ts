@@ -11,6 +11,7 @@ import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
 import Swal from 'sweetalert2';
 import { InputTextarea } from 'primeng/inputtextarea';
+import { LocaleSettings } from 'primeng/calendar';
 interface HotelData {
   hotel_id: number; // Adjust the type accordingly
   piso_id: number; 
@@ -57,6 +58,23 @@ export class DashboardRoomsComponent implements OnInit  {
   @ViewChild('tarifaMultiSelectOcupar') tarifaMultiSelectOcupar: MultiSelect;
   @ViewChild('productoMultiSelectOcupar') productoMultiSelectOcupar: MultiSelect; 
 
+  public dayNamesSpanish = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  public dayNamesShortSpanish = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  public monthNamesSpanish = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  public monthNamesShortSpanish = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+  public localeSettingsSpanish: LocaleSettings = {
+    firstDayOfWeek: 1, // Lunes es el primer día de la semana
+    dayNames: this.dayNamesSpanish,
+    dayNamesShort: this.dayNamesShortSpanish,
+    monthNames: this.monthNamesSpanish,
+    monthNamesShort: this.monthNamesShortSpanish,
+    today: 'Hoy',
+    clear: 'Borrar',
+    dateFormat: 'dd/mm/yy',
+    weekHeader: 'Sm'
+};
+  
   public menuHabitacion: MenuItem [];
   public totalPagarReserva: number = 0;
   public fechaInicio: any;
@@ -310,25 +328,21 @@ export class DashboardRoomsComponent implements OnInit  {
 
     } else if(this.estadoHabitacion == 4) {
 
-      
+      let data = {
+        hotel_id: this.habitacionId,
+        estado: 4,
+      } 
+
+      this.getDataEmpleado(data); 
+
     }  else if(this.estadoHabitacion == 6) {
         //Mantenimiento
-        parametros = {
-          id_habitacion: this.habitacionId, 
-        }; 
+        let data = {
+          hotel_id: this.habitacionId,
+          estado: 6,
+        } 
+        this.getDataEmpleado(data);
 
-        Swal.fire({
-          title: "¿Estas seguro que deseas Anular el mantenimiento?",
-          text: "",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Sí, Confirmar",
-          cancelButtonText: "Cancelar",
-        }).then((result) => {
-            if (result.isConfirmed) { 
-                this.enviarAnularMantenimiento(parametros);
-            }
-        });
         //this.enviarMantenimiento(parametros);
     } else if(this.estadoHabitacion == 2) {
       this.ocupar();
@@ -389,7 +403,22 @@ export class DashboardRoomsComponent implements OnInit  {
         });
     } else if(this.estadoHabitacion == 60) { 
 
-      console.log("LOL")
+      parametros = {
+        id_habitacion: this.habitacionId, 
+      }; 
+
+      Swal.fire({
+        title: "¿Estas seguro que deseas Anular el mantenimiento?",
+        text: "",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, Confirmar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+          if (result.isConfirmed) { 
+              this.enviarAnularMantenimiento(parametros);
+          }
+      });
 
     } else {
       console.log("Ninguno")
@@ -407,13 +436,13 @@ export class DashboardRoomsComponent implements OnInit  {
     this.estadoHabitacionActual =  habitacion.habitacionEstado; 
 
     this.estadoHabitacionActual.forEach(element => {
-        console.log(element.estado_id)
+      estadoHabitaciones.push(element.estado_id)
     });
 
     let letItem: MenuItem[] = [];  // Corrected the declaration and initialization
     
 
-
+    console.log( this.estadoHabitacionActual)
     if(!estadoHabitaciones.includes(5)){ //no esta reservada entonces reservemosla
       letItem.push(
       {
@@ -442,26 +471,22 @@ export class DashboardRoomsComponent implements OnInit  {
 
     if(!estadoHabitaciones.includes(2)){ //no ocupado
       let habilitar_desocupado_por_reservado = false;
-     /* if(habitacion.detalle){
+   
+      if(habitacion.detalle){
         habitacion.detalle.forEach(element => {
             if(element.estado_id == 5 ){
 
               let fecha_inicio = new Date(element.fecha_inicio);
-              let fecha_actual = new Date(fecha_inicio.getFullYear(), fecha_inicio.getMonth(), fecha_inicio.getDate());              
-              let hoydate = new Date(); // Obtiene la fecha y hora actual
-              hoydate.setHours(0, 0, 0, 0); // Establece la hora, minutos, segundos y milisegundos a cero
-
-              let hoy = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+              let fecha_actual =  fecha_inicio.getFullYear()+'/' + fecha_inicio.getMonth()+'/' + fecha_inicio.getDate();              
+       
+              let hoy = new Date().getFullYear()+'/' +new Date().getMonth() +'/' +new Date().getDate();
           
-            
-            if(hoy == fecha_actual){
-                habilitar_desocupado_por_reservado = true;
-              } 
-            }
+              if(hoy == fecha_actual){
+                  habilitar_desocupado_por_reservado = true;
+                } 
+              }
         }); 
-      }
-      
-      console.log(habilitar_desocupado_por_reservado)*/
+      } 
 
       letItem.push(
         {
@@ -470,7 +495,7 @@ export class DashboardRoomsComponent implements OnInit  {
           id: '2',
           command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
           visible: true,
-          disabled: !estadoHabitaciones.includes(5)/* 5-6-4 */ ?false:true,
+          disabled: habilitar_desocupado_por_reservado?false:!estadoHabitaciones.includes(5)/* 5-6-4 */ ?false:true,
         },
       )
       
@@ -532,7 +557,7 @@ export class DashboardRoomsComponent implements OnInit  {
             { 
               label: 'Anular Mantenimiento',
               icon: 'pi pi-wrench',
-              id: '6',
+              id: '60',
               command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
               visible: true,
               disabled: !estadoHabitaciones.includes(2)?false:true,
@@ -806,6 +831,45 @@ export class DashboardRoomsComponent implements OnInit  {
   
   } 
 
+  enviarOcuparReserva(parametros) {
+    this.spinner.show();
+
+    this.dashboardRoomsService.ocuparReserva(parametros).subscribe(
+      (response: any) => {    
+        this.spinner.hide();   
+        let data = response;
+        this.ocuparModalVisible = false;
+        if(data.code == "success"){
+          Swal.fire({
+            title: "Exito",
+            text: "Ocupacion exitosa.",
+            icon: "success"
+          });
+          
+            
+          this.openTag(this.pisoSeleccionado)
+
+        } else  if(data.code == "warning"){
+          Swal.fire({
+            title: "Advertencia",
+            text: data.error,
+            icon: "warning"
+          });
+        }   else {
+          Swal.fire({
+            title: "Error",
+            text: "Error al generar la ocupacion.",
+            icon: "error"
+          });
+        }
+
+      },
+      (error) => {
+          console.log('Error: ', error);
+      }
+    );
+  }
+
   enviarOcupar(parametros){
     this.spinner.show();
 
@@ -888,7 +952,34 @@ export class DashboardRoomsComponent implements OnInit  {
   } 
 
   ocupar(){ 
-    this.getReserva();  
+
+    let estadoHabitaciones:number [] = [];
+
+    this.estadoHabitacionActual.forEach(element => { 
+      estadoHabitaciones.push(element.estado_id)
+    });
+
+    if(estadoHabitaciones.includes(5)){
+      Swal.fire({
+        title: "¿La habitacion esta reservada desea hacer checkin?",
+        text: "",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, Confirmar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+          if (result.isConfirmed) { 
+            let data = {
+              habitacion_id: this.habitacionId,
+            }
+
+            this.enviarOcuparReserva(data);
+               //hacer checkin
+          }
+      });
+    } else {
+      this.getReserva();  
+    }
   }
 
 
@@ -971,7 +1062,7 @@ export class DashboardRoomsComponent implements OnInit  {
             id: element.id,
             tipo: element.tipo,
             valor: element.valor,
-            icon: element.tipo==1?'pi pi-hourglass':'pi pi-moon',
+            icon: element.tipo!=1?'pi pi-hourglass':'pi pi-moon',
           }) 
         })
 

@@ -78,8 +78,8 @@
                                 <span class="ml-2">
                                     {{ tarifa.nombre }}   
                                     <p-tag icon="{{tarifa.icon}}"  class="padding" value="{{ tarifa.valor }}"></p-tag>  
-                                    <div *ngIf="tarifa.tipo==1"><h5>Hora</h5></div> 
-                                    <div *ngIf="tarifa.tipo==2"><h5>Noche</h5></div>
+                                    <div *ngIf="tarifa.tipo==2"><h5>Hora</h5></div> 
+                                    <div *ngIf="tarifa.tipo==1"><h5>Noche</h5></div>
                                 </span> 
                             </div>
                         </ng-template>
@@ -127,11 +127,11 @@
                 <div class="field col-12 md:col-6">
                     <label>Fecha Inicio </label>
                     <!--ng-invalid-->
-                    <p-calendar [minDate]="hoy" inputId="fechaInicio"  showTime="true"  [(ngModel)]="fechaInicio" (onSelect)="fechaInicioChange()" dateFormat="dd/mm/yy" class="ng-dirty" [showIcon]="true"></p-calendar>
+                    <p-calendar [minDate]="hoy" locale="localeSettingsSpanish" inputId="fechaInicio"  showTime="true"  [(ngModel)]="fechaInicio" (onSelect)="fechaInicioChange()" dateFormat="dd/mm/yy" class="ng-dirty" [showIcon]="true"></p-calendar>
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>Fecha Final</label>
-                    <p-calendar [minDate]="hoy" inputId="fechaFinal"  showTime="true"  [(ngModel)]="fechaFinal" (onSelect)="fechaFinalChange()" class="ng-dirty" [showIcon]="true"></p-calendar>
+                    <p-calendar [minDate]="hoy" locale="localeSettingsSpanish" inputId="fechaFinal"  showTime="true"  [(ngModel)]="fechaFinal" (onSelect)="fechaFinalChange()" class="ng-dirty" [showIcon]="true"></p-calendar>
                 </div> 
                 <div class="field col-12 md:col-12">
                     <label>Descripcion</label>
@@ -256,11 +256,11 @@
                 <div class="field col-12 md:col-6">
                     <label>Fecha Inicio </label>
                     <!--ng-invalid-->
-                    <p-calendar inputId="fechaInicioLimpieza" formControlName="fechaInicio" (onSelect)="changeFechaLimpieza($event)" showTime="true"  class="ng-dirty" [showIcon]="true"></p-calendar>
+                    <p-calendar locale="localeSettingsSpanish" inputId="fechaInicioLimpieza" formControlName="fechaInicio" (onSelect)="changeFechaLimpieza($event)" showTime="true"  class="ng-dirty" [showIcon]="true"></p-calendar>
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>Fecha Final</label>
-                    <p-calendar inputId="fechaFinalLimpieza"  formControlName="fechaFinal"  (onSelect)="changeFechaLimpieza($event)" showTime="true"  class="ng-dirty" [showIcon]="true"></p-calendar>
+                    <p-calendar locale="localeSettingsSpanish" inputId="fechaFinalLimpieza"  formControlName="fechaFinal"  (onSelect)="changeFechaLimpieza($event)" showTime="true"  class="ng-dirty" [showIcon]="true"></p-calendar>
                 </div>  
 
                 <div class="field col-12 md:col-12">
@@ -295,11 +295,11 @@
                 <div class="field col-12 md:col-6">
                     <label>Fecha Inicio </label>
                     <!--ng-invalid-->
-                    <p-calendar inputId="fechaInicioMantenimiento" (onSelect)="changeFechaMantenimiento()" formControlName="fechaInicio"  showTime="true" class="ng-dirty" [showIcon]="true"></p-calendar>
+                    <p-calendar locale="localeSettingsSpanish" inputId="fechaInicioMantenimiento" (onSelect)="changeFechaMantenimiento()" formControlName="fechaInicio"  showTime="true" class="ng-dirty" [showIcon]="true"></p-calendar>
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>Fecha Final</label>
-                    <p-calendar inputId="fechaFinalMantenimiento" (onSelect)="changeFechaMantenimiento()"  formControlName="fechaFinal"  showTime="true" class="ng-dirty" [showIcon]="true"></p-calendar>
+                    <p-calendar locale="localeSettingsSpanish" inputId="fechaFinalMantenimiento" (onSelect)="changeFechaMantenimiento()"  formControlName="fechaFinal"  showTime="true" class="ng-dirty" [showIcon]="true"></p-calendar>
                 </div>  
                 <div class="field col-12 md:col-12">
                     <label>Descripcion</label>

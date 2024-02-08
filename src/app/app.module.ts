@@ -30,7 +30,7 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
         
         AuthService,
         UsersService,
-        ProductService
+        ProductService,
     ],
     bootstrap: [AppComponent]
 })
