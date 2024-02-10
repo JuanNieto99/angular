@@ -38,11 +38,11 @@ export class DashboardCalendarComponent {
   public clienteData: any[] = [] ;
   public habitacionData: any[] = [] ;
   public tarifaData: any[] = [] ;
-  public abonosTotal: number;
+  public abonosTotal: number = 0;
   public disableReserva: boolean = false;
-  public totalPagarReserva : number; 
-  public productosTotal : number;
-  public tarifasTotal : number;
+  public totalPagarReserva : number = 0; 
+  public productosTotal : number = 0;
+  public tarifasTotal : number = 0;
   public ProductoServicioData: any[] = [] ;
   public tarifasAgregadasReserva: any[] = [] ;
   public dayNamesSpanish = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -240,14 +240,15 @@ export class DashboardCalendarComponent {
 
   }
   
- 
-
-  checkProducto(event){
-
-  }
 
   checkTarifaReserva(event){
+    this.tarifasTotal = 0;
 
+    this.tarifaData.forEach(element => {
+      this.tarifasTotal = this.tarifasTotal + parseInt(element.valor);
+    });
+
+    this.validacionesReserva();
   }
 
   getReserva(clienteBusqueda:string =''){
@@ -329,7 +330,8 @@ export class DashboardCalendarComponent {
   }
 
   validacionesReserva(){
-
+    this.totalPagarReserva = 0;
+    this.totalPagarReserva = this.productosTotal + this.tarifasTotal ;
   }
 
   selectHabitacion(event){
@@ -337,5 +339,12 @@ export class DashboardCalendarComponent {
       this.tipo_habitacion = event.value[0].tipo; 
       this.getReserva();
     } 
+  }
+
+  checkProductoServicio($event){
+    this.productosTotal = 0;
+    this.ProductoServicioData.forEach(element => {
+      this.productosTotal = this.productosTotal  + parseInt(element.valor);
+    });
   }
 }

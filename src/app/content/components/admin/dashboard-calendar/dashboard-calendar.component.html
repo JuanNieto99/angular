@@ -38,12 +38,12 @@
               <div class="field col-12 md:col-12">
                   <label for="tarifa">Tarifa</label>
                   <!-- (onFilter)="busquedaProductoServicio($event)" (onChange)="checkProductoServicio($event)"-->
-                  <p-multiSelect [options]="tarifaData"  formControlName="tarifa_id"  optionLabel="nombre"   placeholder="Buscar Tarifa" optionLabel="nombre" class="multiselect-custom"   emptyMessage="Tarifa no encontrada" display="chip">
+                  <p-multiSelect [options]="tarifaData"  formControlName="tarifa_id"  optionLabel="nombre" (onChange)="checkTarifaReserva($event)"  placeholder="Buscar Tarifa" optionLabel="nombre" class="multiselect-custom"   emptyMessage="Tarifa no encontrada" display="chip">
                       <ng-template let-tarifa pTemplate="item">
                           <div class="flex align-items-center">
                               <span class="ml-2">
                                   {{ tarifa.nombre }}   
-                                  <p-tag icon="{{tarifa.icon}}"  class="padding" value="{{ tarifa.valor }}"></p-tag>  
+                                  <p-tag icon="{{tarifa.icon}}"  class="padding" value="{{ tarifa.valor }}" ></p-tag>  
                                   <div *ngIf="tarifa.tipo==2"><h5>Hora</h5></div> 
                                   <div *ngIf="tarifa.tipo==1"><h5>Noche</h5></div>
                               </span> 
@@ -53,9 +53,9 @@
               </div>
 
               <div class="field col-12 md:col-12">
-                  <label for="cliente">Producto / Servicio</label>
+                  <label for="producto">Producto / Servicio</label>
                   <!-- (onFilter)="busquedaProductoServicio($event)" (onChange)="checkProductoServicio($event)"-->
-                  <p-multiSelect [options]="ProductoServicioData" formControlName="producto_id" #clienteMultiSelectProducto   optionLabel="name" (onChange)="checkProducto($event)"  placeholder="Buscar Producto/Servicio" optionLabel="name" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
+                  <p-multiSelect [options]="ProductoServicioData" formControlName="producto_id" #clienteMultiSelectProducto  (onChange)="checkProductoServicio($event)"    optionLabel="name"  placeholder="Buscar Producto/Servicio" optionLabel="name" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
                       <ng-template let-producto pTemplate="item">
                           <div class="flex align-items-center">
                               <span class="ml-2">{{producto.name}} <p-tag class="padding" value="{{ producto.valor }}"></p-tag>  </span>
@@ -125,7 +125,7 @@
                                       <th>Nombre</th>
                                       <th>Precio</th>
                                   </thead>
-                                  <tbody *ngFor="let productosArray of productosAgregadosReserva; let i = index">
+                                  <tbody *ngFor="let productosArray of ProductoServicioData; let i = index">
                                       <td>
                                           {{ productosArray.name }}
                                       </td>
@@ -146,7 +146,7 @@
                                   <th>Nombre</th>
                                   <th>Precio</th>
                               </thead>
-                              <tbody *ngFor="let tarifasArray of tarifasAgregadasReserva; let i = index">
+                              <tbody *ngFor="let tarifasArray of tarifaData; let i = index">
                                   <td>
                                       {{ tarifasArray.nombre }}
                                   </td>
