@@ -3,12 +3,13 @@
 </ngx-spinner>
 
 <div class="card">
-    <div >
+    <div>
         <p-tag icon="pi pi-calendar-times"  class="padding" value="Reservada"></p-tag>
         <p-tag icon="pi pi-lock-open"   class="padding" severity="success" value="Disponible"></p-tag>
         <p-tag icon="pi pi-exclamation-triangle"  class="padding"  severity="info" value="Limpieza" ></p-tag>
         <p-tag icon="pi pi-wrench" class="padding" severity="warning" value="Mantenimiento" ></p-tag>
         <p-tag icon="pi pi-lock" class="padding" severity="danger" value="Ocupada" ></p-tag> 
+        <p-tag icon="pi pi-dollar"  class="padding" severity="success" value="Facturar" ></p-tag>  
     </div>     
     <h5>Habitaciones</h5>
     <p-accordion *ngFor="let item of dataRoom">
@@ -29,21 +30,24 @@
                             <img src="assets/puertas/{{ habitaciones.habitacionNombre }}.jpg" width="80%" height="80%" class="rooms"/> 
                         </div>
                         <div class="flex flex-wrap gap-2" style="margin-left: 20%; " >  
-                            <ng-container *ngFor="let estados of habitaciones.detalle"> 
-                                <div *ngIf="estados.estado_id == 5" >
-                                    <p-tag icon="pi pi-calendar-times"></p-tag>
+                            <ng-container > 
+                                <div *ngIf="validarEstado(habitaciones.detalle, 5)">
+                                    <p-tag icon="pi pi-calendar-times" [value]="validarEstado(habitaciones.detalle, 5)" ></p-tag>
                                 </div>
-                                <div *ngIf="estados.estado_id == 3" >
-                                    <p-tag icon="pi pi-lock-open" severity="success" ></p-tag>
+                                <div *ngIf="validarEstado(habitaciones.detalle, 3)" >
+                                    <p-tag icon="pi pi-lock-open" severity="success"  ></p-tag>
                                 </div>
-                                <div *ngIf="estados.estado_id == 4"  >
-                                    <p-tag icon="pi pi-exclamation-triangle" severity="info"></p-tag>
+                                <div *ngIf="validarEstado(habitaciones.detalle, 4)"  >
+                                    <p-tag icon="pi pi-exclamation-triangle" severity="info"  ></p-tag>
                                 </div>
-                                <div *ngIf="estados.estado_id == 6" >
-                                    <p-tag icon="pi pi-wrench" severity="warning"  ></p-tag>
+                                <div *ngIf="validarEstado(habitaciones.detalle, 6)" >
+                                    <p-tag icon="pi pi-wrench" severity="warning"   ></p-tag>
                                 </div>
-                                <div *ngIf="estados.estado_id == 2"  >
-                                    <p-tag icon="pi pi-lock" severity="danger"  ></p-tag>
+                                <div *ngIf="validarEstado(habitaciones.detalle, 2)"  >
+                                    <p-tag icon="pi pi-lock" severity="danger" ></p-tag>
+                                </div>
+                                <div *ngIf="validarEstado(habitaciones.detalle, 7)"  >
+                                    <p-tag icon="pi pi-dollar" severity="success" ></p-tag>
                                 </div>
                             </ng-container>
                         </div>  

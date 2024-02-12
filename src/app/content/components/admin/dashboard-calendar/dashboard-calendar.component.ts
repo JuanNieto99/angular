@@ -11,6 +11,9 @@ import { B } from '@fullcalendar/core/internal-common';
 import { LocaleSettings } from 'primeng/calendar/public_api';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { DashboardRoomsService } from 'src/app/content/service/dashboardRooms/dashboard-rooms.service';
+import Swal from 'sweetalert2';
+import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
 
 
 interface dataEvento {
@@ -53,6 +56,7 @@ export class DashboardCalendarComponent {
   public productosAgregadosReserva: any[] = [] ;
   public primeraVez:boolean = true;
   private tipo_habitacion: number = 0;
+  public tarifasSeleccionas: any[] = [];
   public localeSettingsSpanish: LocaleSettings = {
     firstDayOfWeek: 1, // Lunes es el primer día de la semana
     dayNames: this.dayNamesSpanish,
@@ -79,9 +83,9 @@ export class DashboardCalendarComponent {
     initialView: 'dayGridMonth',
    // initialEvents: INITIAL_EVENTS, // alternatively, use the `events` setting to fetch from a feed
     weekends: true,
-    editable: true,
+    editable: false,
     selectable: true,
-    selectMirror: true,
+    selectMirror: false,
     dayMaxEvents: true,
     select: this.handleDateSelect.bind(this),
     eventClick: this.handleEventClick.bind(this),
@@ -99,24 +103,28 @@ export class DashboardCalendarComponent {
     private FB: FormBuilder,
     private spinner: NgxSpinnerService,
     private dashboardRoomsService:DashboardRoomsService, 
-    ) {
+    private datePipe: DatePipe,
+    private router: Router
+    ) 
+  {
     this.formReservacionArray = this.FB.array([]); 
-
   }
 
   ngOnInit(){
+    this.spinner.hide();
     let currentUser:any = JSON.parse(localStorage.getItem('currentUser'));  
     this.hotelId = currentUser.usuario.datalle_hoteles[0].hotel_id;
     this.reservaForm = this.FB.group({
         habitacion_id: ['',[Validators.required]],
         cliente_id: ['',[Validators.required]],
         tarifa_id: ['',[Validators.required]],
-        producto_id: ['',[Validators.required]],
+        producto_id: ['',[]],
         abonos: this.formReservacionArray,
         descripcion:  ['',[Validators.required]],
         fechaInicio:  ['',[Validators.required]],
         fechaFinal:  ['',[Validators.required]],
     });
+    
     this.getCalendariHabitacionesReservadas();
   }
 
@@ -129,8 +137,7 @@ export class DashboardCalendarComponent {
 
     this.formReservacionArray.push(
       form
-    )
-
+    );
   }
 
   handleCalendarToggle() {
@@ -143,9 +150,22 @@ export class DashboardCalendarComponent {
     });
   }
 
+  changeMedioPagoReserva(){
+    this.abonosTotal = 0;
+    
+    this.formReservacionArray.value.forEach(element => {
+      console.log(element.monto)
+      this.abonosTotal =  this.abonosTotal + element.monto;
+    });
+  }
+
   handleDateSelect(selectInfo: DateSelectArg) {
     this.primeraVez = true;
     this.habitacionData = [];
+    this.reservaForm.reset();
+    this.reservaForm.disable();
+    this.reservaForm.get('habitacion_id').enable();
+
     this.getReserva();
     /*const title = prompt('Please enter a new title for your event');
     const calendarApi = selectInfo.view.calendar;
@@ -161,17 +181,22 @@ export class DashboardCalendarComponent {
         allDay: selectInfo.allDay
       });
     }*/
-    
-    this.reservaForm.get('fechaInicio').setValue( new Date(selectInfo.startStr));
-    this.reservaForm.get('fechaFinal').setValue( new Date(selectInfo.endStr));
+
+    this.reservaForm.get('fechaInicio').setValue( this.subtractDays(new Date(selectInfo.startStr), 1));
+    this.reservaForm.get('fechaFinal').setValue(new Date(selectInfo.endStr));
 
     this.reservacionModalVisible = true
   }
 
-  handleEventClick(clickInfo: EventClickArg) {
-    if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-      clickInfo.event.remove();
-    }
+    subtractDays(date: Date, days: number): Date {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
+
+  handleEventClick(clickInfo: EventClickArg) { 
+    let detalleHabitacionid = clickInfo.event._def.publicId;
+    this.router.navigate(['dashboard/calendar/'+detalleHabitacionid+'/detailRoom']);
   }
 
   handleEvents(events: EventApi[]) {
@@ -220,8 +245,21 @@ export class DashboardCalendarComponent {
               start: new Date(element.fecha_inicio),
               end: new Date(element.fecha_salida), 
             }
-            dataEvento.push(evento);
-          });
+      
+            let pasar = true;
+
+            dataEvento.forEach(element => {
+              if(element.id == evento.id){
+                pasar = false;
+              } 
+            });  
+
+            if(pasar){ 
+              dataEvento.push(evento); 
+            }
+
+
+          });  
 
           this.option.events = dataEvento;
 
@@ -232,20 +270,77 @@ export class DashboardCalendarComponent {
 
   }
 
-  reservarSubmit(){
-    console.log(this.reservaForm.value)
+  reservarSubmit(){ 
+    if(this.reservaForm.enable){
+      let data = {
+        abonos: this.formReservacionArray.value,
+        cliente_id: this.reservaForm.get('cliente_id').value[0].id,
+        descripcion: this.reservaForm.get('descripcion').value,
+        fecha_final: this.datePipe.transform(this.reservaForm.get('fechaFinal').value, 'yyyy-MM-dd HH:mm:ss'),
+        fecha_inicio: this.datePipe.transform(this.reservaForm.get('fechaInicio').value, 'yyyy-MM-dd HH:mm:ss'),
+        habitacion_id: this.reservaForm.get('habitacion_id').value[0].id,
+        hotel_id: this.hotelId, 
+        subtotal: this.totalPagarReserva - this.abonosTotal,
+        total: this.totalPagarReserva,
+        tarifas: this.reservaForm.get('tarifa_id').value,
+      }
+
+      this.enviarReservar(data);
+    }
   }
+
+  
 
   busquedaCliente(event){
 
   }
+
+  enviarReservar(parametros){  
+
+    this.dashboardRoomsService.reservar(parametros).subscribe(
+      (response: any) => {       
+        let data = response;
+        this.reservacionModalVisible = false;
+        if(data.code == "success"){
+
+          Swal.fire({
+            title: "Exito",
+            text: "Reservacion exitosa.",
+            icon: "success"
+          });
+
+          this.getCalendariHabitacionesReservadas();
+
+        } else  if(data.code == "warning"){
+          Swal.fire({
+            title: "Advertencia",
+            text: data.error,
+            icon: "warning"
+          });
+        }   else {
+          Swal.fire({
+            title: "Error",
+            text: "Error al generar la reserva.",
+            icon: "error"
+          });
+        }
+      },
+      (error) => {
+          console.log('Error: ', error);
+      }
+    );
+  
+    
+  }
+
   
 
   checkTarifaReserva(event){
     this.tarifasTotal = 0;
-
-    this.tarifaData.forEach(element => {
+    this.tarifasSeleccionas = [];
+    this.reservaForm.get('tarifa_id').value.forEach(element => {
       this.tarifasTotal = this.tarifasTotal + parseInt(element.valor);
+      this.tarifasSeleccionas.push(element)
     });
 
     this.validacionesReserva();
@@ -253,6 +348,7 @@ export class DashboardCalendarComponent {
 
   getReserva(clienteBusqueda:string =''){
     this.spinner.show();  
+    
     let data = {
       'hotel_id':this.hotelId,
       'cliente_busqueda': clienteBusqueda,
@@ -268,6 +364,7 @@ export class DashboardCalendarComponent {
         let dataTarifa = response.tarifa;
         let dataHabitacion = response.habitacion
         let dataProducto = response.productos; 
+
         this.clienteData = []; 
         this.selectMedioPago = [];
         this.tarifaData = [];
@@ -287,7 +384,7 @@ export class DashboardCalendarComponent {
             id: element.id
           }) 
         });
- 
+
         if(this.primeraVez) {
 
           dataHabitacion.forEach(element => {
@@ -299,6 +396,8 @@ export class DashboardCalendarComponent {
           });
 
           this.primeraVez = false;
+        } else {
+          this.reservaForm.enable();
         }
 
 

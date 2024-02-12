@@ -1,0 +1,29 @@
+<ngx-spinner type="ball-scale-multiple" fullScreen="true" type="true">
+        
+</ngx-spinner>
+<h2>Abrir caja</h2>
+<p-toolbar>
+    <form [formGroup]="form" (ngSubmit)="abrirCaja()">
+        <div class="p-fluid p-formgrid grid">
+            <div class="field col-12 md:col-4">
+                <label>Nombre Caja Abrir</label>
+                <input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="nombreCaja">
+            </div>
+            <div class="field col-12 md:col-4">
+                <label>Usuario</label>
+                <input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="usuario">
+            </div>
+            <div class="field col-12 md:col-4">
+                <label>Base</label>
+                <input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="base">
+            </div>
+            <div class="field col-12 md:col-6">
+                <label>Fecha Apertura</label>
+                <input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="fecha">
+            </div>
+            <div class="field col-12 md:col-12">
+                <button pButton pRipple label="Abrir Caja" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+            </div>
+        </div>
+    </form>
+</p-toolbar>

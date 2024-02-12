@@ -1,0 +1,108 @@
+
+<h2>Detalle Reserva</h2>
+
+<p-toolbar>
+    <div class="p-toolbar-group-left flex flex-wrap">
+    </div>
+    <div class="p-toolbar-group-right">
+        <p-splitButton label="Opciones"  [model]="items"></p-splitButton>
+    </div>
+    <form [formGroup]="form">
+        <div class="p-fluid p-formgrid grid">
+            <div class="field col-12 md:col-3">
+                <label>Nombre Habitacion</label>
+                <input type="text" formControlName="nombreHabitacion"  pInputText class="w-full mb-3 border-round-3xl" >
+            </div>
+    
+            <div class="field col-12 md:col-3">
+                <label>Estado</label>
+                <input type="text" formControlName="estado"  pInputText class="w-full mb-3 border-round-3xl"  >
+            </div> 
+    
+            <div class="field col-12 md:col-3">
+                <label> Fecha Inicio </label>
+                <input type="text" formControlName="desde"  pInputText class="w-full mb-3 border-round-3xl"  >
+            </div> 
+    
+            <div class="field col-12 md:col-3">
+                <label> Fecha Salida </label>
+                <input type="text" formControlName="hasta"  pInputText class="w-full mb-3 border-round-3xl"  >
+            </div> 
+    
+            <div class="field col-12 md:col-3">
+                <label>Nombre Cliente</label>
+                <input type="text" formControlName="nombreCliente"  pInputText class="w-full mb-3 border-round-3xl"  >
+            </div> 
+    
+            <div class="field col-12 md:col-12">
+                <label>Descripcion</label>
+                <textarea formControlName="descripcion" pInputTextarea  required rows="3" cols="20"></textarea>
+            </div> 
+        </div> 
+    </form>
+</p-toolbar>
+
+
+
+<div class="field col-12 md:col-12">
+    <table>
+        <tr>
+            <th style="width: 20%;">Nombre</th>
+            <th>Valores</th>
+            <th>Detalle</th>
+        </tr>
+        
+        <tr>
+            <th> Tarifas</th>
+            <th> $ {{ tarifasTotal }} </th>
+            <td>
+            <table>
+                <thead>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                </thead>
+                <tbody *ngFor="let tarifasArray of dataTarifa; let i = index">
+                    <td>
+                        {{ tarifasArray.tarifa.nombre }}
+                    </td>
+                    <td>
+                        {{ tarifasArray.valor }}
+                    </td>
+                </tbody>
+            </table>
+            </td>
+        </tr>
+        <tr>
+            <th> Abonos</th>
+            <th> $ {{ abonosTotal }} </th>
+            <td>
+            <table>
+                <thead>
+                    <th>Monto</th>
+                    <th>Metodo Pago</th>
+                </thead>
+                <tbody *ngFor="let metodosPagoArray of dataAbonos; let i = index">
+                    <td>
+                        {{ metodosPagoArray.valor }}
+                    </td>
+                    <td>
+                        {{ metodosPagoArray.metodo_pago.nombre  }}
+                    </td>
+                </tbody>
+            </table>
+            </td>
+        </tr>
+        <tr>
+            <th> Sub Total</th>
+            <th> $ {{ totalPagarReserva <= 0?0: totalPagarReserva}} </th>
+            <td> 
+            </td>
+        </tr>
+        <tr>
+            <th> Total</th>
+            <th> $ {{ totalPagarReserva - abonosTotal <= 0?0: totalPagarReserva - abonosTotal}} </th>
+            <td> 
+            </td>
+        </tr>
+    </table> 
+</div>

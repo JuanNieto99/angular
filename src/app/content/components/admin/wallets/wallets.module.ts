@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WalletsRoutingModule } from './wallets-routing.module';
 import { WalletsComponent } from './wallets.component';
@@ -22,6 +22,10 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AdminInterceptor } from '../../../interceptors/admin.interceptor';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { DetailsWalletsComponent } from './details-wallets/details-wallets.component';
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { DetailsWalletsListComponent } from './details-wallets-list/details-wallets-list.component';
+import { SplitButtonModule } from 'primeng/splitbutton';
 
 @NgModule({
     imports: [
@@ -42,6 +46,7 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
         InputNumberModule,
         DialogModule,
         SweetAlert2Module.forRoot(),
+        NgxSpinnerModule,
         ReactiveFormsModule, // import ReactiveFormsModule
     ],
     providers: [
@@ -50,8 +55,9 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
             useClass:AdminInterceptor,
             multi:true
         }, 
-        HotelsService, WalletService
+        HotelsService, WalletService,
+        DatePipe
     ],
-    declarations: [WalletsComponent]
+    declarations: [WalletsComponent, DetailsWalletsComponent, DetailsWalletsListComponent]
 })
 export class WalletsModule { }

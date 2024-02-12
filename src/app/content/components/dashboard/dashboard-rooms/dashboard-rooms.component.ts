@@ -12,6 +12,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import Swal from 'sweetalert2';
 import { InputTextarea } from 'primeng/inputtextarea';
 import { LocaleSettings } from 'primeng/calendar';
+import { Router } from '@angular/router';
 interface HotelData {
   hotel_id: number; // Adjust the type accordingly
   piso_id: number; 
@@ -102,7 +103,7 @@ export class DashboardRoomsComponent implements OnInit  {
   public formReserva: FormGroup;  
   public formReservacionArray: FormArray ;  
   public formOcuparArray: FormArray ;  
-
+  public detalleHabitacion: any;
   public clienteData: any;
   public ProductoServicioData: any; 
   public tarifaData: any;  
@@ -153,12 +154,14 @@ export class DashboardRoomsComponent implements OnInit  {
     private FB: FormBuilder,
     private spinner: NgxSpinnerService,
     private datePipe: DatePipe,
+    private router: Router,
   ){
     this.formReservacionArray = this.FB.array([]); 
     this.formOcuparArray = this.FB.array([]); 
   }
 
   buildForm(){ 
+    this.spinner.hide();
 
     this.formLimpieza = this.FB.group({
       descripcion: ['',[Validators.required]],
@@ -420,6 +423,8 @@ export class DashboardRoomsComponent implements OnInit  {
           }
       });
 
+    } else if(this.estadoHabitacion == 8){
+      this.router.navigate(['dashboard/dashboardRooms/'+this.habitacionId+'/ocupar']);
     } else {
       console.log("Ninguno")
     }
@@ -434,7 +439,7 @@ export class DashboardRoomsComponent implements OnInit  {
     this.tipoHabitacionId = habitacion.tipoHabitacion.id;
     this.pisoSeleccionado = habitacion.piso; 
     this.estadoHabitacionActual =  habitacion.habitacionEstado; 
-
+    this.detalleHabitacion = (habitacion.detalle)
     this.estadoHabitacionActual.forEach(element => {
       estadoHabitaciones.push(element.estado_id)
     });
@@ -451,7 +456,7 @@ export class DashboardRoomsComponent implements OnInit  {
         id: '5',
         command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
         visible: true,
-        disabled: !estadoHabitaciones.includes(2)?false:true,
+        disabled: estadoHabitaciones.includes(7)? true :!estadoHabitaciones.includes(2)?false:true,
       }) 
     }
   
@@ -467,21 +472,34 @@ export class DashboardRoomsComponent implements OnInit  {
         },
       )
       
+    } 
+
+    if(estadoHabitaciones.includes(2) || estadoHabitaciones.includes(7)){ //ver ocupacion
+      letItem.push(
+        {
+          label: 'Ver Ocupacion',
+          icon: 'pi pi-book',
+          id: '8',
+          command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
+          visible: true,
+          disabled: estadoHabitaciones.includes(7)?false : !estadoHabitaciones.includes(2)?true:false,
+        },
+      ) 
     }
 
     if(!estadoHabitaciones.includes(2)){ //no ocupado
       let habilitar_desocupado_por_reservado = false;
-   
+  
       if(habitacion.detalle){
         habitacion.detalle.forEach(element => {
             if(element.estado_id == 5 ){
 
               let fecha_inicio = new Date(element.fecha_inicio);
               let fecha_actual =  fecha_inicio.getFullYear()+'/' + fecha_inicio.getMonth()+'/' + fecha_inicio.getDate();              
-       
+      
               let hoy = new Date().getFullYear()+'/' +new Date().getMonth() +'/' +new Date().getDate();
           
-              if(hoy == fecha_actual){
+                if(hoy == fecha_actual){
                   habilitar_desocupado_por_reservado = true;
                 } 
               }
@@ -495,7 +513,7 @@ export class DashboardRoomsComponent implements OnInit  {
           id: '2',
           command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
           visible: true,
-          disabled: habilitar_desocupado_por_reservado?false:!estadoHabitaciones.includes(5)/* 5-6-4 */ ?false:true,
+          disabled:  estadoHabitaciones.includes(7)?true: false,//habilitar_desocupado_por_reservado?false:!estadoHabitaciones.includes(5)/* 5-6-4 */ ?false:true,
         },
       )
       
@@ -517,12 +535,12 @@ export class DashboardRoomsComponent implements OnInit  {
       
     }
 
-
+let yaEstaReservada = false;
     estadoHabitaciones.forEach(element => { 
       switch (element) {
         case 5:
           //esta reservada
-          letItem.push(
+        /*  letItem.push(
             { 
               label: 'Anular Reserva',
               icon: 'pi pi-calendar-times',
@@ -531,8 +549,21 @@ export class DashboardRoomsComponent implements OnInit  {
               visible: true,
               disabled: !estadoHabitaciones.includes(2)?false:true,
             } 
-          )
-          
+          )*/
+          if(!yaEstaReservada){
+            letItem.push(
+              {
+                label: 'Reservar',
+                icon: 'pi pi-calendar-times',
+                id: '5',
+                command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
+                visible: true,
+                disabled: !estadoHabitaciones.includes(2)?false:true,
+              }) 
+
+              yaEstaReservada = true;
+          }
+
           break;
         case 4:
           //esta limpieza 
@@ -960,13 +991,15 @@ export class DashboardRoomsComponent implements OnInit  {
     });
 
     if(estadoHabitaciones.includes(5)){
-      Swal.fire({
-        title: "¿La habitacion esta reservada desea hacer checkin?",
+      this.getReserva()
+
+    /* Swal.fire({
+        title: "¿La habitacion esta reservada par ahoy por desea hacerle checkin?",
         text: "",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Sí, Confirmar",
-        cancelButtonText: "Cancelar",
+        cancelButtonText: "Deseo Hacer una ocupacion",
       }).then((result) => {
           if (result.isConfirmed) { 
             let data = {
@@ -975,10 +1008,16 @@ export class DashboardRoomsComponent implements OnInit  {
 
             this.enviarOcuparReserva(data);
                //hacer checkin
+          } 
+
+          if(result.isDenied){
+            this.getReserva()
           }
+
       });
     } else {
       this.getReserva();  
+    }*/
     }
   }
 
@@ -1415,5 +1454,12 @@ export class DashboardRoomsComponent implements OnInit  {
     } else {
       this.disableButtonLimpieza = false;
     }
+  }
+
+  validarEstado(estados, id): number { 
+    
+    let respuesta = estados.filter(element => element.estado_id == id).length; 
+
+    return respuesta;
   }
 }

@@ -33,6 +33,8 @@ import { DatePipe } from '@angular/common';
 import { CalendarModule } from "primeng/calendar";
 import { DashboardRoomsService } from 'src/app/content/service/dashboardRooms/dashboard-rooms.service';
 import { TagModule } from 'primeng/tag';
+import { DashboardCalendarRoomDetailComponent } from './dashboard-calendar-room-detail/dashboard-calendar-room-detail.component';
+import { SplitButtonModule } from 'primeng/splitbutton';
 
 @NgModule({ 
   imports: [
@@ -63,7 +65,8 @@ import { TagModule } from 'primeng/tag';
     PaginatorModule,
     FullCalendarModule,
     MultiSelectModule,
-    CalendarModule
+    CalendarModule,
+    SplitButtonModule
   ],providers: [
     {
         provide:HTTP_INTERCEPTORS,
@@ -74,6 +77,6 @@ import { TagModule } from 'primeng/tag';
     
     DatePipe
   ],
-  declarations: [DashboardCalendarComponent]
+  declarations: [DashboardCalendarComponent, DashboardCalendarRoomDetailComponent]
 })
 export class DashboardCalendarModule { }

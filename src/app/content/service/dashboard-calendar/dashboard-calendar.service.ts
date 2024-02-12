@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 export class DashboardCalendarService {
   private baseUrl: string;
   private endpointHabitacionesReservada: string; 
+  private endpointDetalleHabitacionReserva: string; 
   public data: Observable<any[]>;
 
   constructor(    
@@ -16,9 +17,15 @@ export class DashboardCalendarService {
     ) {
       this.baseUrl = Config.url;
       this.endpointHabitacionesReservada = '/getReservasHabitacionesCalendario'; 
+      this.endpointDetalleHabitacionReserva = '/detalleHabitacion/'; 
     }
 
     getHabitacionesCalendario(parametros:any): Observable<any>{
       return this.httpClient.post<any>(`${this.baseUrl+this.endpointHabitacionesReservada}`, parametros); 
     }
+
+    getDetalleHabitacionReseva(idDetalleHabitacion: number){
+      return this.httpClient.get<any>(`${this.baseUrl+this.endpointDetalleHabitacionReserva+idDetalleHabitacion}`);
+    }
+    
 }

@@ -17,8 +17,12 @@ import { Config } from '../../storage/config';
     private endpointPActualizar:string;
     private endpointPEliminar:string;
     private endpointCrear: string;
+    private endpointAbrirCaja: string;
     private endpointEdit: string;
-
+    private endpointCerrarCaja: string;
+    private endpointGetAbrirCaja: string;
+    private endpointGetDetalleCaja: string;
+    private endpointAnularCaja: string;
     /////// Variables para manejar datos de permisos
     private dataSubject: BehaviorSubject<Wallet[]>;
     public data: Observable<Wallet[]>;
@@ -33,6 +37,19 @@ import { Config } from '../../storage/config';
         this.endpointPActualizar = '/cajaActualizar';
         this.endpointPEliminar='/cajaEliminar';
         this.endpointEdit='/cajaEditar';
+        this.endpointGetAbrirCaja = '/getAbrirCaja/';
+        this.endpointAbrirCaja = '/cajaAbir';
+        this.endpointGetDetalleCaja = '/cajaDetalleListar';
+        this.endpointCerrarCaja = '/cajaCerrar';
+        this.endpointAnularCaja = '/cajaControlEliminar';
+    }
+
+    getAbrirCaja(usuario_id:number): Observable<any> {
+        return this.httpClient.get<any>(`${this.baseUrl+this.endpointGetAbrirCaja+usuario_id}`);
+    }
+
+    abrirCaja(data: any) : Observable<any> {
+        return this.httpClient.post<any[]>(`${this.baseUrl+this.endpointAbrirCaja}`, data);
     }
 
     //////////////////////  CRUD PERMISOS  /////////////////////////
@@ -54,12 +71,12 @@ import { Config } from '../../storage/config';
     /////// Elegir un nuevo servicio por id
     getWalletById(id: number){
         return this.httpClient.get<any>(`${this.baseUrl+this.endpointPMostrar}/${id}`)
-              .pipe(map(hotel => hotel));
+            .pipe(map(hotel => hotel));
     }
 
     getWallteEditById(id: number){
         return this.httpClient.get<any>(`${this.baseUrl+this.endpointEdit}/${id}`)
-              .pipe(map(hotel => hotel));
+            .pipe(map(hotel => hotel));
     }
     updateWallets(data:any): Observable<any> {
         return this.httpClient.post<any>(`${this.baseUrl+this.endpointPActualizar}`, data);
@@ -73,12 +90,25 @@ import { Config } from '../../storage/config';
     refresWalletsData(): void {
         this.getWallets(30).subscribe(
             (response: any) => {
-              console.log(response.data);
+                console.log(response.data);
                 this.dataSubject.next(response.data);
             },
             (error) => {
                 console.log('Error: ', error);
             }
         );  
-      } 
-  }
+    } 
+
+    getAllDetalleCaja(per_page:number, search:string = '', page:number = 1): Observable<any[]> {
+        const parametros = {};
+        return this.httpClient.post<any[]>(`${this.baseUrl+this.endpointGetDetalleCaja}?per_page=${per_page}&page=${page}&search=${search}`, parametros);
+    }
+
+    cerrarCaja(data:any): Observable<any> {
+        return this.httpClient.post<any>(`${this.baseUrl+this.endpointCerrarCaja}`, data);
+    }
+
+    anularCaja(data:any): Observable<any> {
+        return this.httpClient.post<any>(`${this.baseUrl+this.endpointAnularCaja}`, data);
+    }
+}

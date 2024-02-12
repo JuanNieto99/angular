@@ -15,6 +15,7 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import Swal from 'sweetalert2/dist/sweetalert2.all.js';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -83,7 +84,17 @@ export class WalletsComponent implements OnInit {
     changeDetector: any;
 
     ///////// Forms Groups ////////////
-    constructor(private walletService:WalletService, private spinner: NgxSpinnerService, private permissionsService:PermissionsService, private hotelsService:HotelsService, private confirmationService: ConfirmationService, private toastModule: ToastModule, private dialogModule: DialogModule , private messageService: MessageService, private usersService: UsersService, private breadcrumbService: BreadcrumbService, private tableModule: TableModule, private buttonModule: ButtonModule, private cdRef: ChangeDetectorRef) {}
+    constructor(
+        private walletService:WalletService,
+        private spinner: NgxSpinnerService,
+        private permissionsService:PermissionsService,
+        private hotelsService:HotelsService,
+        private confirmationService: ConfirmationService,
+        private toastModule: ToastModule,
+        private dialogModule: DialogModule ,
+        private router: Router,
+        private messageService: MessageService,
+        ) {}
 
     ngOnInit(): void {
         // Inicializamos la consulta de hoteles
@@ -211,12 +222,12 @@ export class WalletsComponent implements OnInit {
     searchInput(){
         let search = this.formSearch.get('search').value;
         if(search==""){
-          this.getIndex(search);
+            this.getIndex(search);
         }
 
     }
 
-      search(dt){
+    search(dt){
         let search = this.formSearch.get('search').value;
         this.getIndex(search);
     }
@@ -262,5 +273,7 @@ export class WalletsComponent implements OnInit {
             this.disablePageRight = true;
         }
     }
+
+
 
 }

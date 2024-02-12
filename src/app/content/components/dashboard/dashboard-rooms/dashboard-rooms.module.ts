@@ -33,7 +33,8 @@ import { ChipModule } from "primeng/chip";
 import { ChipsModule } from "primeng/chips";
 import { PanelModule } from 'primeng/panel';
 import { MessageModule } from 'primeng/message'; 
-import { DatePipe } from '@angular/common';   
+import { DatePipe } from '@angular/common';
+import { DashboardRoomsOcuparComponent } from './dashboard-rooms-ocupar/dashboard-rooms-ocupar.component';   
 
 @NgModule({ 
   imports: [
@@ -77,6 +78,6 @@ import { DatePipe } from '@angular/common';
       DashboardRoomsService,
       DatePipe,
   ],
-  declarations: [ DashboardRoomsComponent]
+  declarations: [ DashboardRoomsComponent, DashboardRoomsOcuparComponent]
 })
 export class DashboardRoomsModule { }

@@ -61,10 +61,11 @@ export class AppMenuComponent implements OnInit {
                                 label: 'Bodegas',
                                 icon: 'pi pi-fw pi-server',
                                 routerLink: ['/dashboard/inventory']
-                            }
+                            },
+                            {label: 'Recetas', icon: 'pi pi-book', routerLink: ['/dashboard/admin/recipes']},
                         ]
                     },
-                    {
+                    { // 
                         label: 'Administrar',
                         icon: 'pi pi-fw pi-sliders-h',
                         items: [
@@ -72,12 +73,18 @@ export class AppMenuComponent implements OnInit {
                             { label: 'Usuarios', icon: 'pi pi-fw pi-user-plus', routerLink: ['/dashboard/admin/users'] },
                             { label: 'Roles', icon: 'pi pi-users', routerLink: ['/dashboard/admin/roles'] },
                             { label: 'Permisos', icon: 'pi pi-key', routerLink: ['/dashboard/admin/permissions'] },
-                            { label: 'Cajas', icon: 'pi pi-wallet', routerLink: ['/dashboard/admin/wallets'] },
+                            { label: 'Gestion Cajas', icon: 'pi pi-wallet', items: [
+                                {
+                                    label: 'Cajas', icon: 'pi pi-wallet', routerLink: ['/dashboard/admin/wallets']
+                                },
+                                {
+                                    label: 'Cajas Abrir', icon: 'pi pi-wallet', routerLink: ['/dashboard/admin/wallets/detail']
+                                } 
+                            ] },
                             { label: 'Tipo Habitación', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/typeRooms'] },
                             { label: 'Secuencia Interna', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/internalSequence'] },
                             { label: 'Secuencia Externa', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/externalSequence'] },
                             { label: 'Habitaciones', icon: 'pi pi-home', routerLink: ['/dashboard/admin/rooms'] },
-                            {label: 'Recetas', icon: 'pi pi-book', routerLink: ['/dashboard/admin/recipes']},
                             {label: 'Tarifa', icon: 'pi pi-tag', routerLink: ['/dashboard/admin/tarifas']}
                         ]
                     },
