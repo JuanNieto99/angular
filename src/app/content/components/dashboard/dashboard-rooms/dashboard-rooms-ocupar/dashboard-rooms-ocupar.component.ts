@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { DashboardRoomsService } from 'src/app/content/service/dashboardRooms/dashboard-rooms.service';
 
@@ -13,6 +13,7 @@ import { DashboardRoomsService } from 'src/app/content/service/dashboardRooms/da
 export class DashboardRoomsOcuparComponent {
 
   public form: FormGroup;  
+  public habitacionId: number;
 
   constructor( 
     private dashboardRoomsService:DashboardRoomsService, 
@@ -20,11 +21,14 @@ export class DashboardRoomsOcuparComponent {
     private spinner: NgxSpinnerService,
     private datePipe: DatePipe,
     private router: Router,
+    private route: ActivatedRoute,
   ){ 
   }
 
   ngOnInit(){
+    this.habitacionId = parseInt(this.route.snapshot.paramMap.get('idHabitacion'));  
     this.buildForm();
+    this.getRoomOcupar();
   }
 
   buildForm(){ 
@@ -36,5 +40,16 @@ export class DashboardRoomsOcuparComponent {
       descripcion:  ['',[]],
     });
     
+  }
+
+  getRoomOcupar(){
+      let data = {
+        habitacion_id : this.habitacionId,
+      } 
+      this.spinner.show();
+      this.dashboardRoomsService.getOcuparHabitacion(data).subscribe(reques => {
+        this.spinner.hide();
+        console.log(reques)
+      })
   }
 }
