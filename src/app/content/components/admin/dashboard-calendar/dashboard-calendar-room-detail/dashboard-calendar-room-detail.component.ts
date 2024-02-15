@@ -54,8 +54,7 @@ export class DashboardCalendarRoomDetailComponent {
 
   buildForm(){
     this.form = this.FB.group({
-      nombreHabitacion: [this.dataRoomDetail?.habitacion.nombre, []],
-      estado: [this.dataRoomDetail?.estado_habitacion.estado.nombre, []],
+      nombreHabitacion: [this.dataRoomDetail?.habitacion.nombre, []], 
       descripcion: [this.dataRoomDetail?.descripcion, []],
       nombreCliente: [this.dataRoomDetail?.cliente.nombres+' '+this.dataRoomDetail?.cliente.apellidos, []],
       desde: [this.dataRoomDetail?.fecha_inicio, []],
