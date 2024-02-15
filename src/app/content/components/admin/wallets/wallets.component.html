@@ -4,7 +4,7 @@
         <div>
             <div class="font-medium text-3xl text-900">Cajas</div>
             <div class="flex align-items-center text-700 flex-wrap">
-                <div class="mr-5 flex align-items-center mt-3"> 
+                <div class="mr-5 flex align-items-center mt-3">
                 </div>
             </div>
         </div>
@@ -31,7 +31,7 @@
                     </div>
                 </ng-template>
                 <ng-template pTemplate="header">
-                    <tr> 
+                    <tr>
                         <th>Nombre</th>
                         <th>Base</th>
                         <th>Descripción</th>
@@ -39,7 +39,7 @@
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-wallet>
-                    <tr> 
+                    <tr>
                         <td>{{ wallet.nombre }}</td>
                         <td>{{ wallet.base }}</td>
                         <td>{{ wallet.descripcion }}</td>
@@ -65,7 +65,6 @@
 </div>
 <p-dialog header="Crear una Caja" [(visible)]="crearW" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12">
-        <h5>Completa el formulario</h5>
         <form [formGroup]="formNewWallet" (ngSubmit)="createWallet()">
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-4">

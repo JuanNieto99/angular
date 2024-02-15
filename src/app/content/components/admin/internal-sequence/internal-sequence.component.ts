@@ -124,7 +124,7 @@ export class InternalSequenceComponent {
                 if (response.code == 'success') {
                     Swal.fire({
                         title: 'Exito',
-                        text: 'Producto creado exitosamente.',
+                        text: 'Secuencia interna creada exitosamente.',
                         icon: 'success',
                     });
 
@@ -132,7 +132,7 @@ export class InternalSequenceComponent {
                 } else {
                     Swal.fire({
                         title: 'Error',
-                        text: 'Error al crear el producto.',
+                        text: 'Error al crear la secuencia interna.',
                         icon: 'error',
                     });
                 }
@@ -194,7 +194,7 @@ export class InternalSequenceComponent {
                 if (response.code == 'success') {
                     Swal.fire({
                         title: 'Éxito',
-                        text: 'Producto actualizado exitosamente.',
+                        text: 'Secuencia intera actualizada exitosamente.',
                         icon: 'success',
                     });
 
@@ -202,7 +202,7 @@ export class InternalSequenceComponent {
                 } else {
                     Swal.fire({
                         title: 'Error',
-                        text: 'Error al actualizar el producto.',
+                        text: 'Error al actualizar la secuencia interna.',
                         icon: 'error',
                     });
                 }

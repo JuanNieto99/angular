@@ -13,65 +13,44 @@ import { Config } from '../../storage/config';
   export class InventoryService{
     ///// Variables de endpoints  /////
     private baseUrl: string;
-    private endpointPListar:string;
-    private endpointPMostrar:string;
-    private endpointPActualizar:string;
-    private endpointPEliminar:string;
-    private endpointCrear: string;
-
-    /////// Variables para manejar datos de permisos
+    private endpointListar: string;
+    private endpointInventoryGet: string;
+    private endpointInventoryUpdate:string;
+    private endpointDelete:string;
+    private endpointInventoryCreate: string;
     private dataSubject: BehaviorSubject<Inventory[]>;
     public data: Observable<Inventory[]>;
 
     constructor(private httpClient: HttpClient) {
-        this.dataSubject = new BehaviorSubject<Permit[]>([]);
+        this.dataSubject = new BehaviorSubject<Inventory[]>([]);
         this.data = this.dataSubject.asObservable();
         this.baseUrl = Config.url;
-        this.endpointCrear ='/inventarioCrear';
-        this.endpointPListar = '/inventarioListar';
-        this.endpointPMostrar = '/inventarioMostrar';
-        this.endpointPActualizar = '/inventarioActualizar';
-        this.endpointPEliminar='/inventarioEliminar';
+        this.endpointInventoryCreate ='/inventarioCrear';
+        this.endpointListar = '/inventarioListar';
+        this.endpointInventoryGet = '/inventarioEditar/';
+        this.endpointInventoryUpdate = '/inventarioActualizar';
+        this.endpointDelete='/inventarioEliminar';
     }
 
-    //////////////////////  CRUD PERMISOS  /////////////////////////
-    // Consultar lista de Inventarios
-    getInventories(per_page:number):Observable<Inventory[]>{
-        const parametros = { 
-            nombre: '',
-            descripcion: '',
-            estado: '',
-            hotel_id:''
-        };
-        return this.httpClient.post<Inventory[]>(`${this.baseUrl+this.endpointPListar}?per_page=${per_page}`, parametros);
+    getAll(per_page:number, search:string = '', page:number = 1): Observable<Inventory[]> {
+        const parametros = {};
+        return this.httpClient.post<Inventory[]>(`${this.baseUrl+this.endpointListar}?per_page=${per_page}&page=${page}&search=${search}`, parametros);
     }
-    // Crear un nuevo servicio
-    createInventory(data: any): Observable<Inventory[]> {
-        return this.httpClient.post<Inventory[]>(`${this.baseUrl+this.endpointCrear}`, data);
+
+    getInventory(id:number): Observable<any>{
+        return this.httpClient.get<any>(`${this.baseUrl+this.endpointInventoryGet+id}`);
     }
-    /////// Elegir un nuevo servicio por id
-    getInventoryById(id: number){
-        return this.httpClient.get<any>(`${this.baseUrl+this.endpointPMostrar}/${id}`)
-              .pipe(map(hotel => hotel));
+
+    createInventory(data:any){
+        return this.httpClient.post<any>(`${this.baseUrl+this.endpointInventoryCreate}`, data);
     }
-    updateInventory(data:any): Observable<any> {
-        return this.httpClient.post<any>(`${this.baseUrl+this.endpointPActualizar}`, data);
+
+    updateInventory(data:any){
+        return this.httpClient.post<any>(`${this.baseUrl+this.endpointInventoryUpdate}`, data);
     }
-    deleteInventry(id:number){
-        const parametros = { 
-            id: id
-        };
-        return this.httpClient.post<any>(`${this.baseUrl+this.endpointPEliminar}`, parametros);
+
+    deleteInventory(data:any){
+        return this.httpClient.post<any>(`${this.baseUrl+this.endpointDelete}`, data);
     }
-    refresInventaryData(): void {
-        this.getInventories(30).subscribe(
-            (response: any) => {
-              console.log(response.data);
-                this.dataSubject.next(response.data);
-            },
-            (error) => {
-                console.log('Error: ', error);
-            }
-        );  
-      } 
-  }
+
+}

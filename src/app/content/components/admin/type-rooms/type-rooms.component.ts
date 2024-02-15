@@ -37,7 +37,7 @@ export class TypeRoomsComponent {
     public ultimaPage:number = 1;
     public disablePageLeft: boolean = false;
     public disablePageRight: boolean = true;
-    public valPuerta: string = '';  
+    public valPuerta: string = '';
 
     constructor(
         private FB: FormBuilder,
@@ -58,7 +58,7 @@ export class TypeRoomsComponent {
 
         this.formCreateTypeRoom = this.FB.group({
             nombre: ['', [Validators.required]],
-            hotel_id: ['', [Validators.required]], 
+            hotel_id: ['', [Validators.required]],
         });
 
         this.formEditTypeRoom = this.FB.group({
@@ -71,7 +71,7 @@ export class TypeRoomsComponent {
         this.onCreate();
     }
 
-    onCreate() { 
+    onCreate() {
         this.formCreateTypeRoom.reset();
         this.typeRoomService.getTypeRoom(0).subscribe(
             (response: any) => {
@@ -117,8 +117,8 @@ export class TypeRoomsComponent {
         let dataTypeRoom = this.formCreateTypeRoom.value;
         dataTypeRoom.hotel_id = dataTypeRoom.hotel_id['id'];
         dataTypeRoom.estado = 1;
-        
-        dataTypeRoom.diseno_json = JSON.stringify(json); 
+
+        dataTypeRoom.diseno_json = JSON.stringify(json);
 
         this.typeRoomService.createProduct(dataTypeRoom).subscribe(
             (response: any) => {
@@ -128,7 +128,7 @@ export class TypeRoomsComponent {
                 if (response.code == 'success') {
                     Swal.fire({
                         title: 'Exito',
-                        text: 'Producto creado exitosamente.',
+                        text: 'Tipo de habitación creado exitosamente.',
                         icon: 'success',
                     });
 
@@ -136,7 +136,7 @@ export class TypeRoomsComponent {
                 } else {
                     Swal.fire({
                         title: 'Error',
-                        text: 'Error al crear el producto.',
+                        text: 'Error al crear el tipo de habitación.',
                         icon: 'error',
                     });
                 }
@@ -161,7 +161,7 @@ export class TypeRoomsComponent {
                     .setValue(response.tiposHabitaciones.nombre);
                 let hotel: any = null;
                 this.valPuerta = (JSON.parse(response.tiposHabitaciones.diseno_json).puerta)
-                //this.valPuerta = 
+                //this.valPuerta =
                 setTimeout(() => {
                     this.visibleModalTypeRoomEditar = true;
                 }, 1);
@@ -182,7 +182,7 @@ export class TypeRoomsComponent {
             puerta:this.valPuerta,
         }
 
-        dataTypeRoom.diseno_json = JSON.stringify(json); 
+        dataTypeRoom.diseno_json = JSON.stringify(json);
 
         this.typeRoomService.updateTypeRoom(dataTypeRoom).subscribe(
             (response: any) => {
@@ -192,7 +192,7 @@ export class TypeRoomsComponent {
                 if (response.code == 'success') {
                     Swal.fire({
                         title: 'Exito',
-                        text: 'Producto creado exitosamente.',
+                        text: 'Tipo de producto actualizado exitosamente.',
                         icon: 'success',
                     });
 
@@ -200,7 +200,7 @@ export class TypeRoomsComponent {
                 } else {
                     Swal.fire({
                         title: 'Error',
-                        text: 'Error al crear el producto.',
+                        text: 'Error al actualizar el tipo de habitación.',
                         icon: 'error',
                     });
                 }

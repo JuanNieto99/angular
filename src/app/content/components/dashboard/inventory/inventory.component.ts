@@ -1,183 +1,345 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Hotel } from 'src/app/content/models/admin/hotels.model';
-import { InventoryService } from 'src/app/content/service/dashboard/inventory.service';
-import { WalletService } from 'src/app/content/service/admin/wallet.service';
-import { Wallet } from 'src/app/content/models/admin/wallets.model';
-import { HotelsService } from 'src/app/content/service/admin/hotels.service';
-import { UsersService } from 'src/app/content/service/admin/users.service';
-import { Permit } from 'src/app/content/models/admin/permissions.model';
-import { PermissionsService } from 'src/app/content/service/admin/permissions.service'
-import { BreadcrumbService } from 'src/app/content/service/breadcrumb.service';
-import { DialogModule } from 'primeng/dialog';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';  
-import Swal from 'sweetalert2/dist/sweetalert2.all.js';
+import { Component, OnInit} from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { Inventory } from 'src/app/content/models/dashboard/inventory.model';
+import { InventoryService } from 'src/app/content/service/dashboard/inventory.service';
+import Swal from 'sweetalert2/dist/sweetalert2.all.js';
 
+
+interface PageEvent {
+    first: number;
+    rows: number;
+    page: number;
+    pageCount: number;
+}
 
 @Component({
     selector: 'app-inventory',
     templateUrl: './inventory.component.html',
-    providers: [ConfirmationService, MessageService]
 })
 export class InventoryComponent implements OnInit {
 
-    /// Variables para la obtencion de inventarios
-    public inventories: Inventory[];
-    public totalInventories: any;
-    public inventoryData:any;
+    public visibleModalInventory: boolean = true;
+    public inventoryData: Inventory[];
+    public loadingTable :boolean = false;
+    public hotel: any[];
+    public descripcion: string;
+    public nombre: string;
+    public visibleModalInventarioEditar:boolean = false;
+    public idEditando: number = 0;
 
-    ///// Variables para obtencion de datos
-    public wallets: Wallet[];
-    public totalWallets: any;
-    public walletData: any;
+    // variables para formularios
+    public formCreateInventory: FormGroup;
+    public formSearch: FormGroup;
+    public formEditInventory: FormGroup;
 
-    public hotels: Hotel[];
-    public selectedHotel: any;
-    public tipo:any = 1;
+    //Variables paginador
+    public pageCount: number = 10;
+    public pageActual:number = 1;
+    public ultimaPage:number = 1;
+    public registrosContar: number = 0;
+    public disablePageLeft: boolean = false;
+    public disablePageRight: boolean = true;
+    public first:number = 0;
+    public rows:number = 8;
 
-
-    public editarW: boolean = false;
-    public crearW:boolean = false;
-
-    ////// Variables de obtencion de datos
-    public permission: Permit[];
-    public totalPermission:any;
-
-    /// Variables para abrir modals
-    public editarPermit: boolean = false;
-    public crearPermit: boolean = false;
-    public permissionData: any;
-    public param: any;
- 
-    ///////// Forms Groups ////////////    
-    formNewInventory= new FormGroup({
-        nombre: new FormControl('', Validators.required),
-        descripcion: new FormControl('', Validators.required),
-        estado: new FormControl('', Validators.required),
-        hotel_id: new FormControl('', Validators.required)
-     });
-
-     formEditInventory = new FormGroup({
-        nombre: new FormControl('', Validators.required),
-        descripcion: new FormControl('', Validators.required),
-        estado: new FormControl('', Validators.required),
-        hotel_id: new FormControl('', Validators.required),
-        id: new FormControl('', Validators.required)
-     });
-    changeDetector: any;
-    
-    ///////// Forms Groups ////////////  
-    constructor(private inventoryService: InventoryService, private walletService:WalletService, private permissionsService:PermissionsService, private hotelsService:HotelsService, private confirmationService: ConfirmationService, private toastModule: ToastModule, private dialogModule: DialogModule , private messageService: MessageService, private usersService: UsersService, private breadcrumbService: BreadcrumbService, private tableModule: TableModule, private buttonModule: ButtonModule, private cdRef: ChangeDetectorRef) {}
-    
     ngOnInit(): void {
-        // Inicializamos la consulta de hoteles
-        this.getAllHotels();
-        // iniciamos la consulta de cajas
-        this.getAllInventories();
-        this.inventoryService.data.subscribe(inventory => {
-            this.inventories = inventory;
-        });
-        
-    }
-    //////// Lista de Hoteles ////////
-    getAllHotels(): void {
-        this.hotelsService.getHotels(30).subscribe(
-            (response: any) => {
-                /* console.log('Response: ', response); */
-                this.hotels = response.data;
-                console.log(this.hotels);
-            },
-            (error) => {
-                console.log('Error: ', error);
-            }
-        );
-    }
-    //////// Crear un nuevo Permiso //////////////////
-    createInventory(){
-        this.formNewInventory.get('hotel_id').setValue(this.selectedHotel.id);
-        const datos = this.formNewInventory.value;
-        this.inventoryService.createInventory(datos).subscribe(response => {
-            console.log(response);
-            this.inventoryService.refresInventaryData();
-            this.messageService.add({ severity: 'info', summary: 'Confirmación Exitosa', detail: 'Inventario Creado.',sticky: true, life: 200, });
-            this.crearW = false;
-          }, error => {
-            console.log('Error:', error);
-          });
-    }
-    /////// Consultar Todos los inventarios ///////////
-    getAllInventories(): void {
-        this.inventoryService.getInventories(30).subscribe(
-            (response: any) => {
-                /* console.log('Response: ', response); */
-                this.inventories = response.data;
-                this.totalInventories = response.total;
-                console.log(this.inventories);
-            },
-            (error) => {
-                console.log('Error: ', error);
-            }
-        );
-    }
-    /////////// Consultar 1 hotel  //////////////
-    getInventory(id:number){
-        this.inventoryService.getInventoryById(id).subscribe(response => {
-            this.inventoryData = response;
-            console.log(this.inventoryData);  
-            this.editarW = true;
-        })
+        this.buildForm();
+        this.getIndex();
+        this.visibleModalInventory = false;
     }
 
-    /////////// Editar Permisos //////////////
-    updateInventory(){
-        this.formEditInventory.get('id').setValue(this.inventoryData.id);
-        this.formEditInventory.get('hotel_id').setValue(this.selectedHotel.id);
-        const datos = this.formEditInventory.value;
-        console.log(datos);
-        this.inventoryService.updateInventory(datos).subscribe( response => {
-            //Cierra el modal de edición
-            console.log(response);
-            this.editarW = false;
-            this.messageService.add({ severity: 'info', summary: 'Confirmación Exitosa', detail: 'Inventario actualizado.',sticky: true, life: 200, });
-             //Actualiza la tabla de usuarios con el nuevo registro
-            this.inventoryService.refresInventaryData();
-            //Actualiza la tabla de usuarios con el nuevo registro
-        }, error =>{
-            console.log('Error:', error)
-        });
+    constructor(
+        private InventoryService:InventoryService,
+        private FB: FormBuilder,
+        private spinner: NgxSpinnerService
+    ){
+
     }
-    confirmDelete(id:number){
-        console.log(id);
+
+    onPage(event){
+        this.pageCount = event['rows'];
+        this.getIndex('', this.pageCount);
+    }
+
+    getIndex(search:string = '', pageCount:number = this.pageCount, page: number = 1){
+        this.spinner.show();
+        this.loadingTable = true;
+        this.InventoryService.getAll(pageCount, search, page).subscribe(
+            (response: any) => {
+                this.loadingTable = false;
+                this.inventoryData = response.data;
+                this.ultimaPage = response.last_page;
+                this.registrosContar = response.total;
+                this.spinner.hide();
+            },
+            (error) => {
+                console.log('Error: ', error);
+            }
+        );
+    }
+
+    //CREAR
+
+    openModal(){
+        this.onCreate();
+    }
+
+    onCreate() {
+        this.formCreateInventory.reset();
+        this.InventoryService.getInventory(0).subscribe(
+            (response: any) => {
+                this.hotel = response.hotel;
+                this.descripcion = response.descripcion;
+                this.nombre = response.nombre;
+                this.visibleModalInventory = true;
+            },
+            (error) => {
+                console.log('Error: ', error);
+            }
+        );
+    }
+
+    submitCreate(){
+        //this.newProduct();
+        if(this.formCreateInventory.valid){
+          this.newInventory();
+        } else {
+          this.formCreateInventory.markAllAsTouched();
+        }
+    }
+
+    newInventory() {
+        this.visibleModalInventory = true;
+        this.spinner.show();
+        let dataInventory = this.formCreateInventory.value;
+
+        dataInventory.hotel_id = dataInventory.hotel_id['id'];
+        dataInventory.estado = 1;
+
+        this.InventoryService.createInventory(dataInventory).subscribe(
+            (response: any) => {
+                this.spinner.hide();
+                this.visibleModalInventory = false;
+                if (response.code == 'success') {
+                    Swal.fire({
+                        title: 'Exito',
+                        text: 'Inventario creado exitosamente.',
+                        icon: 'success',
+                    });
+
+                    this.getIndex();
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Error al crear el inventario.',
+                        icon: 'error',
+                    });
+                }
+            },
+            (error) => {
+                console.log('Error: ', error);
+            }
+        );
+    }
+
+    //Editar
+
+    editInventory(id: number) {
+        this.idEditando = id;
+        this.spinner.show();
+        this.InventoryService.getInventory(id).subscribe(
+            (response: any) => {
+                this.spinner.hide();
+                this.hotel = response.hotel;
+                this.nombre = response.inventario.nombre;
+                this.descripcion = response.inventario.descripcion;
+
+                this.formEditInventory.setValue({
+                    hotel_id: this.hotel,
+                    nombre: this.nombre,
+                    descripcion: this.descripcion,
+                });
+
+                setTimeout(() => {
+                    this.visibleModalInventarioEditar = true;
+                }, 1);
+            },
+            (error) => {
+                console.log('Error: ', error);
+            }
+        );
+    }
+
+    updateInventory() {
+        this.spinner.show();
+        let dataInventory = this.formEditInventory.value;
+
+        if (dataInventory.hotel_id) {
+            dataInventory.hotel_id = dataInventory.hotel_id.id;
+        }
+
+        if (dataInventory.tipo) {
+            dataInventory.tipo = dataInventory.tipo.id;
+        }
+
+        if (dataInventory.pisos) {
+            dataInventory.piso = dataInventory.pisos;
+        }
+
+        dataInventory.id = this.idEditando;
+        dataInventory.estado = 1;
+
+        this.InventoryService.updateInventory(dataInventory).subscribe(
+            (response: any) => {
+                this.spinner.hide();
+                this.visibleModalInventarioEditar = false;
+                if (response.code == 'success') {
+                    Swal.fire({
+                        title: 'Éxito',
+                        text: 'Inventario actualizado exitosamente.',
+                        icon: 'success',
+                    });
+
+                    this.getIndex();
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Error al actualizar el inventario.',
+                        icon: 'error',
+                    });
+                }
+            },
+            (error) => {
+                console.log('Error: ', error);
+            }
+        );
+    }
+
+    submitUpdate(){
+        if(this.formEditInventory.valid){
+          this.updateInventory();
+        }
+    }
+
+     //Eliminar
+
+     confirmDelete(id:number){
         Swal.fire({
-            title: "¿Estas Seguro que deseas eliminar este inventario?",
+            title: "¿Estas seguro que deseas eliminar este inventario?",
             text: "Ten cuidado esta acción no se prodrá reversar",
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Sí, Confirmar",
             cancelButtonText: "Cancelar",
-          }).then((result) => {
+        }).then((result) => {
             if (result.isConfirmed) {
-                this.inventoryService.deleteInventry(id).subscribe( response =>{
-                    console.log(response);
-                    this.inventoryService.refresInventaryData();
-                });
-                Swal.fire({
-                title: "Confirmación",
-                text: "La caja ha sido eliminada.",
-                icon: "success"
-              });
-            }
-          });
-    }    
-    modalNewW(){
-        this.crearW = true;
-    }
-    
-    
+                this.spinner.show();
+                this.InventoryService.deleteInventory({id}).subscribe(
+                (response: any) => {
+                    this.spinner.hide();
+                    if(response.code == "success"){
 
-    
+                    Swal.fire({
+                        title: "Exito",
+                        text: "Inventario eliminada exitosamente.",
+                        icon: "success"
+                    });
+
+                    this.getIndex();
+
+                    }  else {
+
+                    Swal.fire({
+                        title: "Error",
+                        text: "Error al eliminar el inventario." ,
+                        icon: "error"
+                    });
+
+                    }
+
+                },
+                (error) => {
+                    console.log('Error: ', error);
+                }
+                );
+            }
+        });
+    }
+
+    //Construccion del formulario
+
+    buildForm(){
+
+        this.formSearch = this.FB.group({
+          search: ['',[]],
+        });
+
+        this.formCreateInventory = this.FB.group({
+            nombre: ['',[Validators.required]],
+            descripcion: ['',[Validators.required]],
+            hotel_id: ['', [Validators.required]],
+        });
+
+        this.formEditInventory = this.FB.group({
+            nombre: ['',[Validators.required]],
+            descripcion: ['',[Validators.required]],
+            hotel_id: ['', [Validators.required]],
+        });
+
+    }
+
+    //Buscador
+
+    searchInput(){
+        let search = this.formSearch.get('search').value;
+        if(search==""){
+          this.getIndex(search);
+        }
+
+    }
+
+    search(dt){
+        let search = this.formSearch.get('search').value;
+        this.getIndex(search);
+    }
+
+//Paginador
+
+onPageChange(event){
+    this.first = event.first;
+    this.rows = event.rows;
+  }
+
+
+  leftTable(){
+    this.pageActual = this.pageActual - 1;
+    this.getIndex('', this.pageCount, this.pageActual);
+    this.validatePage();
+  }
+
+  rightTable(){
+      this.pageActual = this.pageActual + 1;
+      this.getIndex('', this.pageCount, this.pageActual);
+      this.validatePage();
+  }
+
+  validatePage(){
+      if(this.pageActual == 1 ){
+          this.disablePageLeft = false;
+      }
+
+      if(this.pageActual > 1 ){
+          this.disablePageLeft = true;
+      }
+
+      if(this.ultimaPage == this.pageActual){
+          this.disablePageRight = false;
+      }
+
+      if(this.ultimaPage > this.pageActual){
+          this.disablePageRight = true;
+      }
+  }
+
 }

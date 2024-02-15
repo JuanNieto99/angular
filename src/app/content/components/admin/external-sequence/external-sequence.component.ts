@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ExternalSequenceService } from '../../../service/externalSequence/external-sequence.service';
 import Swal from 'sweetalert2';
+import { formatDate } from '@angular/common';
 
 interface PageEvent {
     first: number;
@@ -65,18 +66,19 @@ export class ExternalSequenceComponent {
             (response: any) => {
                 this.hotel = response.hotel;
                 this.prefijo = response.prefijo;
-    
-                // Obtener la fecha actual y formatearla
-                const fechaActual = new Date();
-                const fechaFormateada = `${fechaActual.getDate()}/${fechaActual.getMonth() + 1}/${fechaActual.getFullYear()}`;
-    
-                // Asignar la fecha formateada a la variable
-                this.fechaInicial = fechaFormateada;
-                this.fechaFinal = response.fecha_final;
+
+                // Verificar si las fechas son válidas antes de formatearlas
+                if (response.fecha_inicio && response.fecha_final) {
+                    this.fechaInicial = new Date(response.fecha_inicio).toISOString().split('T')[0];
+                    this.fechaFinal = new Date(response.fecha_final).toISOString().split('T')[0];
+                } else {
+                  //Es normal esto che
+                }
+
                 this.secuenciaInicial = response.secuensia_incial;
                 this.secuenciaActual = response.secuensia_actual;
                 this.secuenciaFinal = response.secuencia_final;
-    
+
                 this.visibleModalExternalSequence = true;
             },
             (error) => {
@@ -84,7 +86,8 @@ export class ExternalSequenceComponent {
             }
         );
     }
-   
+
+
     onRemove(event) {
         this.imagen = null;
     }
@@ -98,19 +101,44 @@ export class ExternalSequenceComponent {
         this.getIndex('', this.pageCount);
     }
 
-    submitCreate() {
-        if (this.formCreateExternalSequence.valid) {
-            this.newExternalSequence();
-        } else {
-            this.formCreateExternalSequence.markAllAsTouched();
-        }
+submitCreate() {
+    if (this.formCreateExternalSequence.valid) {
+        // Convertir la fecha al formato YYYY-MM-DD aceptado por MySQL
+        const fechaInicioFormatted = this.formatDate(this.formCreateExternalSequence.value.fecha_inicio);
+        const fechaFinalFormatted = this.formatDate(this.formCreateExternalSequence.value.fecha_final);
+
+        // Asignar las fechas formateadas de nuevo al formulario
+        this.formCreateExternalSequence.patchValue({
+            fecha_inicio: fechaInicioFormatted,
+            fecha_final: fechaFinalFormatted
+        });
+
+        // Llamar al método para crear la secuencia externa
+        this.newExternalSequence();
+        console.log('Está enviando cambios');
+    } else {
+        console.log('Formulario no válido:', this.formCreateExternalSequence.errors);
+        this.formCreateExternalSequence.markAllAsTouched();
+        console.log('NO está enviando cambios');
     }
+}
+
+// Función para formatear la fecha al formato YYYY-MM-DD
+formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+}
+
+
 
     newExternalSequence() {
         this.visibleModalExternalSequence = true;
         this.spinner.show();
         let dataExternalSequence = this.formCreateExternalSequence.value;
-
+        console.log('Entré al newExternal');
         dataExternalSequence.hotel_id = dataExternalSequence.hotel_id['id'];
         dataExternalSequence.estado = 1;
 
@@ -118,6 +146,7 @@ export class ExternalSequenceComponent {
             dataExternalSequence
         ).subscribe(
             (response: any) => {
+                console.log(response);
                 this.spinner.hide();
                 this.imagen = null;
                 this.visibleModalExternalSequence = false;
@@ -168,7 +197,8 @@ export class ExternalSequenceComponent {
                         .split('T')[0];
                     this.prefijo = secuenciaExterna.prefijo;
 
-                    this.formEditExternalSequence.setValue({
+                    // Asignar los valores al formulario de edición
+                    this.formEditExternalSequence.patchValue({
                         hotel_id: this.hotel,
                         prefijo: this.prefijo,
                         fecha_inicio: this.fechaInicial,
@@ -179,6 +209,7 @@ export class ExternalSequenceComponent {
                     });
                 }
 
+                // Abrir el modal de edición después de asignar los valores
                 setTimeout(() => {
                     this.visibleModalExternalSequenceEditar = true;
                 }, 1);
@@ -188,6 +219,7 @@ export class ExternalSequenceComponent {
             }
         );
     }
+
 
     updateExternalSequence() {
         this.spinner.show();
@@ -206,7 +238,7 @@ export class ExternalSequenceComponent {
                 if (response.code == 'success') {
                     Swal.fire({
                         title: 'Éxito',
-                        text: 'Producto actualizado exitosamente.',
+                        text: 'Secuencia actualizada exitosamente.',
                         icon: 'success',
                     });
 
@@ -214,7 +246,7 @@ export class ExternalSequenceComponent {
                 } else {
                     Swal.fire({
                         title: 'Error',
-                        text: 'Error al actualizar el producto.',
+                        text: 'Error al actualizar la secuencia.',
                         icon: 'error',
                     });
                 }

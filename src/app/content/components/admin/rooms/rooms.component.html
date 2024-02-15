@@ -37,7 +37,7 @@
                     </div>
                 </ng-template>
                 <ng-template pTemplate="header">
-                    <tr> 
+                    <tr>
                         <th>Hotel</th>
                         <th>Piso</th>
                         <th>Tipo Habitación</th>
@@ -84,7 +84,6 @@
 <!-- Crear -->
 <p-dialog header="Crear Habitación" [(visible)]="visibleModalRooms" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12">
-        <h5>Completa el formulario</h5>
         <form [formGroup]="formCreateRooms" (ngSubmit)="submitCreate()">
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-6">
@@ -122,7 +121,7 @@
                     <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="descripcion">
                     <div style="color: red;" *ngIf="formCreateRooms.get('descripcion').hasError('required')">Campo requerido</div>
                 </div>
-        
+
                 <div class="field col-12 md:col-12">
                     <button pButton pRipple label="Crear Habitación" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>
@@ -134,7 +133,6 @@
 <!-- Editar -->
 <p-dialog header="Editar Habitación" [(visible)]="visibleModalRoomsEditar"  [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12">
-        <h5>Completa el formulario</h5>
         <form [formGroup]="formEditRooms" (ngSubmit)="submitUpdate()">
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-6">
@@ -172,7 +170,7 @@
                     <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="descripcion">
                     <div style="color: red;" *ngIf="formEditRooms.get('descripcion').hasError('required')">Campo requerido</div>
                 </div>
-    
+
                 <div class="field col-12 md:col-12">
                     <button pButton pRipple label="Editar Tipo de Habitación" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>

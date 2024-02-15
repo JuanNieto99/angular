@@ -203,7 +203,7 @@ export class RoomsComponent {
                 if (response.code == 'success') {
                     Swal.fire({
                         title: 'Éxito',
-                        text: 'Producto actualizado exitosamente.',
+                        text: 'Habitación actualizada exitosamente.',
                         icon: 'success',
                     });
 
@@ -211,7 +211,7 @@ export class RoomsComponent {
                 } else {
                     Swal.fire({
                         title: 'Error',
-                        text: 'Error al actualizar el producto.',
+                        text: 'Error al actualizar la habitación.',
                         icon: 'error',
                     });
                 }

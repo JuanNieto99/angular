@@ -30,8 +30,6 @@
                                     <input formControlName="search" pInputText type="text" placeholder="Buscar..."   (input)="searchInput()"  class="w-full sm:w-auto"/>
                                     <button type="button" pButton pRipple   class="pi pi-search" (click)="search(dt)"></button>
                                 </div>
-                                    <!--i class="pi pi-search"></i>
-                                    <input formControlName="search" pInputText type="text" placeholder="Buscar..."  (input)="search(dt)" class="w-full sm:w-auto"/-->
                             </form>
                         </span>
                     </div>
@@ -90,7 +88,6 @@
 <!--Crear-->
 <p-dialog header="Secuencia Externa" [(visible)]="visibleModalExternalSequence" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12">
-        <h5>Completa el formulario</h5>
         <form [formGroup]="formCreateExternalSequence" (ngSubmit)="submitCreate()">
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-6">
@@ -106,13 +103,14 @@
                     <div style="color: red;" *ngIf="formCreateExternalSequence.get('prefijo').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
-                    <label>Fecha Inicio </label>
-                    <!--ng-invalid-->
-                    <p-calendar inputId="fechaInicio"   class="ng-dirty" [showIcon]="true"></p-calendar>
-                </div>             
+                    <label>Fecha Inicio</label>
+                    <p-calendar formControlName="fecha_inicio" class="w-full mb-3 border-round-3xl" [showIcon]="true"></p-calendar>
+                    <div style="color: red;" *ngIf="formEditExternalSequence.get('fecha_inicio').hasError('required')">Campo requerido</div>
+                </div>
                 <div class="field col-12 md:col-6">
-                    <label for="fechaFinal">Fecha Final</label>
-                    <p-calendar inputId="fechaFinal" class="ng-dirty" [showIcon]="true"></p-calendar>
+                    <label>Fecha Final</label>
+                    <p-calendar formControlName="fecha_final" class="w-full mb-3 border-round-3xl" [showIcon]="true"></p-calendar>
+                    <div style="color: red;" *ngIf="formEditExternalSequence.get('fecha_final').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>Secuencia Inicial</label>
@@ -140,7 +138,6 @@
 <!--Editar-->
 <p-dialog header="Editar Secuencia Externa" [(visible)]="visibleModalExternalSequenceEditar"  [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12">
-        <h5>Completa el formulario</h5>
         <form [formGroup]="formEditExternalSequence" (ngSubmit)="submitUpdate()">
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-6">
@@ -155,7 +152,7 @@
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>Fecha Inicio</label>
-                    <input type="date"  pInputText class="w-full mb-3 border-round-3xl" formControlName="fecha_inicio">
+                    <p-calendar formControlName="fecha_inicio" class="w-full mb-3 border-round-3xl" [showIcon]="true"></p-calendar>
                     <div style="color: red;" *ngIf="formEditExternalSequence.get('fecha_inicio').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
