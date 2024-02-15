@@ -39,9 +39,6 @@
                 </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
-                        <th style="width: 3rem">
-                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                        </th>
                         <th>Hotel</th>
                         <th>Nombre</th>
                         <th>Apellidos</th>
@@ -51,9 +48,6 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-customers>
                     <tr>
-                        <td>
-                            <p-tableCheckbox [value]="customersData"></p-tableCheckbox>
-                        </td>
                         <td>{{ customers.hotel.nombre }}</td>
                         <td>{{ customers.nombres }}</td>
                         <td>{{ customers.apellidos }}</td>

@@ -46,9 +46,6 @@
                 </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
-                        <th style="width: 3rem">
-                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                        </th>
                         <th>Usuario</th>
                         <th>Correo</th>
                         <th>Estado</th>
@@ -58,9 +55,6 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-user>
                     <tr>
-                        <td>
-                            <p-tableCheckbox [value]="users"></p-tableCheckbox>
-                        </td>
                         <td>{{ user.usuario }}</td>
                         <td>{{ user.email }}</td>
                         <td>{{ getStatusName(user.estado) }}</td>

@@ -58,9 +58,6 @@
                 </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
-                        <th style="width: 3rem">
-                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                        </th>
                         <th>Nombre</th>
                         <th>Correo</th>
                         <th>Contacto</th>
@@ -71,9 +68,6 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-hotel>
                     <tr>
-                        <td>
-                            <p-tableCheckbox [value]="hotels"></p-tableCheckbox>
-                        </td>
                         <td>{{ hotel.nombre }}</td>
                         <td>{{ hotel.email }}</td>
                         <td>{{ hotel.contacto }}</td>

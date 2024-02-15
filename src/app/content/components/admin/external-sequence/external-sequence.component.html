@@ -36,9 +36,6 @@
                 </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
-                        <th style="width: 3rem">
-                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                        </th>
                         <th>Hotel</th>
                         <th>Prefijo</th>
                         <th>Fecha Inicial</th>
@@ -51,9 +48,6 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-externalSequence>
                     <tr>
-                        <td>
-                            <p-tableCheckbox [value]="externalSequenceData"></p-tableCheckbox>
-                        </td>
                         <td>{{ externalSequence.hotel.nombre }}</td>
                         <td>{{ externalSequence.prefijo }}</td>
                         <td>{{ externalSequence.fecha_inicio | date: 'dd/MM/yyyy' }}</td>

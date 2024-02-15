@@ -37,9 +37,6 @@
                 </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
-                        <th style="width: 3rem">
-                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                        </th>
                         <th>Nombre</th>
                         <th>Hotel</th>
                         <th>Acciones</th>
@@ -47,9 +44,6 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-typeRoom>
                     <tr>
-                        <td>
-                            <p-tableCheckbox [value]="typeRoomData"></p-tableCheckbox>
-                        </td>
                         <td>{{ typeRoom.nombre }}</td>
                         <td>{{ typeRoom.hotel.nombre }}</td>
                         <td class="flex gap-2">

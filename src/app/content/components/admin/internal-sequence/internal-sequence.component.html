@@ -38,9 +38,6 @@
                 </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
-                        <th style="width: 3rem">
-                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                        </th>
                         <th>Hotel</th>
                         <th>Descripción</th>
                         <th>Secuencia Inicial</th>
@@ -50,9 +47,6 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-internalSequence>
                     <tr>
-                        <td>
-                            <p-tableCheckbox [value]="internalSequenceData"></p-tableCheckbox>
-                        </td>
                         <td>{{ internalSequence.hotel.nombre }}</td>
                         <td>{{ internalSequence.descripcion_secuencia }}</td>
                         <td>{{ internalSequence.secuensia_incial }}</td>
