@@ -84,7 +84,6 @@
 <!-- Crear -->
 <p-dialog header="Crear Receta" [(visible)]="visibleModalRecipes" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12">
-        <h5>Completa el formulario</h5>
         <form [formGroup]="formCreateRecipes" (ngSubmit)="submitCreate()">
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-6">
@@ -117,7 +116,6 @@
 </p-dialog>
 <p-dialog header="Editar Recetas" [(visible)]="visibleModalRecipesEditar"  [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12">
-        <h5>Completa el formulario</h5>
         <form [formGroup]="formEditRecipes" (ngSubmit)="submitUpdate()">
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-6">

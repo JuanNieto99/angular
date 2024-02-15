@@ -5,7 +5,7 @@
         <div>
             <div class="font-medium text-3xl text-900">Tipos de Habitación</div>
             <div class="flex align-items-center text-700 flex-wrap">
-                <div class="mr-5 flex align-items-center mt-3"> 
+                <div class="mr-5 flex align-items-center mt-3">
                     <!-- <span>{{ countRegisters }} Productos Creados</span> -->
                 </div>
             </div>
@@ -79,7 +79,6 @@
 <!--Crear-->
 <p-dialog header="Nuevo Tipo de Habitación" [(visible)]="visibleModalTypeRoom" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12">
-        <h5>Completa el formulario</h5>
         <form [formGroup]="formCreateTypeRoom" >
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-6">
@@ -91,7 +90,7 @@
 					<label>Hotel</label>
 					<p-dropdown [options]="hotel" optionLabel="nombre" formControlName="hotel_id" ></p-dropdown>
                     <div style="color: red;" *ngIf="formCreateTypeRoom.get('hotel_id').hasError('required')">Campo requerido</div>
-                </div>  
+                </div>
             </div>
             <br>
         </form>
@@ -100,22 +99,22 @@
             <div class="col-12 md:col-4">
                 <p-radioButton name="puerta" value="puerta1" [(ngModel)]="valPuerta" id="puerta1"></p-radioButton>
                 <label for="puerta1">  Puerta 1  </label>
-                <div class="field-radiobutton"> 
-                    <img src="assets/puertas/puerta1.jpg" width="100%" height="80%"> 
+                <div class="field-radiobutton">
+                    <img src="assets/puertas/puerta1.jpg" width="100%" height="80%">
                 </div>
             </div>
             <div class="col-12 md:col-4">
                 <p-radioButton name="puerta" value="puerta2" [(ngModel)]="valPuerta" id="puerta2"></p-radioButton>
                 <label for="puerta3">  Puerta 2 </label>
                 <div class="field-radiobutton">
-                    <img src="assets/puertas/puerta2.jpg" width="100%" height="80%">  
+                    <img src="assets/puertas/puerta2.jpg" width="100%" height="80%">
                 </div>
             </div>
             <div class="col-12 md:col-4">
                 <p-radioButton name="puerta" value="puerta3" [(ngModel)]="valPuerta"  id="puerta3"></p-radioButton>
                 <label for="puerta2">  Puerta 3  </label>
-                <div class="field-radiobutton"> 
-                    <img src="assets/puertas/puerta3.jpg" width="100%" height="80%"> 
+                <div class="field-radiobutton">
+                    <img src="assets/puertas/puerta3.jpg" width="100%" height="80%">
                 </div>
             </div>
         </div>
@@ -127,7 +126,6 @@
 <!--Editar-->
 <p-dialog header="Editar Tipo de Hotel" [(visible)]="visibleModalTypeRoomEditar"  [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12">
-        <h5>Completa el formulario</h5>
         <form [formGroup]="formEditTypeRoom" >
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-6">
@@ -148,22 +146,22 @@
             <div class="col-12 md:col-4">
                 <p-radioButton name="puerta" value="puerta1" [(ngModel)]="valPuerta" id="puerta1"></p-radioButton>
                 <label for="puerta1">  Puerta 1  </label>
-                <div class="field-radiobutton"> 
-                    <img src="assets/puertas/puerta1.jpg" width="100%" height="80%"> 
+                <div class="field-radiobutton">
+                    <img src="assets/puertas/puerta1.jpg" width="100%" height="80%">
                 </div>
             </div>
             <div class="col-12 md:col-4">
                 <p-radioButton name="puerta" value="puerta2" [(ngModel)]="valPuerta" id="puerta2"></p-radioButton>
                 <label for="puerta3">  Puerta 2  </label>
                 <div class="field-radiobutton">
-                    <img src="assets/puertas/puerta2.jpg" width="100%" height="80%">  
+                    <img src="assets/puertas/puerta2.jpg" width="100%" height="80%">
                 </div>
             </div>
             <div class="col-12 md:col-4">
                 <p-radioButton name="puerta" value="puerta3" [(ngModel)]="valPuerta"  id="puerta3"></p-radioButton>
                 <label for="puerta2">  Puerta 3  </label>
-                <div class="field-radiobutton"> 
-                    <img src="assets/puertas/puerta3.jpg" width="100%" height="80%"> 
+                <div class="field-radiobutton">
+                    <img src="assets/puertas/puerta3.jpg" width="100%" height="80%">
                 </div>
             </div>
         </div>

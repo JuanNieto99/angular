@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { InventoryRoutingModule } from './inventory-routing.module';
-import { InventoryComponent } from './inventory.component';
 import { TableModule } from 'primeng/table';
 import { FileUploadModule } from 'primeng/fileupload';
 import { ButtonModule } from 'primeng/button';
@@ -16,13 +14,17 @@ import { DropdownModule } from 'primeng/dropdown';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
-import { WalletService } from 'src/app/content/service/admin/wallet.service';
-import { InventoryService } from 'src/app/content/service/dashboard/inventory.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AdminInterceptor } from '../../../interceptors/admin.interceptor';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { NgxSpinnerModule } from "ngx-spinner";
+import { PaginatorModule } from 'primeng/paginator';
+import { InventoryRoutingModule } from './inventory-routing.module';
+import { InventoryService } from 'src/app/content/service/dashboard/inventory.service';
 import { HotelsService } from 'src/app/content/service/admin/hotels.service';
+import { InventoryComponent } from './inventory.component';
+
 
 @NgModule({
     imports: [
@@ -44,14 +46,16 @@ import { HotelsService } from 'src/app/content/service/admin/hotels.service';
         DialogModule,
         SweetAlert2Module.forRoot(),
         ReactiveFormsModule, // import ReactiveFormsModule
+        NgxSpinnerModule,
+        PaginatorModule
     ],
     providers: [
         {
             provide:HTTP_INTERCEPTORS,
             useClass:AdminInterceptor,
             multi:true
-        }, 
-        WalletService, InventoryService, HotelsService
+        },
+        InventoryService, HotelsService
     ],
     declarations: [InventoryComponent]
 })

@@ -129,7 +129,7 @@ export class CustomersComponent {
             if (response.code == 'success') {
                 Swal.fire({
                     title: 'Exito',
-                    text: 'Producto creado exitosamente.',
+                    text: 'Cliente creado exitosamente.',
                     icon: 'success',
                 });
 
@@ -137,7 +137,7 @@ export class CustomersComponent {
             } else {
                 Swal.fire({
                     title: 'Error',
-                    text: 'Error al crear el producto.',
+                    text: 'Error al crear el cliente.',
                     icon: 'error',
                 });
             }

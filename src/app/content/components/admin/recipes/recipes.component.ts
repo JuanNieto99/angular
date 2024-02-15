@@ -95,7 +95,7 @@ export class RecipesComponent {
                 if (response.code == 'success') {
                     Swal.fire({
                         title: 'Éxito',
-                        text: 'Habitación creada exitosamente.',
+                        text: 'Receta creada exitosamente.',
                         icon: 'success',
                     });
 
@@ -103,7 +103,7 @@ export class RecipesComponent {
                 } else {
                     Swal.fire({
                         title: 'Error',
-                        text: 'Error al crear la habitación.',
+                        text: 'Error al crear la receta.',
                         icon: 'error',
                     });
                 }
@@ -180,7 +180,7 @@ export class RecipesComponent {
                 if (response.code == 'success') {
                     Swal.fire({
                         title: 'Éxito',
-                        text: 'Producto actualizado exitosamente.',
+                        text: 'Receta actualizado exitosamente.',
                         icon: 'success',
                     });
 
@@ -188,7 +188,7 @@ export class RecipesComponent {
                 } else {
                     Swal.fire({
                         title: 'Error',
-                        text: 'Error al actualizar el producto.',
+                        text: 'Error al actualizar la receta.',
                         icon: 'error',
                     });
                 }

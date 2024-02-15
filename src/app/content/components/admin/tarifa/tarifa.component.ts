@@ -93,7 +93,7 @@ onCreate() {
     this.tarifaService.getTarifas(0).subscribe(
         (response: any) => {
         this.hotel = response.hotel;
-        
+
         this.tipo = response.tipo_habitacion;
         this.visibleModalTarifa = true;
         },
@@ -107,9 +107,9 @@ newTarifa() {
     this.spinner.show();
     let data = this.formCreateTarifa.value;
 
-    data.hotel_id = data.hotel_id['id']; 
-    data.tipo_habitacion_id = data.tipo_habitacion['id']; 
-    data.tipo = this.disableTipoCrear; 
+    data.hotel_id = data.hotel_id['id'];
+    data.tipo_habitacion_id = data.tipo_habitacion['id'];
+    data.tipo = this.disableTipoCrear;
 
     console.log(data)
 
@@ -140,7 +140,7 @@ newTarifa() {
     );
 }
 
-submitCreate() { 
+submitCreate() {
     if (this.formCreateTarifa.valid) {
         this.newTarifa();
     } else {
@@ -157,7 +157,7 @@ editRooms(id: number) {
         (response: any) => {
             console.log(response)
             this.spinner.hide();
-            this.hotel = response.hotel; 
+            this.hotel = response.hotel;
             this.tipo = response.tipo_habitacion;
 
             this.formEditTarifa.setValue({
@@ -171,20 +171,20 @@ editRooms(id: number) {
             });
 
             if(this.toggleButtonEdit){
-    
+
             if(response.tarifa.tipo==2){
                 if(this.toggleButtonEdit.checked){
                     const dummyEvent = new MouseEvent('click'); // Crear un evento de clic simulado
                     this.toggleButtonEdit.toggle(dummyEvent);
-                } 
+                }
             }
 
-                if(response.tarifa.tipo==1){ 
+                if(response.tarifa.tipo==1){
                     if(!this.toggleButtonEdit.checked){
                         const dummyEvent = new MouseEvent('click'); // Crear un evento de clic simulado
                         this.toggleButtonEdit.toggle(dummyEvent);
-                    }  
-                } 
+                    }
+                }
             }
 
             setTimeout(() => {
@@ -200,10 +200,10 @@ editRooms(id: number) {
 updateRoom() {
     this.spinner.show();
     let data = this.formEditTarifa.value;
-    data.hotel_id = data.hotel_id['id']; 
-    data.tipo_habitacion_id = data.tipo_habitacion['id']; 
-    data.tipo = this.toggleButtonEdit.checked?1:2; 
-    data.id = this.idEditando; 
+    data.hotel_id = data.hotel_id['id'];
+    data.tipo_habitacion_id = data.tipo_habitacion['id'];
+    data.tipo = this.toggleButtonEdit.checked?1:2;
+    data.id = this.idEditando;
 
     this.tarifaService.update(data).subscribe(
         (response: any) => {
@@ -258,7 +258,7 @@ confirmDelete(id:number){
 
                 Swal.fire({
                     title: "Exito",
-                    text: "Habitación eliminada exitosamente.",
+                    text: "Tarifa eliminada exitosamente.",
                     icon: "success"
                 });
 
@@ -268,7 +268,7 @@ confirmDelete(id:number){
 
                 Swal.fire({
                     title: "Error",
-                    text: "Error al eliminar la habitación." ,
+                    text: "Error al eliminar la tarifa." ,
                     icon: "error"
                 });
 
@@ -294,20 +294,20 @@ buildForm() {
         hotel_id: ['', [Validators.required]],
         nombre: ['', [Validators.required]],
         descripcion: ['', [Validators.required]],
-        tipo: ['', []], 
-        valor: ['', [Validators.required]], 
-        cantidad: ['', [Validators.required]], 
-        tipo_habitacion: [''], 
+        tipo: ['', []],
+        valor: ['', [Validators.required]],
+        cantidad: ['', [Validators.required]],
+        tipo_habitacion: [''],
     });
 
     this.formEditTarifa = this.FB.group({
         hotel_id: ['', [Validators.required]],
         nombre: ['', [Validators.required]],
         descripcion: ['', [Validators.required]],
-        tipo: ['', []], 
-        valor: ['', [Validators.required]], 
-        cantidad: ['', [Validators.required]], 
-        tipo_habitacion: [''], 
+        tipo: ['', []],
+        valor: ['', [Validators.required]],
+        cantidad: ['', [Validators.required]],
+        tipo_habitacion: [''],
     });
 }
 
@@ -371,7 +371,7 @@ validatePage(){
     }
 }
 
-onToggleCreateChange($event){ 
+onToggleCreateChange($event){
 
     if(!$event.checked){
         this.disableTipoCrear = 2;

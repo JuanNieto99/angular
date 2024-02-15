@@ -84,7 +84,6 @@
 <!--Crear-->
 <p-dialog header="Secuencia Interna" [(visible)]="visibleModalInternalSequence" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12">
-        <h5>Completa el formulario</h5>
         <form [formGroup]="formCreateInternalSequence" (ngSubmit)="submitCreate()">
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-6">
@@ -118,7 +117,6 @@
 <!--Editar-->
 <p-dialog header="Editar Secuencia Interna" [(visible)]="visibleModalInternalSequenceEditar"  [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12">
-        <h5>Completa el formulario</h5>
         <form [formGroup]="formEditInternalSequence" (ngSubmit)="submitUpdate()">
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-6">

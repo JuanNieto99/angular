@@ -101,7 +101,6 @@
 </div>
 <p-dialog header="Crear Hotel" [(visible)]="crearH" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12">
-        <h5>Completa el formulario</h5>
         <form [formGroup]="formNewHotel" (ngSubmit)="createHotel()">
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-4">
