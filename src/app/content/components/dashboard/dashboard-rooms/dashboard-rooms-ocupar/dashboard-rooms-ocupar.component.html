@@ -5,7 +5,7 @@
     <div class="p-toolbar-group-left flex flex-wrap">
     </div>
     <div class="p-toolbar-group-right">
-        <p-splitButton label="Opciones"  [model]="items"></p-splitButton>
+        <p-splitButton [label]="estadoHabitacion?.estado_id == 2? 'Guardar':undefined" (onClick)="submitAll()"   [model]="items"></p-splitButton>
     </div>
     <form [formGroup]="form">
         <div class="p-fluid p-formgrid grid">
@@ -34,9 +34,9 @@
             </div> 
         </div> 
     </form>
+    <p-message severity="error" class="padding" text="El total de abonos no puede ser mallor al total a pagar" *ngIf="abonosTotal>tarifasTotal" ></p-message>   
+
 </p-toolbar>
-
-
 
 <div class="field col-12 md:col-12">
     <table>
@@ -50,14 +50,14 @@
             <th> Tarifas</th>
             <th> $ {{ tarifasTotal }} </th>
             <td>
-            <div class="ordenAdd">
+            <div class="ordenAdd" *ngIf="estadoHabitacion?.estado_id == 2">
                 <button pButton pRipple (click)="addTarifa()" class="p-button" icon="pi pi-plus"></button>
             </div>
             <table>
                 <thead>
                     <th>Nombre</th>
                     <th>Precio</th>
-                    <th>Opcion</th>
+                    <th *ngIf="estadoHabitacion?.estado_id == 2">Opcion</th>
                 </thead>
                 <tbody *ngFor="let tarifasArray of dataTarifa; let i = index">
                     <td>
@@ -66,8 +66,8 @@
                     <td>
                         {{ tarifasArray?.valor }}
                     </td>
-                    <td>
-                        <p-button (click)="confirmDeleteTarida(tarifasArray.identificador)" icon="pi pi-trash" severity="danger"></p-button>
+                    <td *ngIf="estadoHabitacion?.estado_id == 2">
+                        <p-button (click)="confirmDeleteTarifa(tarifasArray.id)" icon="pi pi-trash" severity="danger"></p-button>
                     </td>
                 </tbody>
             </table>
@@ -77,7 +77,7 @@
             <th> Productos / Servicios</th>
             <th> $ {{ totalProductos }} </th>
             <td>
-            <div class="ordenAdd">
+            <div class="ordenAdd" *ngIf="estadoHabitacion?.estado_id == 2">
                 <button pButton pRipple (click)="addProductos()" class="p-button" icon="pi pi-plus"></button>
             </div>
             <table>
@@ -85,7 +85,7 @@
                     <th>Nombre</th>
                     <th>Precio</th>
                     <th>Cantidad</th>
-                    <th>Opcion</th>
+                    <th *ngIf="estadoHabitacion?.estado_id == 2">Opcion</th>
                 </thead>
                 <tbody *ngFor="let productosArray of dataProductos; let i = index">
                     <td>
@@ -97,7 +97,7 @@
                     <td>
                         {{ productosArray?.cantidad }}
                     </td>
-                    <td>
+                    <td *ngIf="estadoHabitacion?.estado_id == 2">
                         <p-button (click)="confirmDeleteProductos(productosArray.identificador)" icon="pi pi-trash" severity="danger"></p-button>
                     </td>
                 </tbody>
@@ -108,14 +108,14 @@
             <th> Abonos</th>
             <th> $ {{ abonosTotal }} </th>
             <td>
-                <div class="ordenAdd">
+                <div class="ordenAdd" *ngIf="estadoHabitacion?.estado_id == 2">
                     <button pButton pRipple (click)="addAbonos()" class="p-button" icon="pi pi-plus"></button>
                 </div>
             <table>
                 <thead>
                     <th>Monto</th>
                     <th>Metodo Pago</th>
-                    <th>Opcion</th>
+                    <th *ngIf="estadoHabitacion?.estado_id == 2">Opcion</th>
                 </thead>
                 <tbody *ngFor="let metodosPagoArray of dataAbonos; let i = index">
                     <td>
@@ -124,7 +124,7 @@
                     <td>
                         {{ metodosPagoArray?.nombre  }}
                     </td>
-                    <td>
+                    <td *ngIf="estadoHabitacion?.estado_id == 2">
                         <p-button (click)="confirmDeleteAbono(metodosPagoArray.identificador)" icon="pi pi-trash" severity="danger"></p-button>
                     </td>
                 </tbody>
@@ -224,4 +224,39 @@
             </div>
         </form>
 	</div>
+</p-dialog>
+
+<p-dialog header="Facturar " [(visible)]="facturarVisible" [modal]="true" [style]="{ width: '50vw', height: '40vw' }" [draggable]="true" [resizable]="true">
+        <button pButton pRipple type="button" (click)="agregarAbonoOcupar()" icon="pi pi-plus" class="p-button-rounded"></button>
+        <br><br>   
+        <div class="field col-12 md:col-12">
+
+            <div class="grid formgrid" *ngFor="let formGroupOcupar of formFacturacionMediosPago.controls; let i = index" [formGroup]="formGroupOcupar">
+                <div class="col-12 mb-5 lg:col-5 lg:mb-5">
+                    <label for="monto">Monto</label>
+                    <br>
+                    <input type="number" id="monto" formControlName="monto" pInputText placeholder="Valor" (input)="changeMedioPagoFactura()"  class="expandir" >
+                    <br>
+                    <div *ngIf="formGroupOcupar?.controls['monto']?.errors?.['required']" style="color: red;">Nombre es requerido.</div>
+                </div>
+
+                <div class="col-12 mb-5 lg:col-5 lg:mb-5">
+                    <label htmlFor="medioPago">Medio Pago</label>
+                    <br>
+                    <p-dropdown [options]="dataMetodosPago" class="expandir" formControlName="medio_pago"  id="medioPago"  optionLabel="nombre" ></p-dropdown>                        
+                </div>
+
+                <div class="col-12 mb-2 lg:col-2 lg:mb-5"  >
+                    <label htmlFor="opciones"></label>
+                    <br>
+                    <p-button (click)="eliminarMedioPagoAbono(i)" id="opciones" icon="pi pi-trash" severity="danger"></p-button>
+                </div>
+            </div>
+        </div>
+    
+         <p-message severity="info" class="padding" text="El total ingresado no es igual al total a Pagar" *ngIf="totalFactura!=(this.tarifasTotal-this.abonosTotal)" ></p-message>   
+
+    <div class="field col-12 md:col-12">
+        <button pButton pRipple [label]="'Pagar '+(this.tarifasTotal-this.abonosTotal)"  [disabled]="this.formFacturacionMediosPago.invalid || totalFactura!=(this.tarifasTotal-this.abonosTotal)" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+    </div>
 </p-dialog>
