@@ -1,4 +1,227 @@
 
-<ngx-spinner type="ball-scale-multiple" fullScreen="true">
+<h2>Detalle Ocupacion</h2>
+
+<p-toolbar>
+    <div class="p-toolbar-group-left flex flex-wrap">
+    </div>
+    <div class="p-toolbar-group-right">
+        <p-splitButton label="Opciones"  [model]="items"></p-splitButton>
+    </div>
+    <form [formGroup]="form">
+        <div class="p-fluid p-formgrid grid">
+            <div class="field col-12 md:col-3">
+                <label>Nombre Habitacion</label>
+                <input type="text" formControlName="nombreHabitacion"  pInputText class="w-full mb-3 border-round-3xl" >
+            </div>    
+            <div class="field col-12 md:col-3">
+                <label> CheckIn </label>
+                <input type="text" formControlName="desde"  pInputText class="w-full mb-3 border-round-3xl"  >
+            </div> 
     
-</ngx-spinner><p>dashboard-rooms-ocupar works!</p>
+            <div class="field col-12 md:col-3">
+                <label> CheckOut </label>
+                <input type="text" formControlName="hasta"  pInputText class="w-full mb-3 border-round-3xl"  >
+            </div> 
+    
+            <div class="field col-12 md:col-3">
+                <label>Nombre Cliente</label>
+                <input type="text" formControlName="nombreCliente"  pInputText class="w-full mb-3 border-round-3xl"  >
+            </div> 
+    
+            <div class="field col-12 md:col-12">
+                <label>Descripcion</label>
+                <textarea formControlName="descripcion" pInputTextarea  required rows="3" cols="20"></textarea>
+            </div> 
+        </div> 
+    </form>
+</p-toolbar>
+
+
+
+<div class="field col-12 md:col-12">
+    <table>
+        <tr>
+            <th style="width: 20%;">Nombre</th>
+            <th>Valores</th>
+            <th>Detalle</th>
+        </tr>
+        
+        <tr>
+            <th> Tarifas</th>
+            <th> $ {{ tarifasTotal }} </th>
+            <td>
+            <div class="ordenAdd">
+                <button pButton pRipple (click)="addTarifa()" class="p-button" icon="pi pi-plus"></button>
+            </div>
+            <table>
+                <thead>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Opcion</th>
+                </thead>
+                <tbody *ngFor="let tarifasArray of dataTarifa; let i = index">
+                    <td>
+                        {{ tarifasArray?.nombre }}
+                    </td>
+                    <td>
+                        {{ tarifasArray?.valor }}
+                    </td>
+                    <td>
+                        <p-button (click)="confirmDeleteTarida(tarifasArray.identificador)" icon="pi pi-trash" severity="danger"></p-button>
+                    </td>
+                </tbody>
+            </table>
+            </td>
+        </tr>
+        <tr>
+            <th> Productos / Servicios</th>
+            <th> $ {{ totalProductos }} </th>
+            <td>
+            <div class="ordenAdd">
+                <button pButton pRipple (click)="addProductos()" class="p-button" icon="pi pi-plus"></button>
+            </div>
+            <table>
+                <thead>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Opcion</th>
+                </thead>
+                <tbody *ngFor="let productosArray of dataProductos; let i = index">
+                    <td>
+                        {{ productosArray?.nombre }}
+                    </td> 
+                    <td>
+                        {{ productosArray?.valor }}
+                    </td>
+                    <td>
+                        {{ productosArray?.cantidad }}
+                    </td>
+                    <td>
+                        <p-button (click)="confirmDeleteProductos(productosArray.identificador)" icon="pi pi-trash" severity="danger"></p-button>
+                    </td>
+                </tbody>
+            </table>
+            </td>
+        </tr>
+        <tr>
+            <th> Abonos</th>
+            <th> $ {{ abonosTotal }} </th>
+            <td>
+                <div class="ordenAdd">
+                    <button pButton pRipple (click)="addAbonos()" class="p-button" icon="pi pi-plus"></button>
+                </div>
+            <table>
+                <thead>
+                    <th>Monto</th>
+                    <th>Metodo Pago</th>
+                    <th>Opcion</th>
+                </thead>
+                <tbody *ngFor="let metodosPagoArray of dataAbonos; let i = index">
+                    <td>
+                        {{ metodosPagoArray?.valor }}
+                    </td>
+                    <td>
+                        {{ metodosPagoArray?.nombre  }}
+                    </td>
+                    <td>
+                        <p-button (click)="confirmDeleteAbono(metodosPagoArray.identificador)" icon="pi pi-trash" severity="danger"></p-button>
+                    </td>
+                </tbody>
+            </table>
+            </td>
+        </tr>
+        <tr>
+            <th> Sub Total</th>
+            <th> $ {{ totalPagarReserva <= 0?0: totalPagarReserva}} </th>
+            <td> 
+            </td>
+        </tr>
+        <tr>
+            <th> Total</th>
+            <th> $ {{ totalPagarReserva - abonosTotal <= 0?0: totalPagarReserva - abonosTotal}} </th>
+            <td> 
+            </td>
+        </tr>
+    </table> 
+</div>
+
+<p-dialog header="Agregar Tarifa" [(visible)]="tarifaVisible" [modal]="true" [style]="{ width: '50vw', height: '40vw' }" [draggable]="true" [resizable]="true">
+    <div class="col-12">
+        <form [formGroup]="formTarifa" (ngSubmit)="submitTarifa()">
+            <div class="p-fluid p-formgrid grid"> 
+                <div class="field col-12 md:col-12">
+                    <label>Tarifa</label>
+                    <p-multiSelect [options]="allTarifas"  formControlName="tarifa_id"  optionLabel="nombre" placeholder="Buscar Tarifa" optionLabel="nombre" class="multiselect-custom"   emptyMessage="Tarifa no encontrada" display="chip">
+                        <ng-template let-tarifa pTemplate="item">
+                            <div class="flex align-items-center">
+                                <span class="ml-2">
+                                    {{ tarifa.nombre }}   
+                                    <p-tag icon="{{tarifa.icon}}"  class="padding" value="{{ tarifa.valor }}" ></p-tag>  
+                                    <div *ngIf="tarifa.tipo==2"><h5>Hora</h5></div> 
+                                    <div *ngIf="tarifa.tipo==1"><h5>Noche</h5></div>
+                                </span> 
+                            </div>
+                        </ng-template>
+                    </p-multiSelect>
+                </div>
+                <div class="field col-12 md:col-12">
+                    <button pButton pRipple label="Agregar" [disabled]="this.formTarifa.invalid" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                </div>
+            </div>
+        </form>
+	</div>
+</p-dialog>
+
+<p-dialog header="Agregar Producto" [(visible)]="productoVisible" [modal]="true" [style]="{ width: '50vw', height: '40vw' }" [draggable]="true" [resizable]="true">
+    <div class="col-12">
+        <form [formGroup]="formProducto" (ngSubmit)="submitProducto()">
+            <div class="p-fluid p-formgrid grid">  
+                <div class="field col-12 md:col-6">
+                    <label for="cliente">Producto / Servicio</label>
+                    <p-multiSelect [options]="productoData"  formControlName="producto_id" selectionLimit="1"  limoptionLabel="nombre" placeholder="Buscar Producto/Servicio" optionLabel="nombre" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
+                        <ng-template let-producto pTemplate="item">
+                            <div class="flex align-items-center">
+                                <span class="ml-2">{{producto.nombre}}</span>
+                                <p-tag class="padding" value="{{ producto.valor }}" ></p-tag>  
+                            </div>
+                        </ng-template>
+                    </p-multiSelect>
+                </div> 
+                <div class="field col-12 md:col-6">
+                    <label>Cantidad</label>
+                    <input type="number" formControlName="cantidad"  pInputText class="w-full mb-3 border-round-3xl"  >
+                </div>
+                <div class="field col-12 md:col-12">
+                    <button pButton pRipple label="Agregar"  [disabled]="this.formProducto.invalid" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                </div>
+            </div>
+        </form>
+	</div>
+</p-dialog>
+
+<p-dialog header="Abonos " [(visible)]="abonoVisible" [modal]="true" [style]="{ width: '50vw', height: '40vw' }" [draggable]="true" [resizable]="true">
+    <div class="col-12">
+        <form [formGroup]="formMetodoPago" (ngSubmit)="submitAbono()">
+            <div class="p-fluid p-formgrid grid">  
+                <div class="field col-12 md:col-6">
+                    <label for="cliente">Metodo Pago</label>
+                    <p-multiSelect [options]="dataMetodosPago"  formControlName="metodo_pago_id" selectionLimit="1"  limoptionLabel="nombre" placeholder="Buscar Producto/Servicio" optionLabel="nombre" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
+                        <ng-template let-metodoPago pTemplate="item">
+                            <div class="flex align-items-center">
+                                <span class="ml-2">{{metodoPago.nombre}}</span>
+                            </div>
+                        </ng-template>
+                    </p-multiSelect>
+                </div> 
+                <div class="field col-12 md:col-6">
+                    <label>Monto</label>
+                    <input type="number" formControlName="valor"  pInputText class="w-full mb-3 border-round-3xl"  >
+                </div>
+                <div class="field col-12 md:col-12">
+                    <button pButton pRipple label="Agregar"  [disabled]="this.formMetodoPago.invalid" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                </div>
+            </div>
+        </form>
+	</div>
+</p-dialog>

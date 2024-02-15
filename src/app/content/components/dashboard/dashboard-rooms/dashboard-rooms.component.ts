@@ -54,10 +54,10 @@ export class DashboardRoomsComponent implements OnInit  {
   @ViewChild('op1') op1: OverlayPanel;
   @ViewChild('clienteMultiSelectReservar') clienteMultiSelectReservar: MultiSelect;
   @ViewChild('clienteMultiSelectTarifa') clienteMultiSelectTarifa: MultiSelect;
-  @ViewChild('clienteMultiSelectProducto') clienteMultiSelectProducto: MultiSelect;
+ // @ViewChild('clienteMultiSelectProducto') clienteMultiSelectProducto: MultiSelect;
   @ViewChild('clienteMultiSelectOcupar') clienteMultiSelectOcupar: MultiSelect;
   @ViewChild('tarifaMultiSelectOcupar') tarifaMultiSelectOcupar: MultiSelect;
-  @ViewChild('productoMultiSelectOcupar') productoMultiSelectOcupar: MultiSelect; 
+ // @ViewChild('productoMultiSelectOcupar') productoMultiSelectOcupar: MultiSelect; 
 
   public dayNamesSpanish = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
   public dayNamesShortSpanish = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
@@ -456,7 +456,7 @@ export class DashboardRoomsComponent implements OnInit  {
         id: '5',
         command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
         visible: true,
-        disabled: estadoHabitaciones.includes(7)? true :!estadoHabitaciones.includes(2)?false:true,
+        disabled: false, //estadoHabitaciones.includes(7)? true :!estadoHabitaciones.includes(2)?false:true,
       }) 
     }
   
@@ -558,7 +558,7 @@ let yaEstaReservada = false;
                 id: '5',
                 command: (event: MenuItemCommandEvent) => this.opcionSeleccionada(event, habitacion),
                 visible: true,
-                disabled: !estadoHabitaciones.includes(2)?false:true,
+                disabled: false, //!estadoHabitaciones.includes(2)?false:true,
               }) 
 
               yaEstaReservada = true;
@@ -990,8 +990,8 @@ let yaEstaReservada = false;
       estadoHabitaciones.push(element.estado_id)
     });
 
-    if(estadoHabitaciones.includes(5)){
-      this.getReserva()
+    //if(estadoHabitaciones.includes(5)){
+      this.getReserva();
 
     /* Swal.fire({
         title: "¿La habitacion esta reservada par ahoy por desea hacerle checkin?",
@@ -1018,7 +1018,7 @@ let yaEstaReservada = false;
     } else {
       this.getReserva();  
     }*/
-    }
+   // }
   }
 
 
@@ -1037,14 +1037,14 @@ let yaEstaReservada = false;
         this.clienteMultiSelectReservar.uncheckAll();
         this.clienteMultiSelectTarifa.checkAll(); 
         this.clienteMultiSelectTarifa.uncheckAll();
-        this.clienteMultiSelectProducto.checkAll(); 
-        this.clienteMultiSelectProducto.uncheckAll();
+       // this.clienteMultiSelectProducto.checkAll(); 
+        //this.clienteMultiSelectProducto.uncheckAll();
         this.clienteMultiSelectOcupar.checkAll(); 
         this.clienteMultiSelectOcupar.uncheckAll(); 
         this.tarifaMultiSelectOcupar.checkAll();
         this.tarifaMultiSelectOcupar.uncheckAll();
-        this.productoMultiSelectOcupar.checkAll(); 
-        this.productoMultiSelectOcupar.uncheckAll(); 
+       // this.productoMultiSelectOcupar.checkAll(); 
+       /// this.productoMultiSelectOcupar.uncheckAll(); 
         
         this.selectMedioPago = []; 
         this.tarifaData = [];
@@ -1387,7 +1387,7 @@ let yaEstaReservada = false;
     let subtotal = this.totalPagarReserva;
     let total = this.totalPagarReserva - this.abonosTotal;
     let tarifas = this.clienteMultiSelectTarifa.value;
-    let productos = this.clienteMultiSelectProducto.value;
+    //let productos = this.clienteMultiSelectProducto.value;
 
     let reservar = {
       fecha_inicio: fechaInicio,
@@ -1396,7 +1396,7 @@ let yaEstaReservada = false;
       total: total,
       subtotal: subtotal,
       tarifas: tarifas,
-      productos: productos,
+      productos: [],
       descripcion: this.descripcionReserva,
       habitacion_id: this.habitacionId,
       hotel_id: this.hotelId,
@@ -1417,14 +1417,14 @@ let yaEstaReservada = false;
     let total = this.totalPagarOcupar- this.abonosTotalOcupar;
     let subtotal = this.totalPagarOcupar;
     let tarifas = this.tarifaMultiSelectOcupar.value;
-    let productos = this.productoMultiSelectOcupar.value;
+   // let productos = this.productoMultiSelectOcupar.value;
   
     let reservar = {
       cliente_id: cliente,
       total: total,
       subtotal: subtotal,
       tarifas: tarifas,
-      productos: productos,
+      productos: [],
       descripcion: this.formReserva.get('descripcionReserva').value,
       habitacion_id: this.habitacionId,
       hotel_id: this.hotelId,

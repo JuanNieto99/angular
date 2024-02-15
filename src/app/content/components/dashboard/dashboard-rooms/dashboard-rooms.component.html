@@ -90,17 +90,16 @@
                     </p-multiSelect>
                 </div>
 
-                <div class="field col-12 md:col-12">
+                <!--div-- class="field col-12 md:col-12">
                     <label for="cliente">Producto / Servicio</label>
-                    <!-- (onFilter)="busquedaProductoServicio($event)" (onChange)="checkProductoServicio($event)"-->
-                    <p-multiSelect [options]="ProductoServicioData" #clienteMultiSelectProducto   optionLabel="name" (onChange)="checkProducto($event)"  placeholder="Buscar Producto/Servicio" optionLabel="name" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
+                     <p-multiSelect [options]="ProductoServicioData" #clienteMultiSelectProducto   optionLabel="name" (onChange)="checkProducto($event)"  placeholder="Buscar Producto/Servicio" optionLabel="name" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
                         <ng-template let-producto pTemplate="item">
                             <div class="flex align-items-center">
                                 <span class="ml-2">{{producto.name}} <p-tag class="padding" value="{{ producto.valor }}"></p-tag>  </span>
                             </div>
                         </ng-template>
                     </p-multiSelect>
-                </div>
+                </!--div-->
                 <div class="field col-12 md:col-12">
                     <p-panel header="Abonos $ {{abonosTotal}}" [toggleable]="true" [collapsed]="true"   >
                         <button pButton pRipple type="button" (click)="agregarAbono()" icon="pi pi-plus" class="p-button-rounded"></button>
@@ -157,7 +156,7 @@
                             <th>Valores</th>
                             <td>Detalle</td>
                         </tr>
-                        <tr>
+                        <!--tr>
                             <th> Productos / Servicios</th>
                             <th> $ {{ productosTotal }} </th>
                             <td>
@@ -177,7 +176,7 @@
                                 </table>
 
                             </td> 
-                        </tr>
+                        </!--tr-->
                         <tr>
                             <th> Tarifas</th>
                             <th> $ {{ tarifasTotal }} </th>
@@ -353,9 +352,8 @@
                     </p-multiSelect>
                 </div>
 
-                <div class="field col-12 md:col-12">
+                <!--div class="field col-12 md:col-12">
                     <label for="cliente">Producto / Servicio</label>
-                    <!-- (onFilter)="busquedaProductoServicio($event)" (onChange)="checkProductoServicio($event)"-->
                     <p-multiSelect [options]="ProductoServicioData" #productoMultiSelectOcupar (onChange)="checkProductoOcupar($event)" optionLabel="name" placeholder="Buscar Producto/Servicio" optionLabel="name" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
                         <ng-template let-producto pTemplate="item">
                             <div class="flex align-items-center">
@@ -363,7 +361,7 @@
                             </div>
                         </ng-template>
                     </p-multiSelect>
-                </div>
+                </!--div-->
 
                 <div class="field col-12 md:col-12">
                     <p-panel header="Abonos" [toggleable]="true" [collapsed]="true"   >

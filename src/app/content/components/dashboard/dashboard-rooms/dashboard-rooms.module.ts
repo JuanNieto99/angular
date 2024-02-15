@@ -35,6 +35,7 @@ import { PanelModule } from 'primeng/panel';
 import { MessageModule } from 'primeng/message'; 
 import { DatePipe } from '@angular/common';
 import { DashboardRoomsOcuparComponent } from './dashboard-rooms-ocupar/dashboard-rooms-ocupar.component';   
+import { SplitButtonModule } from 'primeng/splitbutton';
 
 @NgModule({ 
   imports: [
@@ -68,6 +69,7 @@ import { DashboardRoomsOcuparComponent } from './dashboard-rooms-ocupar/dashboar
     ChipModule,
     ChipsModule,
     MessageModule, 
+    SplitButtonModule
   ],
     providers: [
       {
