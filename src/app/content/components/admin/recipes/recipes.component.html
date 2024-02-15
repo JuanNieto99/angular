@@ -38,9 +38,6 @@
                 </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
-                        <th style="width: 3rem">
-                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                        </th>
                         <th>Hotel</th>
                         <th>Nombre</th>
                         <th>Precio</th>
@@ -50,9 +47,6 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-recipes>
                     <tr>
-                        <td>
-                            <p-tableCheckbox [value]="recipesData"></p-tableCheckbox>
-                        </td>
                         <td>{{ recipes.hotel.nombre }}</td>
                         <td>{{ recipes.nombre }} </td>
                         <td>{{ recipes.precio | currency:'COP':'':'1.0-0'}}</td>

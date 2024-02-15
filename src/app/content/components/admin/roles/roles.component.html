@@ -37,9 +37,6 @@
                 </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
-                        <th style="width: 3rem">
-                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                        </th>
                         <th>Nombre</th>
                         <th>Descripción</th>
                         <th>Acciones</th>
@@ -47,9 +44,6 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-rol>
                     <tr>
-                        <td>
-                            <p-tableCheckbox [value]="roles"></p-tableCheckbox>
-                        </td>
                         <td>{{ rol.nombre }}</td>
                         <td>{{ rol.descripcion }}</td>
                         <td class="flex gap-2">

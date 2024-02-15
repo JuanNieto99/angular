@@ -34,9 +34,6 @@
                 </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
-                        <th style="width: 3rem">
-                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                        </th>
                         <th>Hotel</th>
                         <th>Nombre</th>
                         <th>Descripcion</th>
@@ -45,9 +42,6 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-inventory>
                     <tr>
-                        <td>
-                            <p-tableCheckbox [value]="inventories"></p-tableCheckbox>
-                        </td>
                         <td>{{ inventory.hotel ? inventory.hotel.nombre : '' }}</td>
                         <td>{{ inventory.nombre }}</td>
                         <td>{{ inventory.descripcion }}</td>

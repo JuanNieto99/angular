@@ -58,14 +58,14 @@ export class AppMenuComponent implements OnInit {
                                 routerLink: ['/dashboard/products']
                             },
                             {
-                                label: 'Bodegas',
+                                label: 'Inventario',
                                 icon: 'pi pi-fw pi-server',
                                 routerLink: ['/dashboard/inventory']
                             },
                             {label: 'Recetas', icon: 'pi pi-book', routerLink: ['/dashboard/admin/recipes']},
                         ]
                     },
-                    { // 
+                    { //
                         label: 'Administrar',
                         icon: 'pi pi-fw pi-sliders-h',
                         items: [
@@ -79,7 +79,7 @@ export class AppMenuComponent implements OnInit {
                                 },
                                 {
                                     label: 'Cajas Abrir', icon: 'pi pi-wallet', routerLink: ['/dashboard/admin/wallets/detail']
-                                } 
+                                }
                             ] },
                             { label: 'Tipo Habitación', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/typeRooms'] },
                             { label: 'Secuencia Interna', icon: 'pi pi-fw pi-calculator', routerLink: ['/dashboard/admin/internalSequence'] },

@@ -36,9 +36,6 @@
                 </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
-                        <th style="width: 3rem">
-                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                        </th>
                         <th>Nombre</th>
                         <th>Medida</th>
                         <th>Precio</th>
@@ -50,9 +47,6 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-product>
                     <tr>
-                        <td>
-                            <p-tableCheckbox [value]="productsData"></p-tableCheckbox>
-                        </td>
                         <td>{{ product.nombre }}</td>
                         <td>{{ product.medida.nombre }}</td>
                         <td>{{ product.precio }}</td>
