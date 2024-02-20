@@ -1,220 +1,301 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Hotel } from 'src/app/content/models/admin/hotels.model';
+import { Component } from '@angular/core';
 import { WalletService } from 'src/app/content/service/admin/wallet.service';
-import { Wallet } from 'src/app/content/models/admin/wallets.model';
-import { HotelsService } from 'src/app/content/service/admin/hotels.service';
-import { UsersService } from 'src/app/content/service/admin/users.service';
-import { Permit } from 'src/app/content/models/admin/permissions.model';
-import { PermissionsService } from 'src/app/content/service/admin/permissions.service'
-import { BreadcrumbService } from 'src/app/content/service/breadcrumb.service';
-import { DialogModule } from 'primeng/dialog';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { ToastModule } from 'primeng/toast';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import Swal from 'sweetalert2/dist/sweetalert2.all.js';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { Router } from '@angular/router';
+import { tipo } from '../../dashboard/products/products.component';
+
+interface PageEvent {
+    first: number;
+    rows: number;
+    page: number;
+    pageCount: number;
+}
 
 
 @Component({
     selector: 'app-permisssions',
-    templateUrl: './wallets.component.html',
-    providers: [ConfirmationService, MessageService]
+    templateUrl: './wallets.component.html'
 })
-export class WalletsComponent implements OnInit {
+export class WalletsComponent {
 
-    ///// Variables para obtencion de datos
-    public wallets: Wallet[];
-    public totalWallets: any;
-    public walletData: any;
+    public loadingTable: boolean = false;
+    public walletData: any[];
+    public formCreateWallet: FormGroup;
+    public formEditWallet: FormGroup;
+    public visibleModalWallet: boolean = false;
+    public visibleModalWalletEditar: boolean = false;
+    public hotel: any[];
+    public nombre: string;
+    public descripcion: string;
+    public base: number;
+    public tipoCaja: any[];
+    public usuarios: any[];
+    public idEditando: number = 0;
 
-    public hotels: Hotel[];
-    public selectedHotel: any;
-    public tipo:any = 1;
+    //Buscador
 
-    public loadingTable :boolean = true;
-    public first:number = 0;
-    public rows:number = 8;
+    public formSearch: FormGroup;
+
+
+    //Paginador variables
     public pageCount: number = 10;
-    public pageActual: number = 1;
-    public ultimaPage: number = 1;
+    public pageActual:number = 1;
+    public ultimaPage:number = 1;
     public disablePageLeft: boolean = false;
     public disablePageRight: boolean = true;
+    public first:number = 0;
+    public rows:number = 8;
+    public countRegisters: number;
 
-
-    public editarW: boolean = false;
-    public crearW:boolean = false;
-
-    ////// Variables de obtencion de datos
-    public permission: Permit[];
-    public totalPermission:any;
-
-    /// Variables para abrir modals
-    public editarPermit: boolean = false;
-    public crearPermit: boolean = false;
-    public permissionData: any;
-    public param: any;
-
-    ///////// Forms Groups ////////////
-    formSearch= new FormGroup({
-        search: new FormControl ('',[])
-    });
-
-    formNewWallet= new FormGroup({
-        nombre: new FormControl('', Validators.required),
-        descripcion: new FormControl('', Validators.required),
-        base: new FormControl('', Validators.required),
-        estado: new FormControl('', Validators.required),
-        hotel_id: new FormControl('', Validators.required),
-        tipo: new FormControl('', Validators.required)
-    });
-
-    formEditWallet = new FormGroup({
-        nombre: new FormControl('', Validators.required),
-        descripcion: new FormControl('', Validators.required),
-        base: new FormControl('', Validators.required),
-        estado: new FormControl('', Validators.required),
-        hotel_id: new FormControl('', Validators.required),
-        tipo: new FormControl('', Validators.required),
-        id: new FormControl('', Validators.required)
-    });
-
-    changeDetector: any;
-
-    ///////// Forms Groups ////////////
     constructor(
-        private walletService:WalletService,
+        private FB: FormBuilder,
         private spinner: NgxSpinnerService,
-        private permissionsService:PermissionsService,
-        private hotelsService:HotelsService,
-        private confirmationService: ConfirmationService,
-        private toastModule: ToastModule,
-        private dialogModule: DialogModule ,
-        private router: Router,
-        private messageService: MessageService,
-        ) {}
+        private WalletService: WalletService
+    ) {}
 
     ngOnInit(): void {
-        // Inicializamos la consulta de hoteles
+        this.buildForm();
         this.getIndex();
-        // iniciamos la consulta de cajas
-        this.getAllWallets();
-        this.walletService.data.subscribe(wallets => {
-            this.wallets = wallets;
-        });
-
+        this.visibleModalWallet = false;
     }
-    //////// Lista de Hoteles ////////
-    getIndex(search:string = '', pageCount:number = this.pageCount, page: number = 1): void {
+
+    getIndex(search:string = '', pageCount:number = this.pageCount, page: number = 1) {
         this.spinner.show();
-        this.hotelsService.getHotels(pageCount, search, page).subscribe(
+        this.loadingTable = true;
+        this.WalletService.getAll(pageCount, search, page).subscribe(
             (response: any) => {
                 this.loadingTable = false;
-                this.hotels = response.data; 
+                this.walletData = response.data;
+                this.ultimaPage = response.last_page;
+                this.countRegisters = response.total;
+                this.spinner.hide();
             },
             (error) => {
                 console.log('Error: ', error);
+                this.spinner.hide();
             }
         );
     }
-    //////// Crear un nuevo Permiso //////////////////
-    createWallet(){
-        this.formNewWallet.get('hotel_id').setValue(this.selectedHotel.id);
-        this.formNewWallet.get('tipo').setValue(this.tipo);
-        const datos = this.formNewWallet.value;
-        this.walletService.CreateWallet(datos).subscribe(response => {
-            console.log(response);
-            this.walletService.refresWalletsData();
-            this.messageService.add({ severity: 'info', summary: 'Confirmación Exitosa', detail: 'Caja Creada.',sticky: true, life: 200, });
-            this.crearW = false;
-        // this.getAllWallets();
-        }, error => {
-            console.log('Error:', error);
+
+    buildForm() {
+        this.formSearch = this.FB.group({
+            search: ['', []],
+        });
+
+        this.formCreateWallet = this.FB.group({
+            hotel_id: ['', [Validators.required]],
+            nombre: ['', [Validators.required]],
+            descripcion: ['', [Validators.required]],
+            base: ['', [Validators.required]],
+            tipo: ['', [Validators.required]],
+            usuario_id: ['', [Validators.required]] // Aquí se define el control usuario_id
+        });
+
+        this.formEditWallet = this.FB.group({
+            hotel_id: ['', [Validators.required]],
+            nombre: ['', [Validators.required]], // Asegúrate de que este control esté definido
+            descripcion: ['', [Validators.required]],
+            base: ['', [Validators.required]],
+            tipo: ['', [Validators.required]],
+            usuario_id: ['', [Validators.required]]
         });
     }
 
+    //Crear
 
-    /////// Consultar Todos los Permisos  ///////////
-    getAllWallets(): void {
-        this.walletService.getWallets(30).subscribe(
+    openModal() {
+        this.onCreate();
+    }
+
+    onCreate() {
+        this.formCreateWallet.reset();
+        this.WalletService.getWallet(0).subscribe(
             (response: any) => {
-                this.wallets = response.data;
-                this.totalWallets = response.total;
+                this.hotel = response.hotel;
+                this.nombre = response.nombre;
+                this.descripcion = response.descripcion;
+                this.base = response.base;
+                this.tipoCaja = response.tipo_caja; // Asignar los datos de tipo de caja
+                this.usuarios = response.usuario; // Asignar los datos de usuario
+                this.visibleModalWallet = true;
+                console.log('Consulta create'+response)
             },
             (error) => {
                 console.log('Error: ', error);
             }
         );
     }
-    /////////// Consultar 1 hotel  //////////////
-    getWallet(id:number){
-        this.walletService.getWallteEditById(id).subscribe(response => {
-            this.walletData = response;
 
-            let hotel: string;
-            response.hotel.forEach(element => {
-                if(element.id==response.caja.hotel_id){
-                    hotel = element;
+
+    submitCreate() {
+        if (this.formCreateWallet.valid) {
+            this.newWallet();
+        } else {
+            this.formCreateWallet.markAllAsTouched();
+        }
+    }
+
+    newWallet() {
+        this.visibleModalWallet = true;
+        this.spinner.show();
+        let dataWallet = this.formCreateWallet.value;
+
+            dataWallet.hotel_id = dataWallet.hotel_id['id'];
+            dataWallet.usuario_id = dataWallet.usuario_id['id'];
+            dataWallet.tipo = dataWallet.tipo['id'];
+            dataWallet.estado = 1;
+
+            this.WalletService.createWallet(dataWallet).subscribe(
+                (response: any) => {
+                    this.spinner.hide();
+                    this.visibleModalWallet = false;
+                    if (response.code == 'success') {
+                        Swal.fire({
+                            title: 'Exito',
+                            text: 'Caja creada exitosamente.',
+                            icon: 'success',
+                        });
+
+                        this.getIndex();
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Error al crear la caja.',
+                            icon: 'error',
+                        });
+                    }
+            },
+            (error) => {
+                console.log('Error: ', error);
+            }
+        );
+    }
+
+    //Editar
+
+    submitUpdate(){
+        if(this.formEditWallet.valid){
+          this.updateWallet();
+        }
+    }
+
+    editWallet(id: number) {
+        this.idEditando = id;
+        this.spinner.show();
+        this.WalletService.getWallet(id).subscribe(
+            (response: any) => {
+                console.log(response);
+                this.spinner.hide();
+                const caja = response.caja; // Acceder al objeto caja dentro de la respuesta
+                this.hotel = response.hotel;
+                this.nombre = caja.nombre;
+                this.descripcion = caja.descripcion;
+                this.base = caja.base;
+                this.tipoCaja = response.tipo_caja; // Asignar directamente tipo_caja a this.tipoCaja
+                this.usuarios = response.usuario; // Asignar directamente usuario a this.usuarios
+
+                this.formEditWallet.setValue({
+                    hotel_id: this.hotel,
+                    tipo: this.tipoCaja,
+                    nombre: this.nombre,
+                    base: this.base,
+                    usuario_id: caja.usuario_id, // Asignar usuario_id de la caja
+                    descripcion: this.descripcion,
+                });
+
+                setTimeout(() => {
+                    this.visibleModalWalletEditar = true;
+                }, 1);
+            },
+            (error) => {
+                console.log('Error: ', error);
+            }
+        );
+    }
+
+    updateWallet() {
+        this.spinner.show();
+        let dataWallet = this.formEditWallet.value;
+
+        // Obtener solo los IDs de tipo y usuario_id
+        dataWallet.tipo = dataWallet.tipo.id;
+        dataWallet.usuario_id = dataWallet.usuario_id.id;
+
+        dataWallet.hotel_id = dataWallet.hotel_id.id;
+        dataWallet.id = this.idEditando;
+        dataWallet.estado = 1;
+        console.log(dataWallet);
+
+        this.WalletService.updateWallet(dataWallet).subscribe(
+            (response: any) => {
+                this.spinner.hide();
+                this.visibleModalWalletEditar = false;
+                if (response.code == 'success') {
+                    Swal.fire({
+                        title: 'Éxito',
+                        text: 'Caja actualizada exitosamente.',
+                        icon: 'success',
+                    });
+
+                    this.getIndex();
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Error al actualizar la caja.',
+                        icon: 'error',
+                    });
                 }
-            });
-
-            console.log(hotel)
-
-            this.formEditWallet.get('nombre').setValue(response.nombre)
-            this.formEditWallet.get('base').setValue(response.base)
-            this.formEditWallet.get('descripcion').setValue(response.descripcion)
-            this.formEditWallet.get('hotel_id').setValue(hotel)
-            this.editarW = true;
-        })
+            },
+            (error) => {
+                console.log('Error: ', error);
+            }
+        );
     }
 
-    /////////// Editar Permisos //////////////
-    updateWallet(){
-        this.formEditWallet.get('id').setValue(this.walletData.id);
-        this.formEditWallet.get('hotel_id').setValue(this.selectedHotel.id);
-        this.formEditWallet.get('tipo').setValue(this.tipo);
-        const datos = this.formEditWallet.value;
-        console.log(datos);
-        this.walletService.updateWallets(datos).subscribe( response => {
-            //Cierra el modal de edición
-            console.log(response);
-            this.editarW = false;
-            this.messageService.add({ severity: 'info', summary: 'Confirmación Exitosa', detail: 'Caja actualizada.',sticky: true, life: 200, });
-             //Actualiza la tabla de usuarios con el nuevo registro
-            this.walletService.refresWalletsData();
-            //Actualiza la tabla de usuarios con el nuevo registro
-        }, error =>{
-            console.log('Error:', error)
-        });
-    }
+    //Eliminar
 
     confirmDelete(id:number){
-        console.log(id);
         Swal.fire({
-            title: "¿Estas Seguro que deseas eliminar esta caja?",
+            title: "¿Estas seguro que deseas eliminar esta caja?",
             text: "Ten cuidado esta acción no se prodrá reversar",
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Sí, Confirmar",
             cancelButtonText: "Cancelar",
-          }).then((result) => {
+        }).then((result) => {
             if (result.isConfirmed) {
-                this.walletService.deleteWallets(id).subscribe( response =>{
-                    console.log(response);
-                    this.walletService.refresWalletsData();
-                });
-                Swal.fire({
-                title: "Confirmación",
-                text: "La caja ha sido eliminada.",
-                icon: "success"
-              });
+                this.spinner.show();
+                this.WalletService.deleteWallet({id}).subscribe(
+                (response: any) => {
+                    this.spinner.hide();
+                    if(response.code == "success"){
+
+                    Swal.fire({
+                        title: "Exito",
+                        text: "Caja eliminada exitosamente.",
+                        icon: "success"
+                    });
+
+                    this.getIndex();
+
+                    }  else {
+
+                    Swal.fire({
+                        title: "Error",
+                        text: "Error al eliminar la caja." ,
+                        icon: "error"
+                    });
+
+                    }
+
+                },
+                (error) => {
+                    console.log('Error: ', error);
+                }
+                );
             }
-          });
-    }
-    modalNewW(){
-        this.crearW = true;
+        });
     }
 
     //Busqueda

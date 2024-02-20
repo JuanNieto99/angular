@@ -1,22 +1,26 @@
-<p-toast></p-toast>
+<ngx-spinner type="ball-scale-multiple"></ngx-spinner>
+
 <div class="surface-section px-4 py-5 md:px-6 lg:px-8">
     <div class="flex align-items-start flex-column lg:justify-content-between lg:flex-row">
         <div>
             <div class="font-medium text-3xl text-900">Cajas</div>
             <div class="flex align-items-center text-700 flex-wrap">
                 <div class="mr-5 flex align-items-center mt-3">
+                    <i class="pi pi-users mr-2"></i>
+                    <!-- <span>{{ countRegisters }} Productos Creados</span> -->
                 </div>
             </div>
         </div>
         <div class="mt-3 lg:mt-0">
-            <button pButton pRipple label="Crear" (click)="modalNewW()" class="p-button-outlined mr-2" ></button>
+            <button pButton pRipple label="Crear" (click)="openModal()" class="p-button-outlined mr-2" icon="pi pi-star"></button>
+            <!--button pButton pRipple label="Exportar" icon="pi pi-check"></button-->
         </div>
     </div>
 </div>
 <div class="grid mt-3">
     <div class="col-12">
         <div class="card px-3 py-3">
-            <p-table [value]="wallets" [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [loading]="loadingTable" [rows]="8" [globalFilterFields]="['nombre','medida','precio','cantidad', 'inventario','acciones']"  selectionMode="multiple" [rowHover]="true" dataKey="usuario" (onPage)="onPage($event)">
+            <p-table [value]="walletData" [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [loading]="loadingTable" [rows]="8" [globalFilterFields]="['nombre','descripcion_secuencia','secuensia_incial','secuensia_actual','acciones']"  selectionMode="multiple" [rowHover]="true" dataKey="usuario" (onPage)="onPage($event)">
                 <ng-template pTemplate="caption">
                     <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                         <h5 class="m-0">Lista de Cajas</h5>
@@ -32,19 +36,25 @@
                 </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
-                        <th>Nombre</th>
+                        <th>Hotel</th>
+                        <th>Caja</th>
                         <th>Base</th>
+                        <th>Tipo Caja</th>
+                        <th>Usuario</th>
                         <th>Descripción</th>
                         <th>Acciones</th>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-wallet>
                     <tr>
+                        <td>{{wallet.hotel.nombre}}</td>
                         <td>{{ wallet.nombre }}</td>
-                        <td>{{ wallet.base }}</td>
+                        <td>{{ wallet.base | currency}}</td>
+                        <td>{{wallet.tipo_cajas.nombre}}</td>
+                        <td>{{wallet.usuario.usuario}}</td>
                         <td>{{ wallet.descripcion }}</td>
                         <td class="flex gap-2">
-                            <p-button (click)="getWallet(wallet.id)" icon="pi pi-user-edit" severity="info"></p-button>
+                            <p-button (click)="editWallet(wallet.id)" icon="pi pi-user-edit" severity="info"></p-button>
                             <p-confirmDialog></p-confirmDialog>
                             <p-button (click)="confirmDelete(wallet.id)" icon="pi pi-trash" severity="danger"></p-button>
 
@@ -63,25 +73,40 @@
         </div>
     </div>
 </div>
-<p-dialog header="Crear una Caja" [(visible)]="crearW" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+<!-- Crear -->
+<p-dialog header="Crear una Caja" [(visible)]="visibleModalWallet" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12">
-        <form [formGroup]="formNewWallet" (ngSubmit)="createWallet()">
+        <form [formGroup]="formCreateWallet" (ngSubmit)="submitCreate()">
             <div class="p-fluid p-formgrid grid">
-                <div class="field col-12 md:col-4">
-                    <label>Nombre de la Caja</label>
-                    <input type="text" placeholder="Caja 1" pInputText class="w-full mb-3 border-round-3xl" formControlName="nombre">
-                </div>
-                <div class="field col-12 md:col-4">
-                    <label>Descripcion</label>
-                    <input type="text" placeholder="Caja hotel 1" pInputText class="w-full mb-3 border-round-3xl" formControlName="descripcion">
+                <div class="field col-12 md:col-8">
+                    <label>Nombre</label>
+                    <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="nombre">
+                    <div style="color: red;" *ngIf="formCreateWallet.get('nombre').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-4">
                     <label>Base</label>
-                    <input type="text" placeholder="200.000" pInputText class="w-full mb-3 border-round-3xl" formControlName="base">
+                    <input type="number"  pInputText class="w-full mb-3 border-round-3xl" formControlName="base">
+                    <div style="color: red;" *ngIf="formCreateWallet.get('base').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
-                    <label>Hotel</label>
-                    <p-dropdown [options]="hotels"  [(ngModel)]="selectedHotel" [ngModelOptions]="{standalone: true}" optionLabel="nombre"></p-dropdown>
+					<label>Hotel</label>
+					<p-dropdown [options]="hotel" optionLabel="nombre" formControlName="hotel_id" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateWallet.get('hotel_id').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Tipo de Caja</label>
+                    <p-dropdown [options]="tipoCaja" optionLabel="nombre" formControlName="tipo"></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateWallet.get('tipo').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Usuario</label>
+                    <p-dropdown [options]="usuarios" optionLabel="usuario" formControlName="usuario_id"></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateWallet.get('usuario_id').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Descripción</label>
+                    <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="descripcion">
+                    <div style="color: red;" *ngIf="formCreateWallet.get('descripcion').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-12">
                     <button pButton pRipple label="Crear Permiso" icon="pi pi-user" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
@@ -90,28 +115,46 @@
         </form>
 	</div>
 </p-dialog>
-<p-dialog header="Editar Caja" [(visible)]="editarW" [style]="{width: '500px'}" modal="modal" (onVisibleChange)="editarW = !editarW">
-    <form [formGroup]="formEditWallet" (ngSubmit)="updateWallet()">
-        <div class="p-fluid p-formgrid grid">
-            <div class="field col-12 md:col-4">
-                <label>Nombre de la Caja</label>
-                <input type="text" placeholder="Caja 1" pInputText class="w-full mb-3 border-round-3xl" formControlName="nombre">
+<!-- Editar -->
+<p-dialog header="Editar Producto" [(visible)]="visibleModalWalletEditar"  [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+    <div class="col-12">
+        <form [formGroup]="formEditWallet" (ngSubmit)="submitUpdate()">
+            <div class="p-fluid p-formgrid grid">
+                <div class="field col-12 md:col-8">
+                    <label>Nombre</label>
+                    <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="nombre">
+                    <div style="color: red;" *ngIf="formEditWallet.get('nombre').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-4">
+                    <label>Base</label>
+                    <input type="number"  pInputText class="w-full mb-3 border-round-3xl" formControlName="base">
+                    <div style="color: red;" *ngIf="formEditWallet.get('base').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+					<label>Hotel</label>
+					<p-dropdown [options]="hotel" optionLabel="nombre" formControlName="hotel_id" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formEditWallet.get('hotel_id').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Tipo de Caja</label>
+                    <p-dropdown [options]="tipoCaja" optionLabel="nombre" formControlName="tipo"></p-dropdown>
+                    <div style="color: red;" *ngIf="formEditWallet.get('tipo').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Usuario</label>
+                    <p-dropdown [options]="usuarios" optionLabel="usuario" formControlName="usuario_id"></p-dropdown>
+                    <div style="color: red;" *ngIf="formEditWallet.get('usuario_id').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Descripción</label>
+                    <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="descripcion">
+                    <div style="color: red;" *ngIf="formEditWallet.get('descripcion').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-12">
+                    <button pButton pRipple label="Editar Producto" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                </div>
             </div>
-            <div class="field col-12 md:col-4">
-                <label>Descripcion</label>
-                <input type="text" placeholder="Caja hotel 1" pInputText class="w-full mb-3 border-round-3xl" formControlName="descripcion">
-            </div>
-            <div class="field col-12 md:col-4">
-                <label>Base</label>
-                <input type="text" placeholder="200.000" pInputText class="w-full mb-3 border-round-3xl" formControlName="base">
-            </div>
-            <div class="field col-12 md:col-6">
-                <label>Hoteles</label>
-                <p-dropdown [options]="hotels"  [(ngModel)]="selectedHotel"   optionLabel="nombre"  formControlName="hotel_id" ></p-dropdown>
-            </div>
-            <div class="field col-12 md:col-12">
-                <button pButton pRipple label="Editar Caja" icon="pi pi-user" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
-            </div>
-        </div>
-    </form>
+            <br>
+        </form>
+	</div>
 </p-dialog>

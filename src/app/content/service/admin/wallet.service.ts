@@ -10,20 +10,20 @@ import { Config } from '../../storage/config';
   })
 
   export class WalletService{
-    ///// Variables de endpoints  /////
+    // Variables de endpoints
     private baseUrl: string;
     private endpointPListar:string;
-    private endpointPMostrar:string;
+    private endpointWalletGet:string;
     private endpointPActualizar:string;
     private endpointPEliminar:string;
-    private endpointCrear: string;
+    private endpointWalletCreate: string;
     private endpointAbrirCaja: string;
     private endpointEdit: string;
     private endpointCerrarCaja: string;
     private endpointGetAbrirCaja: string;
     private endpointGetDetalleCaja: string;
     private endpointAnularCaja: string;
-    /////// Variables para manejar datos de permisos
+    // Variables para manejar datos de permisos
     private dataSubject: BehaviorSubject<Wallet[]>;
     public data: Observable<Wallet[]>;
 
@@ -31,12 +31,12 @@ import { Config } from '../../storage/config';
         this.dataSubject = new BehaviorSubject<Permit[]>([]);
         this.data = this.dataSubject.asObservable();
         this.baseUrl = Config.url;
-        this.endpointCrear ='/cajaCrear';
+        this.endpointWalletCreate ='/cajaCrear';
         this.endpointPListar = '/cajaListar';
-        this.endpointPMostrar = '/cajaMostrar';
+        this.endpointWalletGet = '/cajaMostrar/';
         this.endpointPActualizar = '/cajaActualizar';
         this.endpointPEliminar='/cajaEliminar';
-        this.endpointEdit='/cajaEditar';
+        this.endpointEdit='/cajaEditar/';
         this.endpointGetAbrirCaja = '/getAbrirCaja/';
         this.endpointAbrirCaja = '/cajaAbir';
         this.endpointGetDetalleCaja = '/cajaDetalleListar';
@@ -44,6 +44,30 @@ import { Config } from '../../storage/config';
         this.endpointAnularCaja = '/cajaControlEliminar';
     }
 
+    //Cajas
+    getAll(per_page:number, search:string = '', page:number = 1): Observable<Wallet[]> {
+        const parametros = {};
+        return this.httpClient.post<Wallet[]>(`${this.baseUrl+this.endpointPListar}?per_page=${per_page}&page=${page}&search=${search}`, parametros);
+    }
+
+    getWallet(id:number): Observable<any>{
+        return this.httpClient.get<any>(`${this.baseUrl+this.endpointEdit+id}`);
+    }
+
+    createWallet(data:any){
+        return this.httpClient.post<any>(`${this.baseUrl+this.endpointWalletCreate}`, data);
+    }
+
+    updateWallet(data:any){
+        return this.httpClient.post<any>(`${this.baseUrl+this.endpointPActualizar}`, data);
+    }
+
+    deleteWallet(data:any){
+        return this.httpClient.post<any>(`${this.baseUrl+this.endpointPEliminar}`, data);
+    }
+
+
+    //Detalle de caja
     getAbrirCaja(usuario_id:number): Observable<any> {
         return this.httpClient.get<any>(`${this.baseUrl+this.endpointGetAbrirCaja+usuario_id}`);
     }
@@ -51,53 +75,6 @@ import { Config } from '../../storage/config';
     abrirCaja(data: any) : Observable<any> {
         return this.httpClient.post<any[]>(`${this.baseUrl+this.endpointAbrirCaja}`, data);
     }
-
-    //////////////////////  CRUD PERMISOS  /////////////////////////
-    // Consultar lista de permisos
-    getWallets(per_page:number):Observable<Wallet[]>{
-        const parametros = { 
-            nombre: '',
-            descripcion: '',
-            base: '',
-            estado: '',
-            hotel_id:''
-        };
-        return this.httpClient.post<Wallet[]>(`${this.baseUrl+this.endpointPListar}?per_page=${per_page}`, parametros);
-    }
-    // Crear un nuevo servicio
-    CreateWallet(data: any): Observable<Wallet[]> {
-        return this.httpClient.post<Wallet[]>(`${this.baseUrl+this.endpointCrear}`, data);
-    }
-    /////// Elegir un nuevo servicio por id
-    getWalletById(id: number){
-        return this.httpClient.get<any>(`${this.baseUrl+this.endpointPMostrar}/${id}`)
-            .pipe(map(hotel => hotel));
-    }
-
-    getWallteEditById(id: number){
-        return this.httpClient.get<any>(`${this.baseUrl+this.endpointEdit}/${id}`)
-            .pipe(map(hotel => hotel));
-    }
-    updateWallets(data:any): Observable<any> {
-        return this.httpClient.post<any>(`${this.baseUrl+this.endpointPActualizar}`, data);
-    }
-    deleteWallets(id:number){
-        const parametros = { 
-            id: id
-        };
-        return this.httpClient.post<any>(`${this.baseUrl+this.endpointPEliminar}`, parametros);
-    }
-    refresWalletsData(): void {
-        this.getWallets(30).subscribe(
-            (response: any) => {
-                console.log(response.data);
-                this.dataSubject.next(response.data);
-            },
-            (error) => {
-                console.log('Error: ', error);
-            }
-        );  
-    } 
 
     getAllDetalleCaja(per_page:number, search:string = '', page:number = 1): Observable<any[]> {
         const parametros = {};
@@ -111,4 +88,57 @@ import { Config } from '../../storage/config';
     anularCaja(data:any): Observable<any> {
         return this.httpClient.post<any>(`${this.baseUrl+this.endpointAnularCaja}`, data);
     }
+
+
+
+
+
+    //////////////////////  CRUD PERMISOS  /////////////////////////
+    // Consultar lista de permisos
+    // getWallets(per_page:number):Observable<Wallet[]>{
+    //     const parametros = {
+    //         nombre: '',
+    //         descripcion: '',
+    //         base: '',
+    //         estado: '',
+    //         hotel_id:''
+    //     };
+    //     return this.httpClient.post<Wallet[]>(`${this.baseUrl+this.endpointPListar}?per_page=${per_page}`, parametros);
+    // }
+    // // Crear un nuevo servicio
+    // CreateWallet(data: any): Observable<Wallet[]> {
+    //     return this.httpClient.post<Wallet[]>(`${this.baseUrl+this.endpointCrear}`, data);
+    // }
+    // /////// Elegir un nuevo servicio por id
+    // getWalletById(id: number){
+    //     return this.httpClient.get<any>(`${this.baseUrl+this.endpointPMostrar}/${id}`)
+    //         .pipe(map(hotel => hotel));
+    // }
+
+    // getWallteEditById(id: number){
+    //     return this.httpClient.get<any>(`${this.baseUrl+this.endpointEdit}/${id}`)
+    //         .pipe(map(hotel => hotel));
+    // }
+    // updateWallets(data:any): Observable<any> {
+    //     return this.httpClient.post<any>(`${this.baseUrl+this.endpointPActualizar}`, data);
+    // }
+    // deleteWallets(id:number){
+    //     const parametros = {
+    //         id: id
+    //     };
+    //     return this.httpClient.post<any>(`${this.baseUrl+this.endpointPEliminar}`, parametros);
+    // }
+    // refresWalletsData(): void {
+    //     this.getWallets(30).subscribe(
+    //         (response: any) => {
+    //             console.log(response.data);
+    //             this.dataSubject.next(response.data);
+    //         },
+    //         (error) => {
+    //             console.log('Error: ', error);
+    //         }
+    //     );
+    // }
+
+
 }
