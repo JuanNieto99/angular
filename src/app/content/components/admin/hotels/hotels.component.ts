@@ -24,7 +24,6 @@ import { NgxSpinnerService } from 'ngx-spinner';
 })
 export class HotelsComponent implements OnInit {
 
-
     public editarH: boolean = false;
     public crearH:boolean = false;
 
@@ -35,9 +34,9 @@ export class HotelsComponent implements OnInit {
     public param: any;
     public dataUser:any;
     public tcontribuyente: any = 1;
+    public imagen: any = null;
 
     //Variables para Paginador y Buscador
-
     public pageCount: number = 10;
     public pageActual: number = 1;
     public ultimaPage: number = 1;
@@ -72,7 +71,8 @@ export class HotelsComponent implements OnInit {
         cantidad_habitaciones:new FormControl('', Validators.required),
         usuario_id: new FormControl('', Validators.required),
         tipo_contribuyente: new FormControl('', Validators.required),
-        email: new FormControl('', Validators.required)
+        email: new FormControl('', Validators.required),
+        imagen: new FormControl('', Validators.required) // Agrega un nuevo campo para la imagen
      });
 
      formEditHotel = new FormGroup({
@@ -99,32 +99,30 @@ export class HotelsComponent implements OnInit {
     ngOnInit(): void {
         /// Datos de Usuario
         this.dataUser = this.getCurrentUser();
-        console.log(this.dataUser.usuario.id);
         // Inicializamos la consulta de hoteles
         this.getIndex();
-      /*  this.hotelsService.data.subscribe(hotels => {
-            this.hotels = hotels;
-            this.changeDetector.detectChanges();
-        });
-        //// Consultar Paises
-        this.hotelsService.getCountries(10).subscribe(response => {
+
+        // Consultar Paises
+        this.hotelsService.getCountries().subscribe(response => {
             this.countries$ = response;
         });
-        //// Consultar Estados
-        this.hotelsService.getStates(12).subscribe( response =>{
+
+        // Consultar Estados
+        this.hotelsService.getStates(12).subscribe(response =>{
             this.states$ = response;
-            console.log(this.states$);
         }, error =>{
             console.log('Error:', error);
         });
-        //// Consultar CIudades
+
+        // Consultar CIudades
         this.hotelsService.getCities(13).subscribe( response =>{
             this.cities$ = response;
-            console.log(this.cities$);
         }, error => {
             console.log('Error:', error);
-        })*/
+        });
     }
+
+
     ///// Datos de Usuario /////
     getCurrentUser(): any {
         const currentUser = localStorage.getItem('currentUser');
@@ -144,47 +142,88 @@ export class HotelsComponent implements OnInit {
                 this.loadingTable = false;
                 this.hotels = response.data;
                 this.totalHotels = response.total;
-                console.log(this.hotels);
             },
             (error) => {
                 console.log('Error: ', error);
             }
         );
     }
+
+    //Carga imagenes
+    onRemove(event){
+        this.imagen = null;
+    }
+
+    onSelect(event) {
+        this.imagen = event.currentFiles[0];
+    }
+
     ////////////  CREAR UN NUEVO HOTEL  /////////////
-    createHotel(){
-        this.formNewHotel.reset();
-        this.formNewHotel.get('ciudad_id').setValue(this.selectedCity.id);
+    modalNewHotel() {
+        this.crearH = true;
+    }
+
+    createHotel() {
+        this.formNewHotel.get('ciudad_id').setValue(this.selectedCity ? this.selectedCity.id : null);
         this.formNewHotel.get('usuario_id').setValue(this.dataUser.usuario.id);
         this.formNewHotel.get('tipo_contribuyente').setValue(this.tcontribuyente);
         const datos = this.formNewHotel.value;
-        this.hotelsService.createHotel(datos).subscribe(response => {
-            console.log(response);
-            this.hotelsService.refresHotelsData();
-            this.messageService.add({ severity: 'info', summary: 'Confirmación Exitosa', detail: 'Hotel creado.',sticky: true, life: 200, });
-            this.crearH = false;
-        }, error => {
-        console.log('Error:', error);
-        });
+
+        // Convertir la imagen a una representación de cadena de caracteres JSON
+        const imagenJson = JSON.stringify(this.imagen);
+
+        // Asignar la representación JSON de la imagen al campo de imagen del formulario
+        this.formNewHotel.get('imagen').setValue(imagenJson);
+
+        this.hotelsService.createHotel(datos).subscribe(
+            (response: any) => {
+                this.spinner.hide();
+                this.crearH = false;
+                if(response.code == "success"){
+                    Swal.fire({
+                        title: "Exito",
+                        text: "Hotel creado exitosamente.",
+                        icon: "success"
+                    });
+                    this.getIndex();
+                    this.formNewHotel.reset();
+                } else {
+                    Swal.fire({
+                        title: "Error",
+                        text: "Error al crear el hotel." ,
+                        icon: "error"
+                    });
+                }
+            },
+            (error) => {
+                console.log('Error: ', error);
+            }
+        );
     }
-    /////////// Consultar 1 hotel  //////////////
-    getHotel(id:number){
+
+
+    getHotel(id: number) {
         this.hotelsService.getHotelById(id).subscribe(response => {
             this.hotelData = response.hotel;
             this.hotelData.id = id;
             this.editarH = true;
-            this.formEditHotel.get('nombre').setValue(this.hotelData.nombre);
-            this.formEditHotel.get('email').setValue(this.hotelData.email);
-            this.formEditHotel.get('cantidad_habitaciones').setValue(this.hotelData.cantidad_habitaciones);
-            this.formEditHotel.get('direccion').setValue(this.hotelData.direccion);
-            this.formEditHotel.get('telefono').setValue(this.hotelData.telefono);
-            this.formEditHotel.get('contacto').setValue(this.hotelData.contacto);
-            this.formEditHotel.get('contacto_cargo').setValue(this.hotelData.contacto_cargo);
-            this.formEditHotel.get('razon_social').setValue(this.hotelData.razon_social);
-            this.formEditHotel.get('contacto_telefono').setValue(this.hotelData.contacto_telefono);
-            this.formEditHotel.get('nit').setValue(this.hotelData.nit);
-
-        })
+            this.formEditHotel.patchValue({
+                nombre: this.hotelData.nombre,
+                email: this.hotelData.email,
+                cantidad_habitaciones: this.hotelData.cantidad_habitaciones,
+                direccion: this.hotelData.direccion,
+                telefono: this.hotelData.telefono,
+                contacto: this.hotelData.contacto,
+                contacto_cargo: this.hotelData.contacto_cargo,
+                contacto_telefono: this.hotelData.contacto_telefono,
+                razon_social: this.hotelData.razon_social,
+                nit: this.hotelData.nit,
+                id: this.hotelData.id,
+                ciudad_id: this.hotelData.ciudad_id,
+                tipo_contribuyente: this.hotelData.tipo_contribuyente,
+                usuario_id: this.hotelData.usuario_id
+            });
+        });
     }
 
     /////////// Editar Hotel //////////////
@@ -194,20 +233,32 @@ export class HotelsComponent implements OnInit {
         this.formEditHotel.get('tipo_contribuyente').setValue(this.hotelData.tipo_contribuyente);
         this.formEditHotel.get('usuario_id').setValue(this.hotelData.usuario_id);
         const datos = this.formEditHotel.value;
-        this.hotelsService.updateHotel(datos).subscribe( response => {
-            //Cierra el modal de edición
-            console.log(response);
-            this.editarH = false;
-            this.messageService.add({ severity: 'info', summary: 'Confirmación Exitosa', detail: 'Usuario actualizado.',sticky: true, life: 200, });
-             //Actualiza la tabla de usuarios con el nuevo registro
-            this.hotelsService.refresHotelsData();
-            //Actualiza la tabla de usuarios con el nuevo registro
-        }, error =>{
-            console.log('Error:', error)
-        });
+        this.hotelsService.updateHotel(datos).subscribe(
+            (response: any) => {
+                this.spinner.hide();
+                this.editarH = false;
+                if(response.code == "success"){
+                    Swal.fire({
+                        title: "Exito",
+                        text: "Producto creado exitosamente.",
+                        icon: "success"
+                    });
+                    this.getIndex();
+                } else {
+                    Swal.fire({
+                        title: "Error",
+                        text: "Error al crear el producto." ,
+                        icon: "error"
+                    });
+                }
+            },
+            (error) => {
+                console.log('Error: ', error);
+            }
+        );
     }
+
     confirmDelete(id:number){
-        console.log(id);
         Swal.fire({
             title: "¿Estas Seguro que deseas eliminar el hotel?",
             text: "Ten cuidado esta acción no se prodrá reversar",
@@ -215,19 +266,19 @@ export class HotelsComponent implements OnInit {
             showCancelButton: true,
             confirmButtonText: "Sí, Confirmar",
             cancelButtonText: "Cancelar",
-          }).then((result) => {
+        }).then((result) => {
             if (result.isConfirmed) {
                 this.hotelsService.deleteHotel(id).subscribe( response =>{
-                    console.log(response);
                     this.hotelsService.refresHotelsData();
                 });
                 Swal.fire({
-                title: "Confirmación",
-                text: "El hotel ha sido eliminado.",
-                icon: "success"
-              });
+                    title: "Confirmación",
+                    text: "El hotel ha sido eliminado.",
+                    icon: "success"
+                });
+                this.getIndex();
             }
-          });
+        });
     }
 
     getCountries() {
@@ -235,19 +286,17 @@ export class HotelsComponent implements OnInit {
            this.countries$ = response;
         });
     }
+
     getStates() {
         this.hotelsService.getStates(this.selectedCountry).subscribe(response => {
             this.states$ = response;
         });
     }
+
     getCities() {
         this.hotelsService.getCities(this.selectedState).subscribe(response => {
             this.cities$ = response;
         });
-    }
-
-    modalNewHotel(){
-        this.crearH = true;
     }
 
     //Buscar
@@ -305,6 +354,4 @@ export class HotelsComponent implements OnInit {
             this.disablePageRight = true;
         }
     }
-
-
 }

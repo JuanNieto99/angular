@@ -88,29 +88,38 @@ export class HotelsService {
     );
   }
 
-  getCountries():Observable<country[]>{
-    const parametros = {
-      id: ''
-    };
-    return this.httpClient.post<any>(`${this.baseUrl+this.endpointCountry}`, parametros).pipe(
-      map(response => response.data)
-    );
+  getCountries(): Observable<country[]> {
+    const parametros = { id: '' };
+    return this.httpClient.post<any>(`${this.baseUrl+this.endpointCountry}`, parametros)
+      .pipe(
+        map(response => {
+          // Verificar si la respuesta tiene la propiedad 'data'
+          if (response && response.data && Array.isArray(response.data)) {
+            // Devolver directamente el array 'data'
+            return response.data;
+          } else {
+            // Si la respuesta no tiene la propiedad 'data', devolver un array vacío
+            return [];
+          }
+        }),
+        catchError(error => {
+          console.log('Error:', error);
+          // Manejar el error adecuadamente aquí
+          return [];
+        })
+      );
   }
-  getStates(countryId: any):Observable<state[]>{
-    const parametros = {
-      id: countryId
-    };
+
+  getStates(countryId: any): Observable<state[]> {
+    const parametros = { id: countryId };
     const url = `${this.baseUrl+this.endpointState}`;
-      return this.httpClient.post<state[]>(url, parametros);
+    return this.httpClient.post<state[]>(url, parametros);
   }
-  getCities(stateId: any):Observable<city[]>{
-    const parametros = {
-      id: stateId
-    };
+
+  getCities(stateId: any): Observable<city[]> {
+    const parametros = { id: stateId };
     const url = `${this.baseUrl+this.endpointCity}`;
-      return this.httpClient.post<city[]>(url, parametros);
+    return this.httpClient.post<city[]>(url, parametros);
   }
-
-
 
 }
