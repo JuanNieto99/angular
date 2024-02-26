@@ -137,7 +137,7 @@ export class HotelsComponent implements OnInit {
     getIndex(search: string = '', pageCount: number = this.pageCount, page: number = 1): void {
         this.spinner.show();
         this.loadingTable = true;
-        this.hotelsService.getHotels(pageCount, search, page).subscribe(
+        this.hotelsService.getAll(pageCount, search, page).subscribe(
             (response: any) => {
                 this.loadingTable = false;
                 this.hotels = response.data;
@@ -203,7 +203,7 @@ export class HotelsComponent implements OnInit {
 
 
     getHotel(id: number) {
-        this.hotelsService.getHotelById(id).subscribe(response => {
+        this.hotelsService.getHotel(id).subscribe(response => {
             this.hotelData = response.hotel;
             this.hotelData.id = id;
             this.editarH = true;
@@ -269,7 +269,7 @@ export class HotelsComponent implements OnInit {
         }).then((result) => {
             if (result.isConfirmed) {
                 this.hotelsService.deleteHotel(id).subscribe( response =>{
-                    this.hotelsService.refresHotelsData();
+                    this.hotelsService.refreshHotelsData();
                 });
                 Swal.fire({
                     title: "Confirmación",
