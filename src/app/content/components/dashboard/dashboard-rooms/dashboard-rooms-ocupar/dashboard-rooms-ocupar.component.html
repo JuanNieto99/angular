@@ -64,7 +64,7 @@
                         {{ tarifasArray?.nombre }}
                     </td>
                     <td>
-                        {{ tarifasArray?.valor }}
+                        {{ tarifasArray?.valor | number}}
                     </td>
                     <td *ngIf="estadoHabitacion?.estado_id == 2">
                         <p-button (click)="confirmDeleteTarifa(tarifasArray.id)" icon="pi pi-trash" severity="danger"></p-button>
@@ -84,6 +84,7 @@
                 <thead>
                     <th>Nombre</th>
                     <th>Precio</th>
+                    <th>Precio con Impuesto</th>
                     <th>Cantidad</th>
                     <th *ngIf="estadoHabitacion?.estado_id == 2">Opcion</th>
                 </thead>
@@ -92,7 +93,10 @@
                         {{ productosArray?.nombre }}
                     </td> 
                     <td>
-                        {{ productosArray?.valor }}
+                        {{ productosArray?.valor | number }}
+                    </td>
+                    <td>
+                        {{ productosArray?.valorImpuesto | number }} 
                     </td>
                     <td>
                         {{ productosArray?.cantidad }}
@@ -104,6 +108,7 @@
             </table>
             </td>
         </tr>
+
         <tr>
             <th> Abonos</th>
             <th> $ {{ abonosTotal }} </th>
@@ -132,14 +137,34 @@
             </td>
         </tr>
         <tr>
+            <th> Impuestos </th>
+            <th> $ {{ totalImpuestos }} </th>
+            <th>
+                <table>
+                    <thead>
+                        <th>Monto</th>
+                        <th>Porcentaje</th>
+                    </thead>
+                    <tbody *ngFor="let impuesto of impuestosData; let i = index">
+                        <td>
+                            {{ impuesto?.nombre }}
+                        </td>
+                        <td>
+                            {{ impuesto?.porcentaje  }} %
+                        </td>
+                    </tbody>
+                </table>
+            </th>
+        </tr>
+        <tr>
             <th> Sub Total</th>
-            <th> $ {{ totalPagarReserva <= 0?0: totalPagarReserva}} </th>
+            <th> $ {{ totalPagarReserva <= 0?0: totalPagarReserva | number}} </th>
             <td> 
             </td>
         </tr>
         <tr>
             <th> Total</th>
-            <th> $ {{ totalPagarReserva - abonosTotal <= 0?0: totalPagarReserva - abonosTotal}} </th>
+            <th> $ {{ totalPagarReserva - abonosTotal <= 0?0: totalPagarReserva - abonosTotal | number }} </th>
             <td> 
             </td>
         </tr>
