@@ -62,8 +62,8 @@ export class InternalSequenceComponent {
             (response: any) => {
                 this.hotel = response.hotel;
                 this.secuenciaDescripcion = response.descripcion_secuencia;
-                this.secuenciaInicial = response.secuensia_incial;
-                this.secuenciaActual = response.secuensia_actual;
+                this.secuenciaInicial = response.secuencia_incial;
+                this.secuenciaActual = response.secuencia_actual;
                 this.visibleModalInternalSequence = true;
             },
             (error) => {
@@ -156,13 +156,13 @@ export class InternalSequenceComponent {
 
                 if (secuenciaInterna && 'descripcion_secuencia' in secuenciaInterna) {
                     this.secuenciaDescripcion = secuenciaInterna.descripcion_secuencia;
-                    this.secuenciaInicial = secuenciaInterna.secuensia_incial;
-                    this.secuenciaActual = secuenciaInterna.secuensia_actual;
+                    this.secuenciaInicial = secuenciaInterna.secuencia_incial;
+                    this.secuenciaActual = secuenciaInterna.secuencia_actual;
 
                     this.formEditInternalSequence.setValue({
                         hotel_id: this.hotel,
                         descripcion_secuencia: this.secuenciaDescripcion,
-                        secuensia_incial: this.secuenciaInicial,
+                        secuencia_incial: this.secuenciaInicial,
                         secuencia_actual: this.secuenciaActual,
                     });
                 }
@@ -228,15 +228,15 @@ export class InternalSequenceComponent {
         this.formCreateInternalSequence = this.FB.group({
             hotel_id: ['', [Validators.required]],
             descripcion_secuencia: ['', [Validators.required]],
-            secuensia_incial: ['', [Validators.required]],
-            secuensia_actual: ['', [Validators.required]]
+            secuencia_incial: ['', [Validators.required]],
+            secuencia_actual: ['', [Validators.required]]
 
         });
 
         this.formEditInternalSequence = this.FB.group({
             hotel_id: ['', [Validators.required]],
             descripcion_secuencia: ['', [Validators.required]],
-            secuensia_incial: ['', [Validators.required]],
+            secuencia_incial: ['', [Validators.required]],
             secuencia_actual: ['', [Validators.required]]
         });
     }

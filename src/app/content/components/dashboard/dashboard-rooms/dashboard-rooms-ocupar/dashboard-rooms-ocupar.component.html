@@ -1,6 +1,7 @@
-
+<ngx-spinner type="ball-scale-multiple" fullScreen="true">
+    
+</ngx-spinner>
 <h2>Detalle Ocupacion</h2>
-
 <p-toolbar>
     <div class="p-toolbar-group-left flex flex-wrap">
     </div>
@@ -48,7 +49,7 @@
         
         <tr>
             <th> Tarifas</th>
-            <th> $ {{ tarifasTotal }} </th>
+            <th> $ {{ tarifasTotal | number }} </th>
             <td>
             <div class="ordenAdd" *ngIf="estadoHabitacion?.estado_id == 2">
                 <button pButton pRipple (click)="addTarifa()" class="p-button" icon="pi pi-plus"></button>
@@ -75,7 +76,7 @@
         </tr>
         <tr>
             <th> Productos / Servicios</th>
-            <th> $ {{ totalProductos }} </th>
+            <th> $ {{ totalProductos | number }} </th>
             <td>
             <div class="ordenAdd" *ngIf="estadoHabitacion?.estado_id == 2">
                 <button pButton pRipple (click)="addProductos()" class="p-button" icon="pi pi-plus"></button>
@@ -111,7 +112,7 @@
 
         <tr>
             <th> Abonos</th>
-            <th> $ {{ abonosTotal }} </th>
+            <th> $ {{ abonosTotal | number }} </th>
             <td>
                 <div class="ordenAdd" *ngIf="estadoHabitacion?.estado_id == 2">
                     <button pButton pRipple (click)="addAbonos()" class="p-button" icon="pi pi-plus"></button>
@@ -124,7 +125,7 @@
                 </thead>
                 <tbody *ngFor="let metodosPagoArray of dataAbonos; let i = index">
                     <td>
-                        {{ metodosPagoArray?.valor }}
+                        {{ metodosPagoArray?.valor  | number }}
                     </td>
                     <td>
                         {{ metodosPagoArray?.nombre  }}
@@ -138,7 +139,7 @@
         </tr>
         <tr>
             <th> Impuestos </th>
-            <th> $ {{ totalImpuestos }} </th>
+            <th> $ {{ totalImpuestos | number }} </th>
             <th>
                 <table>
                     <thead>
@@ -231,7 +232,7 @@
             <div class="p-fluid p-formgrid grid">  
                 <div class="field col-12 md:col-6">
                     <label for="cliente">Metodo Pago</label>
-                    <p-multiSelect [options]="dataMetodosPago"  formControlName="metodo_pago_id" selectionLimit="1"  limoptionLabel="nombre" placeholder="Buscar Producto/Servicio" optionLabel="nombre" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
+                    <p-multiSelect [options]="dataMetodosPago"  formControlName="metodo_pago_id" selectionLimit="1"  limoptionLabel="nombre" placeholder="Metodo pago" optionLabel="nombre" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
                         <ng-template let-metodoPago pTemplate="item">
                             <div class="flex align-items-center">
                                 <span class="ml-2">{{metodoPago.nombre}}</span>
@@ -251,11 +252,10 @@
 	</div>
 </p-dialog>
 
-<p-dialog header="Facturar " [(visible)]="facturarVisible" [modal]="true" [style]="{ width: '50vw', height: '40vw' }" [draggable]="true" [resizable]="true">
+<p-dialog header="Facturar " [(visible)]="facturarVisible" [modal]="true" [style]="{ width: '40vw', height: '40vw' }" [draggable]="true" [resizable]="true">
         <button pButton pRipple type="button" (click)="agregarAbonoOcupar()" icon="pi pi-plus" class="p-button-rounded"></button>
         <br><br>   
-        <div class="field col-12 md:col-12">
-
+ 
             <div class="grid formgrid" *ngFor="let formGroupOcupar of formFacturacionMediosPago.controls; let i = index" [formGroup]="formGroupOcupar">
                 <div class="col-12 mb-5 lg:col-5 lg:mb-5">
                     <label for="monto">Monto</label>
@@ -265,10 +265,10 @@
                     <div *ngIf="formGroupOcupar?.controls['monto']?.errors?.['required']" style="color: red;">Nombre es requerido.</div>
                 </div>
 
-                <div class="col-12 mb-5 lg:col-5 lg:mb-5">
+                <div class="col-12 mb-5 lg:col-5 lg:mb-5" style="width: auto;">
                     <label htmlFor="medioPago">Medio Pago</label>
                     <br>
-                    <p-dropdown [options]="dataMetodosPago" class="expandir" formControlName="medio_pago"  id="medioPago"  optionLabel="nombre" ></p-dropdown>                        
+                    <p-dropdown [options]="dataMetodosPago"   class="expandir" formControlName="medio_pago"  id="medioPago"  optionLabel="nombre" ></p-dropdown>                        
                 </div>
 
                 <div class="col-12 mb-2 lg:col-2 lg:mb-5"  >
@@ -277,11 +277,11 @@
                     <p-button (click)="eliminarMedioPagoAbono(i)" id="opciones" icon="pi pi-trash" severity="danger"></p-button>
                 </div>
             </div>
-        </div>
+         
     
-         <p-message severity="info" class="padding" text="El total ingresado no es igual al total a Pagar" *ngIf="totalFactura!=(this.tarifasTotal-this.abonosTotal)" ></p-message>   
+         <p-message severity="info" class="padding" text="El total ingresado no es igual al total a Pagar" *ngIf="totalFactura!=(this.totalPagarReserva-this.abonosTotal)" ></p-message>   
 
     <div class="field col-12 md:col-12">
-        <button pButton pRipple [label]="'Pagar '+(this.tarifasTotal-this.abonosTotal)"  [disabled]="this.formFacturacionMediosPago.invalid || totalFactura!=(this.tarifasTotal-this.abonosTotal)" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+        <button pButton pRipple (click)="submitFactura()" [label]="'Pagar '+(this.totalPagarReserva-this.abonosTotal)"  [disabled]="this.formFacturacionMediosPago.invalid || totalFactura!=(this.totalPagarReserva-this.abonosTotal)" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
     </div>
 </p-dialog>

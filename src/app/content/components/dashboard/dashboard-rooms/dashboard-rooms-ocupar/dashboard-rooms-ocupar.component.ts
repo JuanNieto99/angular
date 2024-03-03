@@ -2,6 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Theme } from '@fullcalendar/core/internal';
 import { el } from '@fullcalendar/core/internal-common';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { MenuItem, MenuItemCommandEvent } from 'primeng/api';
@@ -45,6 +46,9 @@ export class DashboardRoomsOcuparComponent {
   public impuestos: any;
   public totalImpuestos: number = 0;
   public impuestosData: any [] = [];
+  public detalleId: number = 0;
+  public hotelId: number = 0;
+  public clienteId: number = 0;
 
   constructor( 
     private dashboardRoomsService:DashboardRoomsService, 
@@ -75,11 +79,12 @@ export class DashboardRoomsOcuparComponent {
   buildForm(){
     this.form = this.FB.group({
       nombreHabitacion: [this.dataRoomDetail?.detalleHabitacion?.habitacion?.nombre, []],
-      descripcion: ['', []],
+      descripcion: [this.dataRoomDetail?.detalleHabitacion?.descripcion, []],
       nombreCliente: [this.dataRoomDetail?.detalleHabitacion?.cliente?.nombres+' '+this.dataRoomDetail?.detalleHabitacion?.cliente?.apellidos, []],
       desde: [this.dataRoomDetail?.detalleHabitacion?.checkin, []],
-      hasta: [this.dataRoomDetail?.detalleHabitacion?.descripcion, []],
+      hasta: [this.dataRoomDetail?.detalleHabitacion?.checkout, []],
     });
+
 
     this.formTarifa = this.FB.group({ 
       tarifa_id: [this.allTarifasDefault, [Validators.required]]
@@ -134,39 +139,44 @@ export class DashboardRoomsOcuparComponent {
 
        // let identificador = 'tarifas'+this.generarIdAleatorio();
         this.allTarifasDefault = [];
-        this.dataRoomDetail.tarifasHabitacion.forEach(element => {
+        this.dataRoomDetail.tarifasHabitacion.forEach(element => {   
 
           this.dataTarifa.push({
             valor: element.valor,
-            nombre: element.tarifa.nombre,
+            nombre: element.tarifa?.nombre,
             tipo: element.tipo,
-            id:element.id,
+            id: element.item_id,
           //  identificador: identificador,
           }); 
 
-        });
-
+        }); 
 
         this.dataMetodosPago = this.dataRoomDetail.metodos_pago;
 
         this.dataRoomDetail.productosHabitacion.forEach(element => {
 
-          let impuesto = 0;
-      
-          if(element.tipoProducto == 1) {
-            this.impuestos.forEach(elementImpuesto => {
-              impuesto = impuesto + (element?.valor *  elementImpuesto?.porcentaje / 100);
-            });  
-          }
+          let impuesto = 0;   
 
+          if(element.tipo == 1) { 
+         
+            this.impuestos.forEach(elementImpuesto => {
+              impuesto = impuesto + ( (parseInt(element?.valor) * parseInt(element?.cantidad)) *  elementImpuesto?.porcentaje / 100);
+            });   
+             
+            impuesto =  parseInt((parseInt(element?.valor) * parseInt(element?.cantidad)) + (impuesto) + '');
+         
+          }
+          
+          this.totalImpuestos = impuesto -  element?.valor;
+          
           this.dataProductos.push({
                 nombre: element?.productos.nombre,
                 valor: element?.valor,
-                valorImpuesto: parseInt(element?.valor + impuesto),
+                valorImpuesto: impuesto,
                 cantidad: element?.cantidad,
-                id: element?.id,
+                id: element?.item_id,
                 identificador: 'productos'+this.generarIdAleatorio(),
-                tipoProducto: element?.tipo_producto,
+                tipoProducto: element?.productos.tipo_producto,
             });
         });
 
@@ -176,13 +186,14 @@ export class DashboardRoomsOcuparComponent {
               valor: element.valor,
               nombre: element.metodo_pago.nombre,
               id: element.id,
-              identificador: 'productos'+this.generarIdAleatorio(),
+              metodo_pago_id: element?.metodo_pago.id,
+              identificador: 'abonos'+this.generarIdAleatorio(),
             }
           ); 
         });
 
 
-        this.dataRoomDetail.tarifas.forEach(element => {
+        this.dataRoomDetail.tarifas.forEach(element => { 
       //    let identificador =  'tarifas'+this.generarIdAleatorio();
           this.allTarifas.push(
               {
@@ -193,8 +204,8 @@ export class DashboardRoomsOcuparComponent {
                // identificador: identificador,
               }
           ); 
-
-          if(this.dataRoomDetail.tarifasHabitacion.filter(elementFilter => (elementFilter.tarifa.id==element.id)).length>0){
+               
+          if(this.dataRoomDetail.tarifasHabitacion.filter(elementFilter => (elementFilter?.tarifa?.id==element.id)).length>0){
             this.allTarifasDefault.push({
               valor: element.valor,          
               nombre: element.nombre,
@@ -206,7 +217,7 @@ export class DashboardRoomsOcuparComponent {
 
         }); 
 
-        this.dataRoomDetail.productos.forEach(element => {
+        this.dataRoomDetail.productos.forEach(element => { 
           this.productoData.push(
             {
               id: element.id,
@@ -215,6 +226,11 @@ export class DashboardRoomsOcuparComponent {
               tipo: element.tipo_producto
             })
         })
+
+        this.detalleId = this.dataRoomDetail?.detalleHabitacion.id;
+        this.hotelId = this.dataRoomDetail?.detalleHabitacion.hotel_id;
+        this.clienteId = this.dataRoomDetail?.detalleHabitacion.cliente?.id;
+    
         
         this.buildForm();
         this.recalcular();
@@ -235,29 +251,27 @@ export class DashboardRoomsOcuparComponent {
     });
 
     let productoTotal = 0;
-
+    
     this.dataProductos.forEach(element => {
       let valor = 0;
       if(element?.valorImpuesto==0) {
         valor = element?.valor
       } else {
         valor = element?.valorImpuesto
+        this.totalImpuestos = element?.valorImpuesto - element?.valor;
       } 
 
       this.totalProductos = this.totalProductos + valor  ;
     });
-    
-    this.impuestosData.forEach(element => {
-      this.totalImpuestos = this.totalImpuestos + ( productoTotal * element.porcentaje / 100 )
-    });
+     
   
-    this.totalImpuestos = parseInt(this.totalImpuestos+'');
+    
 
     this.dataAbonos.forEach(element => {
       this.abonosTotal = this.abonosTotal + parseFloat( element.valor ) ;
     }); 
 
-    this.totalPagarReserva = (this.tarifasTotal +  this.totalProductos ) + this.totalImpuestos;
+    this.totalPagarReserva = (this.tarifasTotal +  this.totalProductos ) ;
 
     this.validaciones();
   }
@@ -339,10 +353,11 @@ export class DashboardRoomsOcuparComponent {
   recargarTablaProducto(){
     let producto = this.formProducto.get('producto_id').value[0];
     let cantidad = this.formProducto.get('cantidad').value;
-    
+ 
     let impuesto = 0;
-          
-    if( producto.tipo == 1) {
+    let tipo_producto = producto.tipo ;
+ 
+    if( tipo_producto == 1) {
 
       this.impuestos.forEach(elementImpuesto => {
         impuesto = impuesto + ( (producto.valor * cantidad) *  elementImpuesto?.porcentaje / 100);
@@ -350,16 +365,16 @@ export class DashboardRoomsOcuparComponent {
        
       impuesto =  parseInt((parseInt(producto.valor) * parseInt(cantidad)) + (impuesto) + '');
     }  
-
+  
     this.dataProductos.push({
       nombre: producto.nombre,
       valor: producto.valor * cantidad,
       valorImpuesto: impuesto,
       cantidad: cantidad,
-      tipoProducto: producto.tipo,
+      tipoProducto: tipo_producto,
       id: producto.id,
       identificador: 'productos'+this.generarIdAleatorio(),
-    })
+    }) 
 
     this.formProducto.reset();
   }
@@ -404,6 +419,8 @@ export class DashboardRoomsOcuparComponent {
       valor: valor,
       nombre: metodoPago.nombre,
       id: metodoPago.id,
+      metodo_pago_id: metodoPago.id,
+      identificador: 'abonos'+this.generarIdAleatorio(),
     })
 
   }
@@ -419,13 +436,56 @@ export class DashboardRoomsOcuparComponent {
       let guardar = {
         tarifas: this.dataTarifa,
         productos: this.dataProductos,
-        abonos: this.dataAbonos
+        abonos: this.dataAbonos,
+        detalleId: this.detalleId,
+        hotelId: this.hotelId,
+        clienteId: this.clienteId,
       }
+      console.log(guardar)
+      this.envirRoomDetalle(guardar);
     }
+  }
+
+  envirRoomDetalle(data: any){
+    this.spinner.show();
+
+    this.dashboardRoomsService.saveDetalleHabitacion(data).subscribe(response => {
+      console.log(response)
+      this.spinner.hide();
+
+      let data:any = response;
+
+      if(data.code == "success"){
+        Swal.fire({
+          title: "Exito",
+          text: data.msm ,
+          icon: "success"
+        });
+        
+        this.router.navigate(['dashboard/dashboardRooms']);
+
+      } else  if(data.code == "warning"){
+        
+        Swal.fire({
+          title: "Advertencia",
+          text: data.error,
+          icon: "warning"
+        });
+        
+      }  else {
+
+        Swal.fire({
+          title: "Error",
+          text: "Error al anular.",
+          icon: "error"
+        });
+      }
+    }) 
   }
 
 
   desocuparHabitacion(){
+    
     let parametros = {
       id_habitacion: this.habitacionId, 
     }; 
@@ -439,6 +499,8 @@ export class DashboardRoomsOcuparComponent {
       cancelButtonText: "Cancelar",
     }).then((result) => {
         if (result.isConfirmed) { 
+          this.spinner.show();
+
             this.enviarDesocupar(parametros);
         }
     });
@@ -453,6 +515,7 @@ export class DashboardRoomsOcuparComponent {
     this.dashboardRoomsService.desocupar(parametros).subscribe(
       (response: any) => {       
         let data = response;
+        this.spinner.hide();
 
         if(data.code == "success"){
           Swal.fire({
@@ -495,6 +558,7 @@ export class DashboardRoomsOcuparComponent {
 
   eliminarMedioPagoAbono(index: number){
     this.formFacturacionMediosPago.removeAt(index); 
+    this.changeMedioPagoFactura();
   }
 
   agregarAbonoOcupar(){
@@ -514,6 +578,63 @@ export class DashboardRoomsOcuparComponent {
     this.formFacturacionMediosPago.value.forEach(element => {
       this.totalFactura = this.totalFactura + parseFloat(element.monto)
     })  
+
+    console.log(this.totalFactura)
+    console.log(this.totalPagarReserva-this.abonosTotal)
+
+  }
+
+  submitFactura() {
+    let guardar = {
+        detalle_id: this.detalleId,
+        metodos_pagos: this.formFacturacionMediosPago.value,
+        concepto: 'Factura Habitacion',
+        hotel_id: this.hotelId,
+        cliente_id: this.clienteId,
+        porcentaje_descuento: 0,
+    }
+
+    this.enviarFacturacion(guardar);
+  }
+
+ 
+  enviarFacturacion(parametros){
+    this.spinner.show();
+
+    this.dashboardRoomsService.facturar(parametros).subscribe(
+      (response: any) => {       
+        let data = response;
+        this.facturarVisible = false;
+        this.spinner.hide();
+
+        if(data.code == "success"){
+
+          Swal.fire({
+            title: "Exito",
+            text:  data.msm,
+            icon: "success"
+          });
+          
+          this.router.navigate(['dashboard/dashboardRooms']);
+
+        } else  if(data.code == "warning"){
+          Swal.fire({
+            title: "Advertencia",
+            text: data.msm,
+            icon: "warning"
+          });
+        }  else {
+          Swal.fire({
+            title: "Error",
+            text: "Error al anular.",
+            icon: "error"
+          });
+        }
+      },
+      (error) => {
+          console.log('Error: ', error);
+      }
+    ); 
   }
 
   generarIdAleatorio(): string {

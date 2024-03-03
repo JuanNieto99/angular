@@ -75,8 +75,8 @@ export class ExternalSequenceComponent {
                   //Es normal esto che
                 }
 
-                this.secuenciaInicial = response.secuensia_incial;
-                this.secuenciaActual = response.secuensia_actual;
+                this.secuenciaInicial = response.secuencia_incial;
+                this.secuenciaActual = response.secuencia_actual;
                 this.secuenciaFinal = response.secuencia_final;
 
                 this.visibleModalExternalSequence = true;
@@ -186,8 +186,8 @@ formatDate(dateString: string): string {
 
                 if (secuenciaExterna && 'prefijo' in secuenciaExterna) {
                     // Formatear las fechas antes de asignarlas al formulario
-                    this.secuenciaInicial = secuenciaExterna.secuensia_incial;
-                    this.secuenciaActual = secuenciaExterna.secuensia_actual;
+                    this.secuenciaInicial = secuenciaExterna.secuencia_incial;
+                    this.secuenciaActual = secuenciaExterna.secuencia_actual;
                     this.secuenciaFinal = secuenciaExterna.secuencia_final;
                     this.fechaInicial = new Date(secuenciaExterna.fecha_inicio)
                         .toISOString()
@@ -203,8 +203,8 @@ formatDate(dateString: string): string {
                         prefijo: this.prefijo,
                         fecha_inicio: this.fechaInicial,
                         fecha_final: this.fechaFinal,
-                        secuensia_incial: this.secuenciaInicial,
-                        secuensia_actual: this.secuenciaActual,
+                        secuencia_incial: this.secuenciaInicial,
+                        secuencia_actual: this.secuenciaActual,
                         secuencia_final: this.secuenciaFinal,
                     });
                 }
@@ -315,8 +315,8 @@ formatDate(dateString: string): string {
             prefijo: ['', [Validators.required]],
             fecha_inicio: ['', [Validators.required]],
             fecha_final: ['', [Validators.required]],
-            secuensia_incial: ['', [Validators.required]],
-            secuensia_actual: ['', [Validators.required]],
+            secuencia_incial: ['', [Validators.required]],
+            secuencia_actual: ['', [Validators.required]],
             secuencia_final: ['', [Validators.required]],
         });
 
@@ -325,8 +325,8 @@ formatDate(dateString: string): string {
             prefijo: ['', [Validators.required]],
             fecha_inicio: ['', [Validators.required]],
             fecha_final: ['', [Validators.required]],
-            secuensia_incial: ['', [Validators.required]],
-            secuensia_actual: ['', [Validators.required]],
+            secuencia_incial: ['', [Validators.required]],
+            secuencia_actual: ['', [Validators.required]],
             secuencia_final: ['', [Validators.required]],
         });
     }
