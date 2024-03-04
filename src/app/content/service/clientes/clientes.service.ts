@@ -48,6 +48,14 @@ export class ClientesService {
         return this.httpClient.post<any>(`${this.baseUrl+this.endpointClienteCreate}`, data);
     }
 
+    updateClientes(data:any){
+        return this.httpClient.post<any>(`${this.baseUrl+this.endpointClienteUpdate}`, data);
+    }
+
+    deleteClientes(data:any){
+        return this.httpClient.post<any>(`${this.baseUrl+this.endpointEliminar}`, data);
+    }
+
     getCountries(): Observable<country[]> {
         const parametros = { id: '' };
         return this.httpClient.post<any>(`${this.baseUrl + this.endpointCountry}`, parametros)

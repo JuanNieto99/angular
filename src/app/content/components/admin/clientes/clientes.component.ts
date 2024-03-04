@@ -44,17 +44,17 @@ export class ClientesComponent implements OnInit {
     public apellidos: string;
     public celular: string;
     public telefono: string;
-    public tipoDocumento: number;
+    public tipoDocumento: any[];
     public numeroDocumento: string;
-    public genero: number;
-    public estadoCivil: number;
-    public ciudad: number;
+    public genero: any[];
+    public estadoCivil: any[];
+    public ciudad: any[];
     public barrio: string;
     public fechaNacimiento: string;
-    public nivelEstudio: number;
+    public nivelEstudio: any[];
     public correo: string;
     public observacion: string;
-    public tipo: number;
+    public tipo: any[];
 
     //Paginador
     public pageCount: number = 10;
@@ -225,8 +225,6 @@ export class ClientesComponent implements OnInit {
         return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
     }
 
-
-
     newClientes() {
         this.formCreateClientes.get('ciudad_id').setValue(this.selectedCity ? this.selectedCity.id : null);
         this.spinner.show();
@@ -273,7 +271,6 @@ export class ClientesComponent implements OnInit {
         this.spinner.show();
         this.clientesService.getClientes(id).subscribe(
             (response: any) => {
-                console.log(response);
                 this.spinner.hide();
                 this.hotel = response.hotel;
                 this.estadoCivil = response.estado_civil;
@@ -283,34 +280,70 @@ export class ClientesComponent implements OnInit {
                 this.tipo = response.tipo;
                 const cliente = response.cliente;
 
-                // this.estadoCivil = cliente.estado_civil;
-                // this.genero = cliente.genero;
-                // this.nivelEstudio = cliente.nivel_estudio;
-                // this.tipoDocumento = cliente.tipoDocumento;
-                // this.tipo = cliente.tipo;
+                let hotel:any = null;
+                let estadoCivil:any = null;
+                let genero:any = null;
+                let nivelEstudio:any = null;
+                let tipoDocumento:any = null;
+                let tipo:any = null;
 
-                // Asignar los valores del cliente al formulario de edición
-                this.formEditClientes.patchValue({
-                    hotel_id: cliente.hotel,
-                    nombres: cliente.nombres,
-                    apellidos: cliente.apellidos,
-                    tipo_documento: cliente.tipo_documento_id,
-                    numero_documento: cliente.numero_documento,
-                    genero: cliente.genero,
-                    estado_civil: cliente.estado_civil_id,
-                    ciudad_id: cliente.ciudad_id,
-                    barrio_residencia: cliente.barrio_residencia,
-                    telefono: cliente.telefono,
-                    celular: cliente.celular,
-                    fecha_nacimiento: new Date(cliente.fecha_nacimiento), // Convertir la cadena de fecha a objeto Date
-                    nivel_estudio: cliente.nivel_studio_id,
-                    tipo: cliente.tipo,
-                    correo: cliente.correo,
-                    observacion: cliente.observacion
-                });
+                this.hotel.forEach((value) => {
+                    if(value.id == cliente.hotel){
+                        hotel = value;
+                    }
+                })
 
-                // Mostrar el modal de edición
+                this.estadoCivil.forEach((value) => {
+                    if(value.id == cliente.estado_civil_id){
+                        estadoCivil = value;
+                    }
+                })
+
+                this.genero.forEach((value) => {
+                    if(value.id == cliente.genero){
+                        genero = value;
+                    }
+                })
+
+                this.nivelEstudio.forEach((value) => {
+                    if(value.id == cliente.nivel_studio_id){
+                        nivelEstudio = value;
+                    }
+                })
+
+                this.tipoDocumento.forEach((value) => {
+                    if(value.id == cliente.tipo_documento_id){
+                        tipoDocumento = value;
+                    }
+                })
+
+                this.tipo.forEach((value) => {
+                    if(value.id == cliente.tipo){
+                        tipo = value;
+                    }
+                })
+
                 setTimeout(() => {
+                    this.formEditClientes.patchValue({
+                        hotel_id: hotel,
+                        nombres: cliente.nombres,
+                        apellidos: cliente.apellidos,
+                        tipo_documento: tipoDocumento,
+                        numero_documento: cliente.numero_documento,
+                        genero: genero,
+                        estado_civil: estadoCivil,
+                        ciudad_id: cliente.ciudad_id,
+                        barrio_residencia: cliente.barrio_residencia,
+                        telefono: cliente.telefono,
+                        celular: cliente.celular,
+                        fecha_nacimiento: new Date(cliente.fecha_nacimiento), // Convertir la cadena de fecha a objeto Date
+                        nivel_estudio: nivelEstudio,
+                        tipo: tipo,
+                        correo: cliente.correo,
+                        observacion: cliente.observacion
+                    });
+
+                    // Mostrar el modal de edición
                     this.visibleModalClientesEditar = true;
                 }, 1);
             },
@@ -318,6 +351,112 @@ export class ClientesComponent implements OnInit {
                 console.log('Error: ', error);
             }
         );
+    }
+
+    updateClientes() {
+        this.spinner.show();
+        let dataCliente = this.formEditClientes.value;
+
+        dataCliente.hotel_id = dataCliente.hotel_id['id'];
+        dataCliente.estado_civil = dataCliente.estado_civil['id'];
+        dataCliente.genero = dataCliente.genero['id'];
+        dataCliente.nivel_estudio = dataCliente.nivel_estudio['id'];
+        dataCliente.tipo_documento = dataCliente.tipo_documento['id'];
+        dataCliente.tipo = dataCliente.tipo['id'];
+        dataCliente.ciudad_id = Number(dataCliente.ciudad_id['id']);
+        dataCliente.estado = 1;
+        dataCliente.id = this.idEditando;
+
+        const fechaNacimiento = new Date(dataCliente.fecha_nacimiento).toISOString();
+        dataCliente.fecha_nacimiento = this.formatDate(fechaNacimiento);
+
+        const formData = new FormData();
+
+        for (const i in dataCliente) {
+            if (dataCliente.hasOwnProperty(i)) {
+                formData.append(i, dataCliente[i]);
+            }
+        }
+
+        this.clientesService.updateClientes(formData).subscribe(
+            (response: any) => {
+                this.spinner.hide();
+                this.visibleModalClientesEditar = false;
+                if(response.code == "success"){
+
+                    Swal.fire({
+                        title: "Exito",
+                        text: "Cliente actualizado exitosamente.",
+                        icon: "success"
+                    });
+
+                    this.getIndex();
+
+                } else {
+
+                    Swal.fire({
+                        title: "Error",
+                        text: "Error al actualizar el cliente.",
+                        icon: "error"
+                    });
+
+                }
+
+            },
+            (error) => {
+                console.log('Error: ', error);
+            }
+        );
+    }
+
+    submitUpdate(){
+        if(this.formEditClientes.valid){
+          this.updateClientes();
+        }
+    }
+
+    //Eliminar
+    confirmDelete(id:number){
+        Swal.fire({
+          title: "¿Estas seguro que deseas eliminar este cliente?",
+          text: "Ten cuidado esta acción no se prodrá reversar",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Sí, Confirmar",
+          cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.spinner.show();
+                this.clientesService.deleteClientes({id}).subscribe(
+                (response: any) => {
+                    this.spinner.hide();
+                    if(response.code == "success"){
+
+                    Swal.fire({
+                        title: "Exito",
+                        text: "Cliente eliminado exitosamente.",
+                        icon: "success"
+                    });
+
+                    this.getIndex();
+
+                    }  else {
+
+                    Swal.fire({
+                        title: "Error",
+                        text: "Error al eliminar el cliente." ,
+                        icon: "error"
+                    });
+
+                    }
+
+                },
+                (error) => {
+                    console.log('Error: ', error);
+                }
+                );
+            }
+        });
     }
 
     //Buscar localización
