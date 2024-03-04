@@ -60,7 +60,7 @@ export class HotelsComponent implements OnInit {
 
     formNewHotel = new FormGroup({
         nombre: new FormControl('', Validators.required),
-        direccion: new FormControl('', [Validators.required, Validators.email]),
+        direccion: new FormControl('', Validators.required),
         ciudad_id: new FormControl('', Validators.required),
         contacto: new FormControl('', Validators.required),
         contacto_telefono:new FormControl('', Validators.required),
@@ -77,7 +77,7 @@ export class HotelsComponent implements OnInit {
 
      formEditHotel = new FormGroup({
         nombre: new FormControl('', Validators.required),
-        cantidad_habitaciones: new FormControl('', [Validators.required, Validators.email]),
+        cantidad_habitaciones: new FormControl('', Validators.required),
         contacto: new FormControl('', Validators.required),
         contacto_cargo: new FormControl('', Validators.required),
         contacto_telefono: new FormControl('', Validators.required),
