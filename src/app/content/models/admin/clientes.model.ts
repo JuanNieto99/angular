@@ -1,4 +1,4 @@
-export interface customers{
+export interface Clientes {
     id?: number,
     nombres?: string,
     apellidos?: string,
@@ -21,4 +21,28 @@ export interface customers{
     hotel_id?: number,
     created_at?: null,
     updated_at?: null
+}
+
+export interface country{
+    id?:number;
+    nombre?: string;
+    estado: number,
+    abreviatura: number,
+    codigo_telefono: number,
+    codigo_dian: number,
+}
+
+export interface state{
+    id?:number;
+    nombre?: string;
+    pais_id?: number;
+}
+
+export interface city{
+    codigo_dane?:string;
+    nombre?: string;
+    departamento_id?: number;
+    id?:number;
+    estado?:number;
+
 }

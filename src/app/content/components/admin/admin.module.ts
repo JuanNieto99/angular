@@ -6,8 +6,8 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RecipesComponent } from './recipes/recipes.component';
 
 @NgModule({
-    declarations: [ 
-        RecipesComponent, 
+    declarations: [
+        RecipesComponent
     ],
     imports: [
         CommonModule,

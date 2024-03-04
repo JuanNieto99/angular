@@ -33,8 +33,8 @@ import { LoginBlockGuard } from './content/guards/loginblock.guard';
                     { path: 'dashboardRooms', loadChildren: () => import('./content/components/dashboard/dashboard-rooms/dashboard-rooms.module').then(m => m.DashboardRoomsModule) },
                     { path: 'calendar', loadChildren: () => import('./content/components/admin/dashboard-calendar/dashboard-calendar.module').then(m => m.DashboardCalendarModule) },
                     { path: 'admin/recipes', loadChildren: () => import('./content/components/admin/recipes/recipes.module').then(m => m.RecipesModule) },
-                    { path: 'admin/customers', loadChildren: () => import('./content/components/admin/customers/customers.module').then(m => m.CustomersModule) },
                     { path: 'admin/tarifas', loadChildren: () => import('./content/components/admin/tarifa/tarifa.module').then(m => m.TarifaModule) },
+                    { path: 'admin/clientes', loadChildren: () => import('./content/components/admin/clientes/clientes.module').then(m => m.ClientesModule) },
                 ],
                 canActivate: [LoginGuard]
             },

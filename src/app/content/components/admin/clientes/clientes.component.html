@@ -1,0 +1,280 @@
+<ngx-spinner type="ball-scale-multiple"></ngx-spinner>
+
+<div class="surface-section px-4 py-5 md:px-6 lg:px-8">
+    <div class="flex align-items-start flex-column lg:justify-content-between lg:flex-row">
+        <div>
+            <div class="font-medium text-3xl text-900">Clientes</div>
+            <div class="flex align-items-center text-700 flex-wrap">
+                <div class="mr-5 flex align-items-center mt-3">
+                </div>
+            </div>
+        </div>
+        <div class="mt-3 lg:mt-0">
+            <button pButton pRipple label="Crear" (click)="openModal()" class="p-button-outlined mr-2" icon="pi pi-star"></button>
+            <!--button pButton pRipple label="Exportar" icon="pi pi-check"></button-->
+        </div>
+    </div>
+</div>
+<div class="grid mt-3">
+    <div class="col-12">
+        <div class="card px-3 py-3">
+            <p-table [value]="clientesData" [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll" [loading]="loadingTable" [rows]="8" [globalFilterFields]="['nombre','medida','precio','cantidad', 'inventario','acciones']"  selectionMode="multiple" [rowHover]="true" dataKey="usuario" (onPage)="onPage($event)">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0">Lista de Clientes</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <form [formGroup]="formSearch" >
+                                <div class="p-inputgroup">
+                                    <input formControlName="search" pInputText type="text" placeholder="Buscar..."   (input)="searchInput()"  class="w-full sm:w-auto"/>
+                                    <button type="button" pButton pRipple   class="pi pi-search" (click)="search(dt)"></button>
+                                </div>
+                                    <!--i class="pi pi-search"></i>
+                                    <input formControlName="search" pInputText type="text" placeholder="Buscar..."  (input)="search(dt)" class="w-full sm:w-auto"/-->
+                            </form>
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Hotel</th>
+                        <th>Teléfono</th>
+                        <th>Tipo de Documento</th>
+                        <th>Documento</th>
+                        <th>Acciones</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-clientes>
+                    <tr>
+                        <td>{{clientes.nombres}} {{clientes.apellidos}}</td>
+                        <td>{{clientes.correo}}</td>
+                        <td>{{clientes.hotel.nombre}}</td>
+                        <td>{{clientes.telefono}}</td>
+                        <td>{{clientes.tipo_documento.nombre}}</td>
+                        <td>{{clientes.numero_documento}}</td>
+                        <td class="flex gap-2">
+                            <p-button (click)="editClientes(clientes.id)" icon="pi pi-user-edit" severity="info"></p-button>
+                            <p-confirmDialog></p-confirmDialog>
+                            <p-button (click)="confirmDelete(clientes.id)" icon="pi pi-trash" severity="danger"></p-button>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="loadingbody">
+					<tr>
+						<td colspan="8">Cargando informacion porfavor espere ...</td>
+					</tr>
+				</ng-template>
+            </p-table>
+            <br>
+            <div style="text-align: center;">
+                <span class="p-buttonset">
+                    <button pButton pRipple label="" icon="pi pi-arrow-left"   [disabled]="!disablePageLeft" (click)="leftTable()" ></button>
+                    <button pButton pRipple [label]="pageActual" ></button>
+                    <button pButton pRipple label="" icon="pi pi-arrow-right" [disabled]="!disablePageRight" (click)="rightTable()"></button>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+<p-dialog header="Crear Cliente" [(visible)]="visibleModalClientes" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+    <div class="col-12">
+        <form [formGroup]="formCreateClientes" (ngSubmit)="submitCreate()">
+            <div class="p-fluid p-formgrid grid">
+                <div class="field col-12 md:col-6">
+					<label>Hotel</label>
+					<p-dropdown [options]="hotel" optionLabel="nombre" formControlName="hotel_id" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateClientes.get('hotel_id').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+					<label>Nombres</label>
+					<input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="nombres">
+                    <div style="color: red;" *ngIf="formCreateClientes.get('nombres').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Apellidos</label>
+                    <input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="apellidos">
+                    <div style="color: red;" *ngIf="formCreateClientes.get('apellidos').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Fecha de Nacimiento</label>
+                    <p-calendar formControlName="fecha_nacimiento" class="w-full mb-3 border-round-3xl" [showIcon]="true"></p-calendar>
+                    <div style="color: red;" *ngIf="formCreateClientes.get('fecha_nacimiento').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+					<label>Tipo Documento</label>
+					<p-dropdown [options]="tipoDocumento" optionLabel="nombre" formControlName="tipo_documento" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateClientes.get('tipo_documento').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Número Documento</label>
+                    <input type="string" pInputText class="w-full mb-3 border-round-3xl" formControlName="numero_documento">
+                    <div style="color: red;" *ngIf="formCreateClientes.get('numero_documento').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+					<label>Genero</label>
+					<p-dropdown [options]="genero" optionLabel="nombre" formControlName="genero" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateClientes.get('genero').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+					<label>Estado civil</label>
+					<p-dropdown [options]="estadoCivil" optionLabel="nombre" formControlName="estado_civil" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateClientes.get('estado_civil').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+					<label>Nivel de Estudios</label>
+					<p-dropdown [options]="nivelEstudio" optionLabel="nombre" formControlName="nivel_estudio" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateClientes.get('nivel_estudio').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+					<label>Tipo de Persona</label>
+					<p-dropdown [options]="tipo" optionLabel="nombre" formControlName="tipo" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateClientes.get('tipo').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>País</label>
+                    <p-dropdown [options]="countries$" [(ngModel)]="selectedCountry" [ngModelOptions]="{standalone: true}" optionLabel="nombre" (onChange)="getStates()"></p-dropdown>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Departamento</label>
+                    <p-dropdown [options]="states$" [(ngModel)]="selectedState" [ngModelOptions]="{standalone: true}" optionLabel="nombre" (onChange)="getCities()"></p-dropdown>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Ciudad</label>
+                    <p-dropdown [options]="cities$" optionLabel="nombre" formControlName="ciudad_id"></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateClientes.get('ciudad_id').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Barrio</label>
+                    <input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="barrio_residencia">
+                    <div style="color: red;" *ngIf="formCreateClientes.get('barrio_residencia').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Telefono</label>
+                    <input type="string" pInputText class="w-full mb-3 border-round-3xl" formControlName="telefono">
+                    <div style="color: red;" *ngIf="formCreateClientes.get('telefono').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Celular</label>
+                    <input type="string" pInputText class="w-full mb-3 border-round-3xl" formControlName="celular">
+                    <div style="color: red;" *ngIf="formCreateClientes.get('celular').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Correo</label>
+                    <input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="correo">
+                    <div style="color: red;" *ngIf="formCreateClientes.get('correo').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Observación</label>
+                    <input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="observacion">
+                    <div style="color: red;" *ngIf="formCreateClientes.get('observacion').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-12">
+                    <button pButton pRipple label="Crear Cliente" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                </div>
+            </div>
+            <br>
+        </form>
+	</div>
+</p-dialog>
+<!-- Editar -->
+<p-dialog header="Crear Cliente" [(visible)]="visibleModalClientesEditar" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+    <div class="col-12">
+        <form [formGroup]="formEditClientes" (ngSubmit)="submitCreate()">
+            <div class="p-fluid p-formgrid grid">
+                <div class="field col-12 md:col-6">
+                    <label>Hotel</label>
+                    <p-dropdown [options]="hotel" optionLabel="nombre" formControlName="hotel_id"></p-dropdown>
+                    <div style="color: red;" *ngIf="formEditClientes.get('hotel_id').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+					<label>Nombres</label>
+					<input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="nombres">
+                    <div style="color: red;" *ngIf="formEditClientes.get('nombres').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Apellidos</label>
+                    <input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="apellidos">
+                    <div style="color: red;" *ngIf="formEditClientes.get('apellidos').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Fecha de Nacimiento</label>
+                    <p-calendar formControlName="fecha_nacimiento" class="w-full mb-3 border-round-3xl" [showIcon]="true"></p-calendar>
+                    <div style="color: red;" *ngIf="formEditClientes.get('fecha_nacimiento').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+					<label>Tipo Documento</label>
+					<p-dropdown [options]="tipoDocumento" optionLabel="nombre" formControlName="tipo_documento" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formEditClientes.get('tipo_documento').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Número Documento</label>
+                    <input type="string" pInputText class="w-full mb-3 border-round-3xl" formControlName="numero_documento">
+                    <div style="color: red;" *ngIf="formEditClientes.get('numero_documento').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+					<label>Genero</label>
+					<p-dropdown [options]="genero" optionLabel="nombre" formControlName="genero" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formEditClientes.get('genero').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+					<label>Estado civil</label>
+					<p-dropdown [options]="estadoCivil" optionLabel="nombre" formControlName="estado_civil" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formEditClientes.get('estado_civil').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+					<label>Nivel de Estudios</label>
+					<p-dropdown [options]="nivelEstudio" optionLabel="nombre" formControlName="nivel_estudio" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formEditClientes.get('nivel_estudio').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+					<label>Tipo de Persona</label>
+					<p-dropdown [options]="tipo" optionLabel="nombre" formControlName="tipo" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formEditClientes.get('tipo').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>País</label>
+                    <p-dropdown [options]="countries$" [(ngModel)]="selectedCountry" [ngModelOptions]="{standalone: true}" optionLabel="nombre" (onChange)="getStates()"></p-dropdown>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Departamento</label>
+                    <p-dropdown [options]="states$" [(ngModel)]="selectedState" [ngModelOptions]="{standalone: true}" optionLabel="nombre" (onChange)="getCities()"></p-dropdown>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Ciudad</label>
+                    <p-dropdown [options]="cities$" optionLabel="nombre" formControlName="ciudad_id"></p-dropdown>
+                    <div style="color: red;" *ngIf="formEditClientes.get('ciudad_id').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Barrio</label>
+                    <input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="barrio_residencia">
+                    <div style="color: red;" *ngIf="formEditClientes.get('barrio_residencia').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Telefono</label>
+                    <input type="string" pInputText class="w-full mb-3 border-round-3xl" formControlName="telefono">
+                    <div style="color: red;" *ngIf="formEditClientes.get('telefono').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Celular</label>
+                    <input type="string" pInputText class="w-full mb-3 border-round-3xl" formControlName="celular">
+                    <div style="color: red;" *ngIf="formEditClientes.get('celular').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Correo</label>
+                    <input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="correo">
+                    <div style="color: red;" *ngIf="formEditClientes.get('correo').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
+                    <label>Observación</label>
+                    <input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="observacion">
+                    <div style="color: red;" *ngIf="formEditClientes.get('observacion').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-12">
+                    <button pButton pRipple label="Editar Cliente" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                </div>
+            </div>
+            <br>
+        </form>
+	</div>
+</p-dialog>
