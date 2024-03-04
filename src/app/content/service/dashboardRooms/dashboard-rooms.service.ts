@@ -25,6 +25,8 @@ export class DashboardRoomsService {
   private endpointGetEmpleadoHabitacion: string;
   private endpointOcupacionReserva: string;
   private endpointRoomOcupar: string;
+  private endpointSaveDetalleRoom: string;
+  private endpointSaveFactura: string;
 
   constructor(private httpClient: HttpClient) {
       this.baseUrl = Config.url;
@@ -43,6 +45,8 @@ export class DashboardRoomsService {
       this.endpointGetEmpleadoHabitacion ='/getEmpleadosHabitacion';
       this.endpointOcupacionReserva = '/checkinReserva';
       this.endpointRoomOcupar = '/getRoomDashBoard'
+      this.endpointSaveDetalleRoom = '/saveDetalleRoom'
+      this.endpointSaveFactura = '/facturaCrear'
 
   }
 
@@ -104,5 +108,13 @@ export class DashboardRoomsService {
 
   getOcuparHabitacion(parametros:any){
     return this.httpClient.post<any[]>(`${this.baseUrl+this.endpointRoomOcupar}`, parametros); 
+  }
+
+  saveDetalleHabitacion(parametros:any){
+    return this.httpClient.post<any[]>(`${this.baseUrl+this.endpointSaveDetalleRoom}`, parametros); 
+  }
+
+  facturar(parametros:any){
+    return this.httpClient.post<any[]>(`${this.baseUrl+this.endpointSaveFactura}`, parametros); 
   }
 }
