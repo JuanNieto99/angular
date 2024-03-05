@@ -103,7 +103,7 @@
                     <div style="color: red;" *ngIf="formCreateProduct.get('cantidad').hasError('min')">El número debe ser mayor o igua a {{  formCreateProduct?.controls['cantidad']?.errors['min'].min }}</div>
                 </div>
                 <div class="field col-12 md:col-6" *ngIf="visibleServicio">
-                    <label>Sin limite Cantidad</label>
+                    <label>Cantidad  Limitada</label>
                     <p-dropdown [options]="limiteCantidad" formControlName="limite_cantidad"  optionLabel="nombre"  ></p-dropdown>
                 </div>
                 <div class="field col-12 md:col-6">
@@ -177,7 +177,7 @@
                     <div style="color: red;" *ngIf="formEditProduct.get('cantidad').hasError('min')">El número debe ser mayor o igua a {{  formCreateProduct?.controls['cantidad']?.errors['min'].min }}</div>
                 </div>
                 <div class="field col-12 md:col-6" *ngIf="visibleServicioEditar">
-                    <label>Sin limite Cantidad</label>
+                    <label>Cantidad Limitada</label>
                     <p-dropdown [options]="limiteCantidad" formControlName="limite_cantidad"  optionLabel="nombre"  ></p-dropdown>
                 </div>
                 <div class="field col-12 md:col-6">
