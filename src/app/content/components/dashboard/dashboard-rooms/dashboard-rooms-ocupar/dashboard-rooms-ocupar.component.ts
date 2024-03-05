@@ -169,6 +169,7 @@ export class DashboardRoomsOcuparComponent {
                   porcentaje: elementImpuesto?.porcentaje,
                   valor: impuesto,
                   producto_identificador: identificador,
+                  item_id: element.productos.id,
                 }
               )
             
@@ -381,10 +382,11 @@ export class DashboardRoomsOcuparComponent {
             porcentaje: elementImpuesto?.porcentaje,
             valor: impuesto,
             producto_identificador: identificador,
+            item_id: producto.id,
           }
         )
       });   
-       
+      
       impuesto =  parseInt((parseInt(producto.valor) * parseInt(cantidad)) + (impuesto) + '');
     }  
   
