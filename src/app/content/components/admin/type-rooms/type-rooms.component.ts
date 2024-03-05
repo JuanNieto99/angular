@@ -120,7 +120,7 @@ export class TypeRoomsComponent {
 
         dataTypeRoom.diseno_json = JSON.stringify(json);
 
-        this.typeRoomService.createProduct(dataTypeRoom).subscribe(
+        this.typeRoomService.createTypeRoom(dataTypeRoom).subscribe(
             (response: any) => {
                 this.spinner.hide();
                 this.imagen = null;
@@ -192,7 +192,7 @@ export class TypeRoomsComponent {
                 if (response.code == 'success') {
                     Swal.fire({
                         title: 'Exito',
-                        text: 'Tipo de producto actualizado exitosamente.',
+                        text: 'Tipo de habitación actualizada exitosamente.',
                         icon: 'success',
                     });
 
@@ -234,7 +234,7 @@ export class TypeRoomsComponent {
                         if (response.code == 'success') {
                             Swal.fire({
                                 title: 'Exito',
-                                text: 'tipo de habitación eliminada exitosamente.',
+                                text: 'Tipo de habitación eliminada exitosamente.',
                                 icon: 'success',
                             });
 

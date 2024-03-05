@@ -109,14 +109,14 @@
                     <div style="color: red;" *ngIf="formCreateWallet.get('descripcion').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-12">
-                    <button pButton pRipple label="Crear Permiso" icon="pi pi-user" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                    <button pButton pRipple label="Crear Caja" icon="pi pi-user" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>
             </div>
         </form>
 	</div>
 </p-dialog>
 <!-- Editar -->
-<p-dialog header="Editar Producto" [(visible)]="visibleModalWalletEditar"  [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+<p-dialog header="Editar Caja" [(visible)]="visibleModalWalletEditar"  [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
     <div class="col-12">
         <form [formGroup]="formEditWallet" (ngSubmit)="submitUpdate()">
             <div class="p-fluid p-formgrid grid">
@@ -151,7 +151,7 @@
                     <div style="color: red;" *ngIf="formEditWallet.get('descripcion').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-12">
-                    <button pButton pRipple label="Editar Producto" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                    <button pButton pRipple label="Editar Caja" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>
             </div>
             <br>

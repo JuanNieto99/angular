@@ -38,7 +38,7 @@ export class TypeRoomsService {
         return this.httpClient.post<typeRoom[]>(`${this.baseUrl+this.endpointListar}?per_page=${per_page}&page=${page}&search=${search}`, httpOptions);
     }
 
-    createProduct(data:any){
+    createTypeRoom(data:any){
         return this.httpClient.post<any>(`${this.baseUrl+this.endpointTypeRoomCreate}`, data);
     }
 
