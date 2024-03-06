@@ -353,12 +353,16 @@ export class ClientesComponent implements OnInit {
                         barrio_residencia: cliente.barrio_residencia,
                         telefono: cliente.telefono,
                         celular: cliente.celular,
-                        fecha_nacimiento: new Date(cliente.fecha_nacimiento), // Convertir la cadena de fecha a objeto Date
+                        fecha_nacimiento: new Date(cliente.fecha_nacimiento),
                         nivel_estudio: nivelEstudio,
                         tipo: tipo,
                         correo: cliente.correo,
                         observacion: cliente.observacion
+
                     });
+
+                    // LLamamos la función para ocultar campos
+                    this.onChangeTipoClienteEditar();
 
                     // Mostrar el modal de edición
                     this.visibleModalClientesEditar = true;
@@ -384,8 +388,18 @@ export class ClientesComponent implements OnInit {
         dataCliente.estado = 1;
         dataCliente.id = this.idEditando;
 
-        const fechaNacimiento = new Date(dataCliente.fecha_nacimiento).toISOString();
-        dataCliente.fecha_nacimiento = this.formatDate(fechaNacimiento);
+        if(dataCliente.tipo != 2){
+            dataCliente.genero = dataCliente.genero['id'];
+            dataCliente.estado_civil = dataCliente.estado_civil['id'];
+            dataCliente.fecha_nacimiento = this.formatDate(new Date(dataCliente.fecha_nacimiento).toISOString());
+            dataCliente.nivel_estudio = dataCliente.nivel_estudio['id'];
+        } else {
+            dataCliente.genero = 3;
+            dataCliente.estado_civil = 9;
+            delete dataCliente.apellidos;
+            delete dataCliente.fecha_nacimiento;
+            dataCliente.nivel_estudio = 8;
+        }
 
         const formData = new FormData();
 
@@ -482,72 +496,81 @@ export class ClientesComponent implements OnInit {
         let tipo_persona = this.formCreateClientes.get('tipo').value;
 
         if(tipo_persona.id == 1){
-            this.visibleServicio = true;
-          // Habilitar campos para el tipo de persona 1
-          this.formCreateClientes.get('apellidos').enable();
-          this.formCreateClientes.get('fecha_nacimiento').enable();
-          this.formCreateClientes.get('estado_civil').enable();
-          this.formCreateClientes.get('genero').enable();
-          this.formCreateClientes.get('nivel_estudio').enable();
 
-          this.formCreateClientes.get('apellidos').setValue(null);
-          this.formCreateClientes.get('fecha_nacimiento').setValue(null);
-          this.formCreateClientes.get('estado_civil').setValue(null);
-          this.formCreateClientes.get('genero').setValue(null);
-          this.formCreateClientes.get('nivel_estudio').setValue(null);
+            this.visibleServicio = true;
+
+            // Habilitar campos para el tipo de persona 1
+            this.formCreateClientes.get('apellidos').enable();
+            this.formCreateClientes.get('fecha_nacimiento').enable();
+            this.formCreateClientes.get('estado_civil').enable();
+            this.formCreateClientes.get('genero').enable();
+            this.formCreateClientes.get('nivel_estudio').enable();
+
+            this.formCreateClientes.get('apellidos').setValue(null);
+            this.formCreateClientes.get('fecha_nacimiento').setValue(null);
+            this.formCreateClientes.get('estado_civil').setValue(null);
+            this.formCreateClientes.get('genero').setValue(null);
+            this.formCreateClientes.get('nivel_estudio').setValue(null);
         }
 
         if(tipo_persona.id == 2){
-            this.visibleServicio = false;
-          // Deshabilitar campos para el tipo de persona 2
-          this.formCreateClientes.get('apellidos').disable();
-          this.formCreateClientes.get('fecha_nacimiento').disable();
-          this.formCreateClientes.get('estado_civil').disable();
-          this.formCreateClientes.get('genero').disable();
-          this.formCreateClientes.get('nivel_estudio').disable();
 
-          this.formCreateClientes.get('apellidos').setValue(0);
-          this.formCreateClientes.get('fecha_nacimiento').setValue(0);
-          this.formCreateClientes.get('estado_civil').setValue(0);
-          this.formCreateClientes.get('genero').setValue(0);
-          this.formCreateClientes.get('nivel_estudio').setValue(0);
+            this.visibleServicio = false;
+
+            // Deshabilitar campos para el tipo de persona 2
+            this.formCreateClientes.get('apellidos').disable();
+            this.formCreateClientes.get('fecha_nacimiento').disable();
+            this.formCreateClientes.get('estado_civil').disable();
+            this.formCreateClientes.get('genero').disable();
+            this.formCreateClientes.get('nivel_estudio').disable();
+
+            this.formCreateClientes.get('apellidos').setValue(0);
+            this.formCreateClientes.get('fecha_nacimiento').setValue(0);
+            this.formCreateClientes.get('estado_civil').setValue(0);
+            this.formCreateClientes.get('genero').setValue(0);
+            this.formCreateClientes.get('nivel_estudio').setValue(0);
         }
     }
 
     //Ocultar campos redundantes de editar
     onChangeTipoClienteEditar (){
-        let tipo_persona = this.formCreateClientes.get('tipo').value;
+        let tipo_persona = this.formEditClientes.get('tipo').value;
 
         if(tipo_persona.id == 1){
-            this.visibleServicioEditar = true;
-          // Habilitar campos para el tipo de persona 1
-          this.formCreateClientes.get('apellidos').enable();
-          this.formCreateClientes.get('fecha_nacimiento').enable();
-          this.formCreateClientes.get('estado_civil').enable();
-          this.formCreateClientes.get('genero').enable();
-          this.formCreateClientes.get('nivel_estudio').enable();
 
-          this.formCreateClientes.get('apellidos').setValue(this.editarData.apellidos);
-          this.formCreateClientes.get('fecha_nacimiento').setValue(this.editarData.fecha_nacimiento);
-          this.formCreateClientes.get('estado_civil').setValue(this.editarData.estado_civil);
-          this.formCreateClientes.get('genero').setValue(this.editarData.genero);
-          this.formCreateClientes.get('nivel_estudio').setValue(this.editarData.nivel_estudio);
+            this.visibleServicioEditar = true;
+
+            // Habilitar campos para el tipo de persona 1
+            this.formCreateClientes.get('apellidos').enable();
+            this.formCreateClientes.get('fecha_nacimiento').enable();
+            this.formCreateClientes.get('estado_civil').enable();
+            this.formCreateClientes.get('genero').enable();
+            this.formCreateClientes.get('nivel_estudio').enable();
+
+            this.formCreateClientes.get('apellidos').setValue(this.editarData.apellidos);
+            this.formCreateClientes.get('fecha_nacimiento').setValue(this.editarData.fecha_nacimiento);
+            this.formCreateClientes.get('estado_civil').setValue(this.editarData.estado_civil);
+            this.formCreateClientes.get('genero').setValue(this.editarData.genero);
+            this.formCreateClientes.get('nivel_estudio').setValue(this.editarData.nivel_estudio);
         }
 
         if(tipo_persona.id == 2){
-            this.visibleServicioEditar = false;
-          // Deshabilitar campos para el tipo de persona 2
-          this.formCreateClientes.get('apellidos').disable();
-          this.formCreateClientes.get('fecha_nacimiento').disable();
-          this.formCreateClientes.get('estado_civil').disable();
-          this.formCreateClientes.get('genero').disable();
-          this.formCreateClientes.get('nivel_estudio').disable();
 
-          this.formCreateClientes.get('apellidos').setValue(0);
-          this.formCreateClientes.get('fecha_nacimiento').setValue(0);
-          this.formCreateClientes.get('estado_civil').setValue(0);
-          this.formCreateClientes.get('genero').setValue(0);
-          this.formCreateClientes.get('nivel_estudio').setValue(0);
+            this.visibleServicioEditar = false;
+
+            // Deshabilitar campos para el tipo de persona 2
+
+            this.formCreateClientes.get('apellidos').disable();
+            this.formCreateClientes.get('fecha_nacimiento').disable();
+            this.formCreateClientes.get('estado_civil').disable();
+            this.formCreateClientes.get('genero').disable();
+            this.formCreateClientes.get('nivel_estudio').disable();
+
+            this.formCreateClientes.get('apellidos').setValue(0);
+            this.formCreateClientes.get('fecha_nacimiento').setValue(0);
+            this.formCreateClientes.get('estado_civil').setValue(0);
+            this.formCreateClientes.get('genero').setValue(0);
+            this.formCreateClientes.get('nivel_estudio').setValue(0);
         }
     }
 
