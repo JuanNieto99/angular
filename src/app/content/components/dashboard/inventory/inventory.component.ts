@@ -39,7 +39,7 @@ export class InventoryComponent implements OnInit {
     public ultimaPage:number = 1;
     public registrosContar: number = 0;
     public disablePageLeft: boolean = false;
-    public disablePageRight: boolean = true;
+    public disablePageRight: boolean = false;
     public first:number = 0;
     public rows:number = 8;
 
@@ -71,6 +71,11 @@ export class InventoryComponent implements OnInit {
                 this.inventoryData = response.data;
                 this.ultimaPage = response.last_page;
                 this.registrosContar = response.total;
+                this.ultimaPage = response.last_page;
+                if(response.total>pageCount){
+                    this.disablePageRight = true;
+                }
+                this.validatePage();
                 this.spinner.hide();
             },
             (error) => {

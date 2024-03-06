@@ -29,7 +29,7 @@ export class RolesComponent implements OnInit {
     public pageActual: number = 1;
     public ultimaPage: number = 1;
     public disablePageLeft: boolean = false;
-    public disablePageRight: boolean = true;
+    public disablePageRight: boolean = false;
     public loadingTable: boolean = false;
     public first: number = 0;
     public rows: number = 8;
@@ -104,7 +104,12 @@ export class RolesComponent implements OnInit {
                 this.roles = response.data;
                 this.ultimaPage = response.last_page;
                 this.totalRoles = response.total;
-                console.log(this.roles);
+                this.ultimaPage = response.last_page;
+                if(response.total>pageCount){
+                    this.disablePageRight = true;
+                }
+                this.validatePage();
+                this.spinner.hide();
             },
             (error) => {
                 console.log('Error: ', error);

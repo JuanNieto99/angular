@@ -40,7 +40,7 @@ export class RecipesComponent {
     public pageActual:number = 1;
     public ultimaPage:number = 1;
     public disablePageLeft: boolean = false;
-    public disablePageRight: boolean = true;
+    public disablePageRight: boolean = false;
 
 
 
@@ -282,6 +282,11 @@ export class RecipesComponent {
               this.recipesData = response.data;
               this.ultimaPage = response.last_page;
               this.countRegisters = response.total;
+              this.ultimaPage = response.last_page;
+              if(response.total>pageCount){
+                  this.disablePageRight = true;
+              }
+              this.validatePage();
               this.spinner.hide();
           },
           (error) => {

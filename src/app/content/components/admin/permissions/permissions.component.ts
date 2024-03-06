@@ -43,7 +43,7 @@ export class PermissionsComponent implements OnInit {
     public pageActual: number = 1;
     public ultimaPage: number = 1;
     public disablePageLeft: boolean = false;
-    public disablePageRight: boolean = true;
+    public disablePageRight: boolean = false;
     public registrosContar: number = 0;
     public loadingTable: boolean = false;
 
@@ -127,6 +127,12 @@ export class PermissionsComponent implements OnInit {
                     this.totalPermission = response.total;
                     this.ultimaPage = response.last_page;
                     this.registrosContar = response.total;
+                    this.ultimaPage = response.last_page;
+                    if(response.total>pageCount){
+                        this.disablePageRight = true;
+                    }
+                    this.validatePage();
+                    this.spinner.hide();
                 },
                 (error) => {
                     console.log('Error: ', error);

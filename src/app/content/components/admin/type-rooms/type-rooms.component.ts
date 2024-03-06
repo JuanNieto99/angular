@@ -36,7 +36,7 @@ export class TypeRoomsComponent {
     public pageActual:number = 1;
     public ultimaPage:number = 1;
     public disablePageLeft: boolean = false;
-    public disablePageRight: boolean = true;
+    public disablePageRight: boolean = false;
     public valPuerta: string = '';
 
     constructor(
@@ -263,6 +263,11 @@ export class TypeRoomsComponent {
                 this.loadingTable = false;
                 this.typeRoomData = response.data;
                 this.countRegisters = response.total;
+                this.ultimaPage = response.last_page;
+                if(response.total>pageCount){
+                    this.disablePageRight = true;
+                }
+                this.validatePage();
                 this.spinner.hide();
             },
             (error) => {
@@ -292,22 +297,21 @@ export class TypeRoomsComponent {
     onPageChange(event){
         this.first = event.first;
         this.rows = event.rows;
-      }
+    }
 
-
-      leftTable(){
+    leftTable(){
         this.pageActual = this.pageActual - 1;
         this.getIndex('', this.pageCount, this.pageActual);
         this.validatePage();
-      }
+    }
 
-      rightTable(){
-          this.pageActual = this.pageActual + 1;
-          this.getIndex('', this.pageCount, this.pageActual);
-          this.validatePage();
-      }
+    rightTable(){
+        this.pageActual = this.pageActual + 1;
+        this.getIndex('', this.pageCount, this.pageActual);
+        this.validatePage();
+    }
 
-      validatePage(){
+    validatePage(){
         if(this.pageActual == 1 ){
             this.disablePageLeft = false;
         }
@@ -324,4 +328,5 @@ export class TypeRoomsComponent {
             this.disablePageRight = true;
         }
     }
+
 }

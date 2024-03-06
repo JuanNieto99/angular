@@ -43,7 +43,7 @@ export class WalletsComponent {
     public pageActual:number = 1;
     public ultimaPage:number = 1;
     public disablePageLeft: boolean = false;
-    public disablePageRight: boolean = true;
+    public disablePageRight: boolean = false;
     public first:number = 0;
     public rows:number = 8;
     public countRegisters: number;
@@ -69,6 +69,11 @@ export class WalletsComponent {
                 this.walletData = response.data;
                 this.ultimaPage = response.last_page;
                 this.countRegisters = response.total;
+                this.ultimaPage = response.last_page;
+                if(response.total>pageCount){
+                    this.disablePageRight = true;
+                }
+                this.validatePage();
                 this.spinner.hide();
             },
             (error) => {

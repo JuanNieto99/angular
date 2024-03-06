@@ -75,8 +75,8 @@ export class ProductsComponent implements OnInit {
     public pageActual:number = 1;
     public ultimaPage:number = 1;
     public disablePageLeft: boolean = false;
-    public disablePageRight: boolean = true;
-    public registrosContar: number = 0; 
+    public disablePageRight: boolean = false;
+    public registrosContar: number = 0;
     public visibleServicio: boolean = true;
     public visibleServicioEditar: boolean = true;
     public editarData: any;
@@ -108,10 +108,15 @@ export class ProductsComponent implements OnInit {
       this.loadingTable = true;
       this.productsService.getAll(pageCount, search, page).subscribe(
         (response: any) => {
-            this.loadingTable = false;  
-            this.productsData = response.data; 
-            this.ultimaPage = response.last_page; 
-            this.registrosContar = response.total;          
+            this.loadingTable = false;
+            this.productsData = response.data;
+            this.ultimaPage = response.last_page;
+            this.registrosContar = response.total;
+            this.ultimaPage = response.last_page;
+            if(response.total>pageCount){
+                this.disablePageRight = true;
+            }
+            this.validatePage();
             this.spinner.hide();
         },
         (error) => {
@@ -122,7 +127,7 @@ export class ProductsComponent implements OnInit {
 
     newProduct(){
       this.spinner.show();
-      let dataProduct = this.formCreateProduct.value; 
+      let dataProduct = this.formCreateProduct.value;
       dataProduct.inventario_id = dataProduct.inventario_id['id'];
       dataProduct.visible_venta = dataProduct.visible_venta['id'];
       dataProduct.tipo_producto = dataProduct.tipo_producto['id'];
@@ -230,12 +235,12 @@ export class ProductsComponent implements OnInit {
     searchInput(){
       let search = this.formSearch.get('search').value;
       if(search==""){
-        this.getIndex(search); 
+        this.getIndex(search);
       }
 
     }
 
-    search(dt){ 
+    search(dt){
       let search = this.formSearch.get('search').value;
       this.getIndex(search);
     }
@@ -319,8 +324,8 @@ export class ProductsComponent implements OnInit {
             if(value.id == this.dataEditarInfoProductos.visible_venta){
               visibleVenta = value;
             }
-          }) 
-          
+          })
+
           this.visibleReceta.forEach((value) => {
             if(value.id == this.dataEditarInfoProductos.visible_receta){
               visibleReceta = value;
@@ -339,8 +344,8 @@ export class ProductsComponent implements OnInit {
             this.formEditProduct.get('stop_minimo').setValue(this.dataEditarInfoProductos.stop_minimo)
             this.formEditProduct.get('tipo_producto').setValue(tipoProducto)
             this.formEditProduct.get('precio_base').setValue(this.dataEditarInfoProductos.precio_base)
-            this.formEditProduct.get('visible_receta').setValue(visibleReceta) 
-            
+            this.formEditProduct.get('visible_receta').setValue(visibleReceta)
+
             this.visibleModalProductoEditar = true;
             this.cargarImagen(response.imagen);
           }, 1);
@@ -457,13 +462,13 @@ export class ProductsComponent implements OnInit {
     updateProducto(){
       this.spinner.show();
       let dataProduct = this.formEditProduct.value;
-    
+
       dataProduct.inventario_id = dataProduct.inventario_id['id'];
-      dataProduct.visible_venta = dataProduct.visible_venta['id']; 
+      dataProduct.visible_venta = dataProduct.visible_venta['id'];
       dataProduct.tipo_producto = dataProduct.tipo_producto['id'];
       dataProduct.visible_receta = dataProduct.visible_receta['id'];
       dataProduct.id = this.idEditando;
-      dataProduct.estado = 1; 
+      dataProduct.estado = 1;
 
       if(dataProduct.tipo_producto != 2){
         dataProduct.medida_id = dataProduct.medida_id['id'];
@@ -536,48 +541,48 @@ export class ProductsComponent implements OnInit {
     }
 
 
-    leftTable(){        
-      this.pageActual = this.pageActual - 1; 
+    leftTable(){
+      this.pageActual = this.pageActual - 1;
       this.getIndex('', this.pageCount, this.pageActual);
-      this.validatePage(); 
+      this.validatePage();
     }
 
     rightTable(){
-        this.pageActual = this.pageActual + 1; 
+        this.pageActual = this.pageActual + 1;
         this.getIndex('', this.pageCount, this.pageActual);
         this.validatePage();
     }
 
     validatePage(){
-        if(this.pageActual == 1 ){  
+        if(this.pageActual == 1 ){
             this.disablePageLeft = false;
-        } 
+        }
 
-        if(this.pageActual > 1 ){ 
+        if(this.pageActual > 1 ){
             this.disablePageLeft = true;
-        }  
+        }
 
         if(this.ultimaPage == this.pageActual){
-            this.disablePageRight = false; 
-        } 
-        
+            this.disablePageRight = false;
+        }
+
         if(this.ultimaPage > this.pageActual){
-            this.disablePageRight = true; 
+            this.disablePageRight = true;
         }
     }
-    
-    onChangeTipoProductoCrear (){ 
-      let tipo_producto = this.formCreateProduct.get('tipo_producto').value; 
+
+    onChangeTipoProductoCrear (){
+      let tipo_producto = this.formCreateProduct.get('tipo_producto').value;
 
       if(tipo_producto.id == 1){
-        //producto 
+        //producto
         this.visibleServicio = true;
         this.formCreateProduct.get('medida_id').enable();
         this.formCreateProduct.get('cantidad').enable();
-        this.formCreateProduct.get('limite_cantidad').enable(); 
+        this.formCreateProduct.get('limite_cantidad').enable();
         this.formCreateProduct.get('stop_minimo').enable();
         this.formCreateProduct.get('precio_base').enable();
-        this.formCreateProduct.get('visible_receta').enable(); 
+        this.formCreateProduct.get('visible_receta').enable();
 
         this.formCreateProduct.get('cantidad').setValue(null);
         this.formCreateProduct.get('medida_id').setValue(null);
@@ -589,18 +594,18 @@ export class ProductsComponent implements OnInit {
       }
 
       if(tipo_producto.id == 2){
-        //servicio 
+        //servicio
         this.visibleServicio = false;
         this.formCreateProduct.get('medida_id').disable();
         this.formCreateProduct.get('cantidad').disable();
-        this.formCreateProduct.get('limite_cantidad').disable(); 
+        this.formCreateProduct.get('limite_cantidad').disable();
         this.formCreateProduct.get('stop_minimo').disable();
         this.formCreateProduct.get('precio_base').disable();
         this.formCreateProduct.get('visible_receta').disable();
 
         this.formCreateProduct.get('cantidad').setValue(0);
         this.formCreateProduct.get('medida_id').setValue(0);
-        this.formCreateProduct.get('limite_cantidad').setValue(0); 
+        this.formCreateProduct.get('limite_cantidad').setValue(0);
         this.formCreateProduct.get('stop_minimo').setValue(0);
         this.formCreateProduct.get('precio_base').setValue(0);
         this.formCreateProduct.get('visible_receta').setValue(0);
@@ -608,14 +613,14 @@ export class ProductsComponent implements OnInit {
     }
 
     onChangeTipoProductoEditar(){
-      let tipo_producto = this.formEditProduct.get('tipo_producto').value; 
+      let tipo_producto = this.formEditProduct.get('tipo_producto').value;
       if(tipo_producto.id == 1){
-        
-        //producto 
+
+        //producto
         this.visibleServicioEditar = true;
         this.formEditProduct.get('medida_id').enable();
         this.formEditProduct.get('cantidad').enable();
-        this.formEditProduct.get('limite_cantidad').enable(); 
+        this.formEditProduct.get('limite_cantidad').enable();
         this.formEditProduct.get('stop_minimo').enable();
         this.formEditProduct.get('precio_base').enable();
 
@@ -629,19 +634,19 @@ export class ProductsComponent implements OnInit {
       if(tipo_producto.id == 2){
         this.editarData =  this.formEditProduct.value;
 
-        //servicio 
+        //servicio
         this.visibleServicioEditar = false;
         this.formEditProduct.get('cantidad').disable();
-        this.formEditProduct.get('limite_cantidad').disable(); 
+        this.formEditProduct.get('limite_cantidad').disable();
         this.formEditProduct.get('stop_minimo').disable();
         this.formEditProduct.get('precio_base').disable();
 
         this.formEditProduct.get('cantidad').setValue(0);
         this.formEditProduct.get('medida_id').setValue(0);
-        this.formEditProduct.get('limite_cantidad').setValue(0); 
+        this.formEditProduct.get('limite_cantidad').setValue(0);
         this.formEditProduct.get('stop_minimo').setValue(0);
         this.formEditProduct.get('precio_base').setValue(0);
       }
     }
-  
+
 }

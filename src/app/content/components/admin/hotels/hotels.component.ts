@@ -41,7 +41,7 @@ export class HotelsComponent implements OnInit {
     public pageActual: number = 1;
     public ultimaPage: number = 1;
     public disablePageLeft: boolean = false;
-    public disablePageRight: boolean = true;
+    public disablePageRight: boolean = false;
     public first: number = 0;
     public rows: number = 8;
     public loadingTable: boolean = false;
@@ -142,6 +142,12 @@ export class HotelsComponent implements OnInit {
                 this.loadingTable = false;
                 this.hotels = response.data;
                 this.totalHotels = response.total;
+                this.ultimaPage = response.last_page;
+                if(response.total>pageCount){
+                    this.disablePageRight = true;
+                }
+                this.validatePage();
+                this.spinner.hide();
             },
             (error) => {
                 console.log('Error: ', error);
