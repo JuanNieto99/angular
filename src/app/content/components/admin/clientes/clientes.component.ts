@@ -29,6 +29,9 @@ export class ClientesComponent implements OnInit {
     public visibleModalClientes: boolean = true;
     public visibleModalClientesEditar: boolean = false;
     public idEditando: number = 0;
+    public visibleServicio: boolean = true;
+    public visibleServicioEditar: boolean = true;
+    public editarData: any;
 
     //Variables para localizacion
     public countries$: any[] = [];
@@ -71,7 +74,7 @@ export class ClientesComponent implements OnInit {
         this.getIndex();
         this.visibleModalClientes = false;
 
-                // Consultar Paises
+        // Consultar Paises
         this.clientesService.getCountries().subscribe(response => {
             this.countries$ = response;
         });
@@ -231,13 +234,27 @@ export class ClientesComponent implements OnInit {
         let dataClientes = this.formCreateClientes.value;
 
         dataClientes.hotel_id = dataClientes.hotel_id['id'];
-        dataClientes.genero = dataClientes.genero['id'];
-        dataClientes.estado_civil = dataClientes.estado_civil['id'];
-        dataClientes.nivel_estudio = dataClientes.nivel_estudio['id'];
         dataClientes.ciudad_id = dataClientes.ciudad_id['id'];
-        dataClientes.tipo_documento = dataClientes.tipo_documento['id'];
         dataClientes.tipo = dataClientes.tipo['id'];
+        dataClientes.tipo_documento = dataClientes.tipo_documento.id;
         dataClientes.estado = 1;
+
+        if(dataClientes.tipo != 2){
+            dataClientes.genero = dataClientes.genero['id'];
+            dataClientes.estado_civil = dataClientes.estado_civil['id'];
+            dataClientes.apellidos = dataClientes.apellidos;
+            dataClientes.fecha_nacimiento = dataClientes.fecha_nacimiento;
+            dataClientes.nivel_estudio = dataClientes.nivel_estudio['id'];
+        } else {
+            dataClientes.genero = 0;
+            dataClientes.estado_civil = 0;
+            delete dataClientes.apellidos;
+            delete dataClientes.fecha_nacimiento; // No enviar fecha_nacimiento
+            dataClientes.nivel_estudio = 0;
+        }
+
+        console.log(dataClientes)
+
         this.clientesService.createClientes(dataClientes).subscribe(
             (response: any) => {
                 this.spinner.hide();
@@ -459,6 +476,81 @@ export class ClientesComponent implements OnInit {
         });
     }
 
+    //Ocultar campos redundantes de crear
+
+    onChangeTipoClienteCrear (){
+        let tipo_persona = this.formCreateClientes.get('tipo').value;
+
+        if(tipo_persona.id == 1){
+            this.visibleServicio = true;
+          // Habilitar campos para el tipo de persona 1
+          this.formCreateClientes.get('apellidos').enable();
+          this.formCreateClientes.get('fecha_nacimiento').enable();
+          this.formCreateClientes.get('estado_civil').enable();
+          this.formCreateClientes.get('genero').enable();
+          this.formCreateClientes.get('nivel_estudio').enable();
+
+          this.formCreateClientes.get('apellidos').setValue(null);
+          this.formCreateClientes.get('fecha_nacimiento').setValue(null);
+          this.formCreateClientes.get('estado_civil').setValue(null);
+          this.formCreateClientes.get('genero').setValue(null);
+          this.formCreateClientes.get('nivel_estudio').setValue(null);
+        }
+
+        if(tipo_persona.id == 2){
+            this.visibleServicio = false;
+          // Deshabilitar campos para el tipo de persona 2
+          this.formCreateClientes.get('apellidos').disable();
+          this.formCreateClientes.get('fecha_nacimiento').disable();
+          this.formCreateClientes.get('estado_civil').disable();
+          this.formCreateClientes.get('genero').disable();
+          this.formCreateClientes.get('nivel_estudio').disable();
+
+          this.formCreateClientes.get('apellidos').setValue(0);
+          this.formCreateClientes.get('fecha_nacimiento').setValue(0);
+          this.formCreateClientes.get('estado_civil').setValue(0);
+          this.formCreateClientes.get('genero').setValue(0);
+          this.formCreateClientes.get('nivel_estudio').setValue(0);
+        }
+    }
+
+    //Ocultar campos redundantes de editar
+    onChangeTipoClienteEditar (){
+        let tipo_persona = this.formCreateClientes.get('tipo').value;
+
+        if(tipo_persona.id == 1){
+            this.visibleServicioEditar = true;
+          // Habilitar campos para el tipo de persona 1
+          this.formCreateClientes.get('apellidos').enable();
+          this.formCreateClientes.get('fecha_nacimiento').enable();
+          this.formCreateClientes.get('estado_civil').enable();
+          this.formCreateClientes.get('genero').enable();
+          this.formCreateClientes.get('nivel_estudio').enable();
+
+          this.formCreateClientes.get('apellidos').setValue(this.editarData.apellidos);
+          this.formCreateClientes.get('fecha_nacimiento').setValue(this.editarData.fecha_nacimiento);
+          this.formCreateClientes.get('estado_civil').setValue(this.editarData.estado_civil);
+          this.formCreateClientes.get('genero').setValue(this.editarData.genero);
+          this.formCreateClientes.get('nivel_estudio').setValue(this.editarData.nivel_estudio);
+        }
+
+        if(tipo_persona.id == 2){
+            this.visibleServicioEditar = false;
+          // Deshabilitar campos para el tipo de persona 2
+          this.formCreateClientes.get('apellidos').disable();
+          this.formCreateClientes.get('fecha_nacimiento').disable();
+          this.formCreateClientes.get('estado_civil').disable();
+          this.formCreateClientes.get('genero').disable();
+          this.formCreateClientes.get('nivel_estudio').disable();
+
+          this.formCreateClientes.get('apellidos').setValue(0);
+          this.formCreateClientes.get('fecha_nacimiento').setValue(0);
+          this.formCreateClientes.get('estado_civil').setValue(0);
+          this.formCreateClientes.get('genero').setValue(0);
+          this.formCreateClientes.get('nivel_estudio').setValue(0);
+        }
+    }
+
     //Buscar localización
     getCountries() {
         this.clientesService.getCountries().subscribe(response => {
@@ -534,6 +626,5 @@ export class ClientesComponent implements OnInit {
             this.disablePageRight = true;
         }
     }
-
 
 }

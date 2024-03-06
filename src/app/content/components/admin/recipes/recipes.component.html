@@ -12,7 +12,7 @@
             </div>
         </div>
         <div class="mt-3 lg:mt-0">
-            <button pButton pRipple label="Crear" (click)="openModal()" class="p-button-outlined mr-2" icon="pi pi-star"></button>
+            <button pButton pRipple label="Crear" (click)="openModal()" class="p-button-outlined mr-2" icon=""></button>
             <!--button pButton pRipple label="Exportar" icon="pi pi-check"></button-->
         </div>
     </div>
@@ -101,7 +101,7 @@
                     <div style="color: red;" *ngIf="formCreateRecipes.get('descripcion').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-12">
-                    <button pButton pRipple label="Crear Habitación" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                    <button pButton pRipple label="Crear Receta" icon="" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>
             </div>
             <br>
@@ -133,7 +133,7 @@
                     <div style="color: red;" *ngIf="formEditRecipes.get('descripcion').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-12">
-                    <button pButton pRipple label="Editar Tipo de Habitación" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                    <button pButton pRipple label="Editar Receta" icon="" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>
             </div>
             <br>

@@ -10,7 +10,7 @@
             </div>
         </div>
         <div class="mt-3 lg:mt-0">
-            <button pButton pRipple label="Crear" (click)="openModal()" class="p-button-outlined mr-2" icon="pi pi-star"></button>
+            <button pButton pRipple label="Crear" (click)="openModal()" class="p-button-outlined mr-2" icon=""></button>
         </div>
     </div>
 </div>
@@ -86,16 +86,21 @@
                     <div style="color: red;" *ngIf="formCreateClientes.get('hotel_id').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
+					<label>Tipo de Persona</label>
+					<p-dropdown [options]="tipo" optionLabel="nombre" (onChange)="onChangeTipoClienteCrear()" formControlName="tipo" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateClientes.get('tipo').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
 					<label>Nombres</label>
 					<input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="nombres">
                     <div style="color: red;" *ngIf="formCreateClientes.get('nombres').hasError('required')">Campo requerido</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" *ngIf="visibleServicio">
                     <label>Apellidos</label>
                     <input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="apellidos">
                     <div style="color: red;" *ngIf="formCreateClientes.get('apellidos').hasError('required')">Campo requerido</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" *ngIf="visibleServicio">
                     <label>Fecha de Nacimiento</label>
                     <p-calendar formControlName="fecha_nacimiento" class="w-full mb-3 border-round-3xl" [showIcon]="true"></p-calendar>
                     <div style="color: red;" *ngIf="formCreateClientes.get('fecha_nacimiento').hasError('required')">Campo requerido</div>
@@ -110,25 +115,20 @@
                     <input type="string" pInputText class="w-full mb-3 border-round-3xl" formControlName="numero_documento">
                     <div style="color: red;" *ngIf="formCreateClientes.get('numero_documento').hasError('required')">Campo requerido</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" *ngIf="visibleServicio">
 					<label>Genero</label>
 					<p-dropdown [options]="genero" optionLabel="nombre" formControlName="genero" ></p-dropdown>
                     <div style="color: red;" *ngIf="formCreateClientes.get('genero').hasError('required')">Campo requerido</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" *ngIf="visibleServicio">
 					<label>Estado civil</label>
 					<p-dropdown [options]="estadoCivil" optionLabel="nombre" formControlName="estado_civil" ></p-dropdown>
                     <div style="color: red;" *ngIf="formCreateClientes.get('estado_civil').hasError('required')">Campo requerido</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" *ngIf="visibleServicio">
 					<label>Nivel de Estudios</label>
 					<p-dropdown [options]="nivelEstudio" optionLabel="nombre" formControlName="nivel_estudio" ></p-dropdown>
                     <div style="color: red;" *ngIf="formCreateClientes.get('nivel_estudio').hasError('required')">Campo requerido</div>
-                </div>
-                <div class="field col-12 md:col-6">
-					<label>Tipo de Persona</label>
-					<p-dropdown [options]="tipo" optionLabel="nombre" formControlName="tipo" ></p-dropdown>
-                    <div style="color: red;" *ngIf="formCreateClientes.get('tipo').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>País</label>
@@ -163,13 +163,13 @@
                     <input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="correo">
                     <div style="color: red;" *ngIf="formCreateClientes.get('correo').hasError('required')">Campo requerido</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-12">
                     <label>Observación</label>
-                    <input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="observacion">
+                    <textarea formControlName="observacion" pInputTextarea  required rows="3" cols="20"></textarea>
                     <div style="color: red;" *ngIf="formCreateClientes.get('observacion').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-12">
-                    <button pButton pRipple label="Crear Cliente" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                    <button pButton pRipple label="Crear Cliente" icon="" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>
             </div>
             <br>
@@ -187,16 +187,21 @@
                     <div style="color: red;" *ngIf="formEditClientes.get('hotel_id').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
+					<label>Tipo de Persona</label>
+					<p-dropdown [options]="tipo" optionLabel="nombre" formControlName="tipo" (onChange)="onChangeTipoClienteEditar()" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formEditClientes.get('tipo').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6">
 					<label>Nombres</label>
 					<input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="nombres">
                     <div style="color: red;" *ngIf="formEditClientes.get('nombres').hasError('required')">Campo requerido</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" *ngIf="visibleServicioEditar">
                     <label>Apellidos</label>
                     <input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="apellidos">
                     <div style="color: red;" *ngIf="formEditClientes.get('apellidos').hasError('required')">Campo requerido</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" *ngIf="visibleServicioEditar">
                     <label>Fecha de Nacimiento</label>
                     <p-calendar formControlName="fecha_nacimiento" class="w-full mb-3 border-round-3xl" [showIcon]="true"></p-calendar>
                     <div style="color: red;" *ngIf="formEditClientes.get('fecha_nacimiento').hasError('required')">Campo requerido</div>
@@ -211,25 +216,20 @@
                     <input type="string" pInputText class="w-full mb-3 border-round-3xl" formControlName="numero_documento">
                     <div style="color: red;" *ngIf="formEditClientes.get('numero_documento').hasError('required')">Campo requerido</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" *ngIf="visibleServicioEditar">
 					<label>Genero</label>
 					<p-dropdown [options]="genero" optionLabel="nombre" formControlName="genero" ></p-dropdown>
                     <div style="color: red;" *ngIf="formEditClientes.get('genero').hasError('required')">Campo requerido</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" *ngIf="visibleServicioEditar">
 					<label>Estado civil</label>
 					<p-dropdown [options]="estadoCivil" optionLabel="nombre" formControlName="estado_civil" ></p-dropdown>
                     <div style="color: red;" *ngIf="formEditClientes.get('estado_civil').hasError('required')">Campo requerido</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-6" *ngIf="visibleServicioEditar">
 					<label>Nivel de Estudios</label>
 					<p-dropdown [options]="nivelEstudio" optionLabel="nombre" formControlName="nivel_estudio" ></p-dropdown>
                     <div style="color: red;" *ngIf="formEditClientes.get('nivel_estudio').hasError('required')">Campo requerido</div>
-                </div>
-                <div class="field col-12 md:col-6">
-					<label>Tipo de Persona</label>
-					<p-dropdown [options]="tipo" optionLabel="nombre" formControlName="tipo" ></p-dropdown>
-                    <div style="color: red;" *ngIf="formEditClientes.get('tipo').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>País</label>
@@ -264,13 +264,13 @@
                     <input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="correo">
                     <div style="color: red;" *ngIf="formEditClientes.get('correo').hasError('required')">Campo requerido</div>
                 </div>
-                <div class="field col-12 md:col-6">
+                <div class="field col-12 md:col-12">
                     <label>Observación</label>
-                    <input type="text" pInputText class="w-full mb-3 border-round-3xl" formControlName="observacion">
+                    <textarea formControlName="observacion" pInputTextarea  required rows="3" cols="20"></textarea>
                     <div style="color: red;" *ngIf="formEditClientes.get('observacion').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-12">
-                    <button pButton pRipple label="Editar Cliente" icon="pi pi-fw pi-star" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                    <button pButton pRipple label="Editar Cliente" icon="" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>
             </div>
             <br>
