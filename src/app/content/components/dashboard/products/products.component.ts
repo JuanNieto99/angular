@@ -61,6 +61,7 @@ export class ProductsComponent implements OnInit {
     public medida: medida [];
     public inventario: inventario [];
     public visibleVenta: visible [];
+    public visibleReceta: visible [];
     public limiteCantidad: limiteCatidad [];
     public tipo: tipo [];
     public imagen: any = null;
@@ -125,6 +126,7 @@ export class ProductsComponent implements OnInit {
       dataProduct.inventario_id = dataProduct.inventario_id['id'];
       dataProduct.visible_venta = dataProduct.visible_venta['id'];
       dataProduct.tipo_producto = dataProduct.tipo_producto['id'];
+      dataProduct.visible_receta = dataProduct.visible_receta['id'];
       dataProduct.estado = 1;
 
       if(dataProduct.tipo_producto != 2){
@@ -201,6 +203,7 @@ export class ProductsComponent implements OnInit {
           cantidad: ['',[Validators.required, Validators.pattern('^[0-9]*$'), Validators.min(0)]],
           inventario_id: ['',[Validators.required]],
           visible_venta: ['',[Validators.required]],
+          visible_receta: ['',[Validators.required]],
           precio_base: ['',[Validators.required, Validators.min(0)]],
           limite_cantidad: ['',[Validators.required]],
           stop_minimo: ['',[Validators.required, Validators.min(0)]],
@@ -215,6 +218,7 @@ export class ProductsComponent implements OnInit {
         cantidad: ['',[Validators.required, Validators.pattern('^[0-9]*$'), Validators.min(0)]],
         inventario_id: ['',[Validators.required]],
         visible_venta: ['',[Validators.required]],
+        visible_receta: ['',[Validators.required]],
         precio_base: ['',[Validators.required, Validators.min(0)]],
         limite_cantidad: ['',[Validators.required]],
         stop_minimo: ['',[Validators.required, Validators.min(0)]],
@@ -250,6 +254,7 @@ export class ProductsComponent implements OnInit {
         this.medida = response.medida;
         this.inventario = response.inventario;
         this.visibleVenta = response.visible_venta;
+        this.visibleReceta = response.visible_receta;
         this.limiteCantidad = response.sin_limite;
         this.tipo = response.tipo;
         this.visibleModalProducto = true;
@@ -274,6 +279,7 @@ export class ProductsComponent implements OnInit {
           this.medida = response.medida;
           this.inventario = response.inventario;
           this.visibleVenta = response.visible_venta;
+          this.visibleReceta = response.visible_receta;
           this.limiteCantidad = response.sin_limite;
           this.tipo = response.tipo;
           this.dataEditarInfoProductos = response.producto;
@@ -283,6 +289,7 @@ export class ProductsComponent implements OnInit {
           let sinLimite:any = null;
           let tipoProducto:any = null;
           let visibleVenta:any = null;
+          let visibleReceta:any = null;
 
           this.medida.forEach((value) => {
             if(value.id == this.dataEditarInfoProductos.medida_id){
@@ -312,6 +319,12 @@ export class ProductsComponent implements OnInit {
             if(value.id == this.dataEditarInfoProductos.visible_venta){
               visibleVenta = value;
             }
+          }) 
+          
+          this.visibleReceta.forEach((value) => {
+            if(value.id == this.dataEditarInfoProductos.visible_receta){
+              visibleReceta = value;
+            }
           })
 
           setTimeout(() => {
@@ -326,7 +339,8 @@ export class ProductsComponent implements OnInit {
             this.formEditProduct.get('stop_minimo').setValue(this.dataEditarInfoProductos.stop_minimo)
             this.formEditProduct.get('tipo_producto').setValue(tipoProducto)
             this.formEditProduct.get('precio_base').setValue(this.dataEditarInfoProductos.precio_base)
-
+            this.formEditProduct.get('visible_receta').setValue(visibleReceta) 
+            
             this.visibleModalProductoEditar = true;
             this.cargarImagen(response.imagen);
           }, 1);
@@ -447,6 +461,7 @@ export class ProductsComponent implements OnInit {
       dataProduct.inventario_id = dataProduct.inventario_id['id'];
       dataProduct.visible_venta = dataProduct.visible_venta['id']; 
       dataProduct.tipo_producto = dataProduct.tipo_producto['id'];
+      dataProduct.visible_receta = dataProduct.visible_receta['id'];
       dataProduct.id = this.idEditando;
       dataProduct.estado = 1; 
 
@@ -496,7 +511,7 @@ export class ProductsComponent implements OnInit {
 
             Swal.fire({
               title: "Error",
-              text: "Error al crear el producto." ,
+              text: "Error al editar el producto." ,
               icon: "error"
             });
 
@@ -562,12 +577,15 @@ export class ProductsComponent implements OnInit {
         this.formCreateProduct.get('limite_cantidad').enable(); 
         this.formCreateProduct.get('stop_minimo').enable();
         this.formCreateProduct.get('precio_base').enable();
+        this.formCreateProduct.get('visible_receta').enable(); 
 
         this.formCreateProduct.get('cantidad').setValue(null);
         this.formCreateProduct.get('medida_id').setValue(null);
         this.formCreateProduct.get('limite_cantidad').setValue(null);
         this.formCreateProduct.get('stop_minimo').setValue(null);
         this.formCreateProduct.get('precio_base').setValue(null);
+        this.formCreateProduct.get('visible_receta').setValue(null);
+
       }
 
       if(tipo_producto.id == 2){
@@ -578,12 +596,14 @@ export class ProductsComponent implements OnInit {
         this.formCreateProduct.get('limite_cantidad').disable(); 
         this.formCreateProduct.get('stop_minimo').disable();
         this.formCreateProduct.get('precio_base').disable();
+        this.formCreateProduct.get('visible_receta').disable();
 
         this.formCreateProduct.get('cantidad').setValue(0);
         this.formCreateProduct.get('medida_id').setValue(0);
         this.formCreateProduct.get('limite_cantidad').setValue(0); 
         this.formCreateProduct.get('stop_minimo').setValue(0);
         this.formCreateProduct.get('precio_base').setValue(0);
+        this.formCreateProduct.get('visible_receta').setValue(0);
       }
     }
 

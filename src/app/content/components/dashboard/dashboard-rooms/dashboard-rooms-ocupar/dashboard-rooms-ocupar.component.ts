@@ -91,20 +91,20 @@ export class DashboardRoomsOcuparComponent {
       tarifa_id: [this.allTarifasDefault, [Validators.required]]
     });
 
-    this.formProducto  = this.FB.group({ 
+    this.formProducto  = this.FB.group({
       producto_id: [null, [Validators.required]],
-      cantidad: [1, [Validators.required]],
+      cantidad: [1, [Validators.required, Validators.min(1)]],
     });
 
 
     this.formMetodoPago = this.FB.group({
       metodo_pago_id: [null, [Validators.required]],
-      valor: [null, [Validators.required]],
+      valor: [null, [Validators.required, Validators.min(1)]],
     });
 
-    let form =  this.FB.group({ 
+    let form =  this.FB.group({
       monto: ['', [Validators.required, Validators.min(0)]],
-      medio_pago: [this.dataMetodosPago?this.dataMetodosPago[0]:null, [Validators.required, Validators.min(0)]],
+      medio_pago: [this.dataMetodosPago?this.dataMetodosPago[0]:null, [Validators.required, Validators.min(1)]],
     }); 
     this.formFacturacionMediosPago = this.FB.array([]); 
 
@@ -333,6 +333,7 @@ export class DashboardRoomsOcuparComponent {
 
     this.allTarifasDefault = this.dataTarifa; 
     this.buildForm();
+    this.recalcular();
   }
 
   confirmDeleteProductos(identificador:string){
@@ -343,10 +344,12 @@ export class DashboardRoomsOcuparComponent {
 
   addTarifa(){
     this.tarifaVisible = true;
+    this.formTarifa.reset();
   }
 
   addProductos(){
     this.productoVisible = true;
+    this.formProducto.reset();
   }
 
   addAbonos(){

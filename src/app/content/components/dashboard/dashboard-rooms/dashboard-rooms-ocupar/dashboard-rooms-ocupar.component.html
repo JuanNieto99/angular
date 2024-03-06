@@ -6,7 +6,7 @@
     <div class="p-toolbar-group-left flex flex-wrap">
     </div>
     <div class="p-toolbar-group-right">
-        <p-splitButton [label]="estadoHabitacion?.estado_id == 2? 'Guardar':undefined" (onClick)="submitAll()"   [model]="items"></p-splitButton>
+        <p-splitButton [label]="estadoHabitacion?.estado_id == 2? 'Guardar':undefined" (onClick)="submitAll()" [disabled]="totalPagarReserva <= 0"  [model]="items"></p-splitButton>
     </div>
     <form [formGroup]="form">
         <div class="p-fluid p-formgrid grid">
@@ -282,6 +282,6 @@
          <p-message severity="info" class="padding" text="El total ingresado no es igual al total a Pagar" *ngIf="totalFactura!=(this.totalPagarReserva-this.abonosTotal)" ></p-message>   
 
     <div class="field col-12 md:col-12">
-        <button pButton pRipple (click)="submitFactura()" [label]="'Pagar '+(this.totalPagarReserva-this.abonosTotal)"  [disabled]="this.formFacturacionMediosPago.invalid || totalFactura!=(this.totalPagarReserva-this.abonosTotal)" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+        <button pButton pRipple (click)="submitFactura()" [label]="'Pagar '+(this.totalPagarReserva-this.abonosTotal | number)"  [disabled]="this.formFacturacionMediosPago.invalid || totalFactura!=(this.totalPagarReserva-this.abonosTotal)" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
     </div>
 </p-dialog>
