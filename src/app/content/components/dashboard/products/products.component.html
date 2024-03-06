@@ -103,7 +103,7 @@
                     <div style="color: red;" *ngIf="formCreateProduct.get('cantidad').hasError('min')">El número debe ser mayor o igua a {{  formCreateProduct?.controls['cantidad']?.errors['min'].min }}</div>
                 </div>
                 <div class="field col-12 md:col-6" *ngIf="visibleServicio">
-                    <label>Sin limite Cantidad</label>
+                    <label>Cantidad  Limitada</label>
                     <p-dropdown [options]="limiteCantidad" formControlName="limite_cantidad"  optionLabel="nombre"  ></p-dropdown>
                 </div>
                 <div class="field col-12 md:col-6">
@@ -133,6 +133,11 @@
                     <label>Visible Venta</label>
                     <p-dropdown [options]="visibleVenta" formControlName="visible_venta"  optionLabel="nombre"  ></p-dropdown>
                     <div style="color: red;" *ngIf="formCreateProduct.get('visible_venta').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6" *ngIf="visibleServicio">
+                    <label>Visible Receta</label>
+                    <p-dropdown [options]="visibleReceta" formControlName="visible_receta"  optionLabel="nombre"  ></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateProduct.get('visible_receta').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-12">
                     <p-fileUpload name="imsgenes[]"  #fileUploadCreate chooseLabel="Seleccionar" [showUploadButton]="false" cancelLabel="Cancelar" accept="image/*"  [maxFileSize]="1000000" (onRemove)="onRemove($event)" (onClear)="onRemove($event)" (onSelect)="onSelect($event)"></p-fileUpload>
@@ -177,7 +182,7 @@
                     <div style="color: red;" *ngIf="formEditProduct.get('cantidad').hasError('min')">El número debe ser mayor o igua a {{  formCreateProduct?.controls['cantidad']?.errors['min'].min }}</div>
                 </div>
                 <div class="field col-12 md:col-6" *ngIf="visibleServicioEditar">
-                    <label>Sin limite Cantidad</label>
+                    <label>Cantidad Limitada</label>
                     <p-dropdown [options]="limiteCantidad" formControlName="limite_cantidad"  optionLabel="nombre"  ></p-dropdown>
                 </div>
                 <div class="field col-12 md:col-6">
@@ -207,6 +212,11 @@
                     <label>Visible Venta</label>
                     <p-dropdown [options]="visibleVenta" formControlName="visible_venta"  optionLabel="nombre"  ></p-dropdown>
                     <div style="color: red;" *ngIf="formEditProduct.get('visible_venta').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-6"  *ngIf="visibleServicioEditar">
+                    <label>Visible Receta</label>
+                    <p-dropdown [options]="visibleReceta" formControlName="visible_receta"  optionLabel="nombre"  ></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateProduct.get('visible_receta').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-12">
                     <p-fileUpload name="imsgenes[]" #fileUpload chooseLabel="Seleccionar" [showUploadButton]="false" cancelLabel="Cancelar" accept="image/*"  [maxFileSize]="1000000"  (onRemove)="onRemove($event)" (onClear)="onRemove($event)" (onSelect)="onSelect($event)"></p-fileUpload>

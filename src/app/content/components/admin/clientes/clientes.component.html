@@ -46,7 +46,7 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-clientes>
                     <tr>
-                        <td>{{clientes.nombres}} {{clientes.apellidos}}</td>
+                        <td>{{clientes.nombres}} {{clientes?.apellidos}}</td>
                         <td>{{clientes.correo}}</td>
                         <td>{{clientes.hotel.nombre}}</td>
                         <td>{{clientes.telefono}}</td>
