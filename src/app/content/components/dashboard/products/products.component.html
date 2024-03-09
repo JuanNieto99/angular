@@ -57,6 +57,7 @@
                             <p-button (click)="editProduct(product.id)" icon="pi pi-user-edit" severity="info"></p-button>
                             <p-confirmDialog></p-confirmDialog>
                             <p-button (click)="confirmDelete(product.id)" icon="pi pi-trash" severity="danger"></p-button>
+                            <p-button icon="pi pi-cog" severity="danger"  [routerLink]="product.id+'/impuesto'"></p-button>
                         </td>
                     </tr>
                 </ng-template>

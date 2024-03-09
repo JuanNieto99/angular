@@ -23,6 +23,8 @@ import { ProductsService } from 'src/app/content/service/dashboard/products.serv
 import { ProductsComponent } from './products.component';
 import { NgxSpinnerModule } from "ngx-spinner";
 import { PaginatorModule } from 'primeng/paginator';
+import { ProductsTributeComponent } from './products-tribute/products-tribute.component';
+import { TreeTableModule } from 'primeng/treetable';
 
 @NgModule({
     imports: [
@@ -45,7 +47,8 @@ import { PaginatorModule } from 'primeng/paginator';
         SweetAlert2Module.forRoot(),
         ReactiveFormsModule, // import ReactiveFormsModule
         NgxSpinnerModule,
-        PaginatorModule
+        PaginatorModule,
+        TreeTableModule
     ],
     providers: [
         {
@@ -55,6 +58,6 @@ import { PaginatorModule } from 'primeng/paginator';
         }, 
         ProductsService,
     ],
-    declarations: [ProductsComponent]
+    declarations: [ProductsComponent, ProductsTributeComponent]
 })
 export class ProductsModule { }
