@@ -109,13 +109,48 @@
             </table>
             </td>
         </tr>
+        <tr>
+            <th>Recetas</th>
+            <th> $ {{ totalRecetas | number }} </th>
+            <td>
+            <div class="ordenAdd" *ngIf="estadoHabitacion?.estado_id == 2">
+                <button pButton pRipple (click)="addRecetas()" class="p-button" icon="pi pi-plus"></button>
+            </div>
+            <table>
+                <thead>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Precio con Impuesto</th>
+                    <th>Cantidad</th>
+                    <th *ngIf="estadoHabitacion?.estado_id == 2">Opcion</th>
+                </thead>
+                <tbody *ngFor="let recetasArray of dataReceta; let i = index">
+                    <td>
+                        {{ recetasArray?.nombre }}
+                    </td> 
+                    <td>
+                        {{ recetasArray?.valor | number }}
+                    </td>
+                    <td>
+                        {{ recetasArray?.valorImpuesto | number }} 
+                    </td>
+                    <td>
+                        {{ recetasArray?.cantidad }}
+                    </td>
+                    <td *ngIf="estadoHabitacion?.estado_id == 2">
+                        <p-button (click)="confirmDeleteRecetas(recetasArray.identificador)" icon="pi pi-trash" severity="danger"></p-button>
+                    </td>
+                </tbody>
+            </table>
+            </td>
 
+        </tr>
         <tr>
             <th> Abonos</th>
             <th> $ {{ abonosTotal | number }} </th>
             <td>
                 <div class="ordenAdd" *ngIf="estadoHabitacion?.estado_id == 2">
-                    <button pButton pRipple (click)="addAbonos()" class="p-button" icon="pi pi-plus"></button>
+                    <!-- button pButton pRipple (click)="addAbonos()" class="p-button" icon="pi pi-plus"></button-->
                 </div>
             <table>
                 <thead>
@@ -131,7 +166,7 @@
                         {{ metodosPagoArray?.nombre  }}
                     </td>
                     <td *ngIf="estadoHabitacion?.estado_id == 2">
-                        <p-button (click)="confirmDeleteAbono(metodosPagoArray.identificador)" icon="pi pi-trash" severity="danger"></p-button>
+                        <!--p-button (click)="confirmDeleteAbono(metodosPagoArray.identificador)" icon="pi pi-trash" severity="danger"></p-button--->
                     </td>
                 </tbody>
             </table>
@@ -200,6 +235,33 @@
 </p-dialog>
 
 <p-dialog header="Agregar Producto" [(visible)]="productoVisible" [modal]="true" [style]="{ width: '50vw', height: '40vw' }" [draggable]="true" [resizable]="true">
+    <div class="col-12">
+        <form [formGroup]="formProducto" (ngSubmit)="submitProducto()">
+            <div class="p-fluid p-formgrid grid">  
+                <div class="field col-12 md:col-6">
+                    <label for="cliente">Producto / Servicio</label>
+                    <p-multiSelect [options]="productoData"  formControlName="producto_id" selectionLimit="1"  limoptionLabel="nombre" placeholder="Buscar Producto/Servicio" optionLabel="nombre" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
+                        <ng-template let-producto pTemplate="item">
+                            <div class="flex align-items-center">
+                                <span class="ml-2">{{producto.nombre}}</span>
+                                <p-tag class="padding" value="{{ producto.valor }}" ></p-tag>  
+                            </div>
+                        </ng-template>
+                    </p-multiSelect>
+                </div> 
+                <div class="field col-12 md:col-6">
+                    <label>Cantidad</label>
+                    <input type="number" formControlName="cantidad"  pInputText class="w-full mb-3 border-round-3xl"  >
+                </div>
+                <div class="field col-12 md:col-12">
+                    <button pButton pRipple label="Agregar"  [disabled]="this.formProducto.invalid" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                </div>
+            </div>
+        </form>
+	</div>
+</p-dialog>
+
+<p-dialog header="Agregar Receta" [(visible)]="recetaVisible" [modal]="true" [style]="{ width: '50vw', height: '40vw' }" [draggable]="true" [resizable]="true">
     <div class="col-12">
         <form [formGroup]="formProducto" (ngSubmit)="submitProducto()">
             <div class="p-fluid p-formgrid grid">  

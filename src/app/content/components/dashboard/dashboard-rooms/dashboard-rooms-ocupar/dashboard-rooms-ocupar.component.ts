@@ -33,9 +33,11 @@ export class DashboardRoomsOcuparComponent {
   public detalleAbonoId: number;
   public totalProductos: number = 0;
   public dataProductos: any[] = [];
+  public dataReceta: any[] = [];
   public tarifaVisible: boolean = false;
   public productoVisible: boolean = false;
   public abonoVisible: boolean = false;
+  public recetaVisible: boolean = false;
   public allTarifas: any[] = [];
   public allTarifasDefault: any[] = [];
   public productoData: any[] = [];
@@ -50,6 +52,8 @@ export class DashboardRoomsOcuparComponent {
   public hotelId: number = 0;
   public clienteId: number = 0;
   private impuestos_save: any = [];
+  public totalRecetas: number = 0;
+  public recetasData: any = [];
 
   constructor( 
     private dashboardRoomsService:DashboardRoomsService, 
@@ -68,7 +72,7 @@ export class DashboardRoomsOcuparComponent {
     this.habitacionId = parseFloat(this.route.snapshot.paramMap.get('idHabitacion'));  
     this.buildForm();
     this.getRoomOcupar();
-
+ 
   } 
 
   cargarItems(){  
@@ -127,7 +131,8 @@ export class DashboardRoomsOcuparComponent {
         this.dataRoomDetail = reques; 
         this.estadoHabitacion = this.dataRoomDetail.estadoHabitacion;
         this.impuestos =  this.dataRoomDetail.impuesto;
-      
+        this.recetasData = this.dataRoomDetail.recetas;
+
         this.impuestos.forEach(element => {
             this.impuestosData.push(
               {
@@ -181,7 +186,7 @@ export class DashboardRoomsOcuparComponent {
          
           }
           
-          this.totalImpuestos = impuesto -  element?.valor;
+          //this.totalImpuestos = impuesto -  element?.valor;
           
           this.dataProductos.push({
                 nombre: element?.productos.nombre,
@@ -241,6 +246,8 @@ export class DashboardRoomsOcuparComponent {
             })
         })
 
+        
+
         this.detalleId = this.dataRoomDetail?.detalleHabitacion.id;
         this.hotelId = this.dataRoomDetail?.detalleHabitacion.hotel_id;
         this.clienteId = this.dataRoomDetail?.detalleHabitacion.cliente?.id;
@@ -272,19 +279,19 @@ export class DashboardRoomsOcuparComponent {
         valor = parseFloat(element?.valor)
       } else {
         valor = element?.valorImpuesto
-        this.totalImpuestos = element?.valorImpuesto - element?.valor;
+        //this.totalImpuestos = element?.valorImpuesto - element?.valor;
       } 
 
       this.totalProductos = this.totalProductos + valor  ;
-    });
-     
-  
-    
+    }); 
 
     this.dataAbonos.forEach(element => {
       this.abonosTotal = this.abonosTotal + parseFloat( element.valor ) ;
     }); 
 
+    this.impuestos_save.forEach(element => {
+      this.totalImpuestos = this.totalImpuestos  + element.valor;
+    });
     this.totalPagarReserva = (this.tarifasTotal +  this.totalProductos ) ;
  
     this.validaciones();
@@ -340,6 +347,9 @@ export class DashboardRoomsOcuparComponent {
     this.dataProductos =  this.dataProductos.filter(element => element.identificador != identificador);
     this.impuestos_save = this.impuestos_save.filter(element => element.producto_identificador != identificador);
     this.recalcular();
+  }
+  confirmDeleteRecetas(identificador:string){
+
   }
 
   addTarifa(){
@@ -533,7 +543,7 @@ export class DashboardRoomsOcuparComponent {
             cliente_id: this.clienteId,
             porcentaje_descuento: 0,
             subtotal: this.totalPagarReserva,
-            total: this.totalPagarReserva - this.abonosTotal,
+            total: this.totalPagarReserva - this.abonosTotal, 
             impuesto_total: this.totalImpuestos, 
             detalleId: this.detalleId,
             hotelId: this.hotelId,
@@ -704,6 +714,10 @@ export class DashboardRoomsOcuparComponent {
           console.log('Error: ', error);
       }
     ); 
+  }
+
+  addRecetas(){
+    this.recetaVisible = true;
   }
 
   generarIdAleatorio(): string {
