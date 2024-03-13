@@ -47,6 +47,10 @@ export class ProductsTributeComponent {
   
   }
 
+  confirmDelete(){
+  
+  }
+
   loadImpuesto(){
     this.productsService.getImpuesto().subscribe(element => {
     
