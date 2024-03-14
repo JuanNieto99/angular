@@ -72,8 +72,8 @@ export class ProductsService {
     return this.httpClient.post<any>(`${this.baseUrl+this.endpointProductUpdate}`, data);
   }
 
-  getImpuesto(){
-    return this.httpClient.get<any>(`${this.baseUrl+this.endpointProductImpuesto}`); 
+  getImpuesto(id: number){
+    return this.httpClient.get<any>(`${this.baseUrl+this.endpointProductImpuesto}`+'/'+id); 
   }
 
   createImpuesto(data:any){

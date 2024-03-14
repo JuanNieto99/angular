@@ -31,9 +31,7 @@ export class ProductsTributeComponent {
   ) {}
 
   ngOnInit() {   
-    this.impuestosData = [
-   //   { nombre: 'IVA', porcentaje: 19, id : 0} 
-    ];
+    this.impuestosData = [];
 
     this.route.params.subscribe(params => {
       this.id = params['id'];
@@ -43,6 +41,10 @@ export class ProductsTributeComponent {
 
     this.formCreate = this.FB.group({
       impuesto:['', Validators.required]
+    });
+
+    setTimeout(() => {
+      this.loadImpuesto();
     });
   }
 
@@ -76,13 +78,20 @@ export class ProductsTributeComponent {
   
   }
 
-  confirmDelete(){
-    
+  confirmDelete(id: number){
+    this.impuestosData = this.impuestosData.filter(element => element.id != id);
   }
 
   loadImpuesto(){
-    this.productsService.getImpuesto().subscribe(element => {
-    
+    this.productsService.getImpuesto(this.id).subscribe(element => {
+      let impuestoProducto = element.impuestoProducto;
+      impuestoProducto.forEach(element => {
+        this.impuestosData.push({
+          nombre: element.impuesto.nombre ,
+          porcentaje: element.impuesto.porcentaje,
+          id: element.impuesto_id, 
+        })
+      });
     })
   }
 
@@ -116,13 +125,13 @@ export class ProductsTributeComponent {
 
   enviarImpuesto(){
     
-    if( this.impuestosData.length > 0){
+   // if( this.impuestosData.length > 0){
       let element = {
         impuestos: this.impuestosData,
         id: this.id,
       };
 
       this.saveImpuesto(element);
-    }
+  //  }
   }
 }
