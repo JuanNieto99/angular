@@ -21,6 +21,7 @@ export class ProductsService {
   public data: Observable<Products[]>;
   private dataSubject: BehaviorSubject<Products[]>;
   private endpointProductImpuesto : string;
+  private endpointGetProductImpuesto : string;
 
   constructor(
     private httpClient: HttpClient, 
@@ -33,6 +34,7 @@ export class ProductsService {
     this.endpointEliminar = '/productoEliminar'; 
     this.endpointProductImpuesto = '/productoImpuestoGet';
     this.endpointProductImpuestoCrear = '/productoImpuestoCrear';
+    this.endpointGetProductImpuesto = '/getProductoImpuesto';
     this.data = this.dataSubject.asObservable();
     this.baseUrl = Config.url;
   }
@@ -76,5 +78,9 @@ export class ProductsService {
 
   createImpuesto(data:any){
     return this.httpClient.post<any>(`${this.baseUrl+this.endpointProductImpuestoCrear}`, data);
+  }
+
+  getImpuestoCrear(){
+    return this.httpClient.get<any>(`${this.baseUrl+this.endpointGetProductImpuesto}`); 
   }
 }

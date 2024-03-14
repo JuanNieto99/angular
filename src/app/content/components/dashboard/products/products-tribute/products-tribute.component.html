@@ -4,14 +4,21 @@
 <div class="surface-section px-4 py-5 md:px-6 lg:px-8">
     <div class="flex align-items-start flex-column lg:justify-content-between lg:flex-row">
         <div>
-            <div class="font-medium text-3xl text-900">Impuesto Producto</div>
+            
+            <div class="font-medium text-3xl text-900">   
+				<button pButton pRipple type="button" icon="pi pi-plus" class="p-button-rounded p-button-text" (click)="openModalCrear()"></button>
+
+                Impuesto Producto
+
+                
+            </div>
             <div class="flex align-items-center text-700 flex-wrap">
                 <div class="mr-5 flex align-items-center mt-3">
                 </div>
             </div>
         </div>
         <div class="mt-3 lg:mt-0">
-            <button pButton pRipple label="Crear" (click)="openModalCrear()" class="p-button-outlined mr-2" icon=""></button>
+            <button pButton pRipple label="Guardar"  (click)="enviarImpuesto()" class="p-button-outlined mr-2" icon=""></button>
             <!--"-->
         </div>
     </div>
@@ -50,9 +57,9 @@
     <div class="col-12">
         <form [formGroup]="formCreate" (ngSubmit)="submitCreate()">
             <div class="p-fluid p-formgrid grid"> 
-                <div class="field col-12 md:col-6" >
-                    <label>Tipo</label>
-                    <p-dropdown [options]="impuesto" (onChange)="onChangeCreateImpuesto()" formControlName="impuesto"  optionLabel="nombre"  ></p-dropdown>
+                <div class="field col-12 md:col-12" >
+                    <label>Impuesto</label>
+                    <p-dropdown [options]="impuestos" (onChange)="onChangeCreateImpuesto()" formControlName="impuesto"  optionLabel="nombre"  ></p-dropdown>
                     <div style="color: red;" *ngIf="formCreate.get('impuesto').hasError('required')">Campo requerido</div>
                 </div> 
                 <div class="field col-12 md:col-12">
