@@ -514,7 +514,7 @@ export class ProductsComponent implements OnInit {
 
             Swal.fire({
               title: "Exito",
-              text: "Producto creado exitosamente.",
+              text: "Producto editado exitosamente.",
               icon: "success"
             });
 

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Recipes } from 'src/app/content/models/admin/recipes.model';
 import { RecipesService } from 'src/app/content/service/recipes/recipes.service';
@@ -47,13 +48,18 @@ export class RecipesComponent {
     constructor(
         private recipesService: RecipesService,
         private FB: FormBuilder,
-        private spinner: NgxSpinnerService
+        private spinner: NgxSpinnerService,
+        private router: Router
     ){ }
 
     ngOnInit(): void {
         this.buildForm();
         this.getIndex();
         this.visibleModalRecipes = false;
+    }
+
+    redirectToRecipesProducts(id:number) {
+        this.router.navigate(['/dashboard/admin/recipes/'+id+'/recipes-products']); // Redirige a la vista de productos
     }
 
     //CREAR
@@ -278,7 +284,6 @@ export class RecipesComponent {
         this.recipesService.getAll(pageCount, search, page).subscribe(
           (response: any) => {
               this.loadingTable = false;
-              console.log(response.data);
               this.recipesData = response.data;
               this.ultimaPage = response.last_page;
               this.countRegisters = response.total;

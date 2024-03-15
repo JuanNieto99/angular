@@ -16,22 +16,27 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AdminInterceptor } from '../../../interceptors/admin.interceptor';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
-import { RecipesRoutingModule } from './recipes-routing.module';
-import { RecipesComponent } from './recipes.component';
 import { NgxSpinnerModule } from "ngx-spinner";
 import { PaginatorModule } from 'primeng/paginator';
 import { RecipesService } from 'src/app/content/service/recipes/recipes.service';
-import { RecipesProductsComponent } from './recipes-products/recipes-products.component';
-import { MultiSelectModule } from 'primeng/multiselect';
+import { AccordionModule } from 'primeng/accordion';
+import { TagModule } from 'primeng/tag';
+import { ChipModule } from "primeng/chip";
+import { ChipsModule } from "primeng/chips";
+import { MessageModule } from 'primeng/message';
+import { SplitButtonModule } from 'primeng/splitbutton';
 
+import { RecipesProductsRoutingModule } from './recipes-products-routing.module';
+import { RecipesProductsComponent } from './recipes-products.component';
+import { AdminInterceptor } from 'src/app/content/interceptors/admin.interceptor';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 
 @NgModule({
   imports: [
     CommonModule,
-    RecipesRoutingModule,
+    RecipesProductsRoutingModule,
     TableModule,
     FileUploadModule,
     FormsModule,
@@ -50,7 +55,13 @@ import { MultiSelectModule } from 'primeng/multiselect';
     ReactiveFormsModule, // import ReactiveFormsModule
     NgxSpinnerModule,
     PaginatorModule,
-    MultiSelectModule
+    AccordionModule,
+    TagModule,
+    MultiSelectModule,
+    ChipModule,
+    ChipsModule,
+    MessageModule,
+    SplitButtonModule
   ],
     providers: [
         {
@@ -59,9 +70,6 @@ import { MultiSelectModule } from 'primeng/multiselect';
             multi:true
         },
         RecipesService,
-    ],
-
-    declarations: [RecipesComponent, RecipesProductsComponent]
-
+    ]
 })
-export class RecipesModule { }
+export class RecipesProductsModule { }

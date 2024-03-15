@@ -115,7 +115,7 @@ export class HotelsComponent implements OnInit {
         });
 
         // Consultar CIudades
-        this.hotelsService.getCities(13).subscribe( response =>{
+        this.hotelsService.getCities(1).subscribe( response =>{
             this.cities$ = response;
         }, error => {
             console.log('Error:', error);

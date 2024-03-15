@@ -1,5 +1,5 @@
 <ngx-spinner type="ball-scale-multiple" fullScreen="true">
-    
+
 </ngx-spinner>
 <h2>Detalle Ocupacion</h2>
 <p-toolbar>
@@ -13,29 +13,29 @@
             <div class="field col-12 md:col-3">
                 <label>Nombre Habitacion</label>
                 <input type="text" formControlName="nombreHabitacion"  pInputText class="w-full mb-3 border-round-3xl" >
-            </div>    
+            </div>
             <div class="field col-12 md:col-3">
                 <label> CheckIn </label>
                 <input type="text" formControlName="desde"  pInputText class="w-full mb-3 border-round-3xl"  >
-            </div> 
-    
+            </div>
+
             <div class="field col-12 md:col-3">
                 <label> CheckOut </label>
                 <input type="text" formControlName="hasta"  pInputText class="w-full mb-3 border-round-3xl"  >
-            </div> 
-    
+            </div>
+
             <div class="field col-12 md:col-3">
                 <label>Nombre Cliente</label>
                 <input type="text" formControlName="nombreCliente"  pInputText class="w-full mb-3 border-round-3xl"  >
-            </div> 
-    
+            </div>
+
             <div class="field col-12 md:col-12">
                 <label>Descripcion</label>
                 <textarea formControlName="descripcion" pInputTextarea  required rows="3" cols="20"></textarea>
-            </div> 
-        </div> 
+            </div>
+        </div>
     </form>
-    <p-message severity="error" class="padding" text="El total de abonos no puede ser mallor al total a pagar" *ngIf="abonosTotal>tarifasTotal" ></p-message>   
+    <p-message severity="error" class="padding" text="El total de abonos no puede ser mallor al total a pagar" *ngIf="abonosTotal>tarifasTotal" ></p-message>
 
 </p-toolbar>
 
@@ -46,7 +46,7 @@
             <th>Valores</th>
             <th>Detalle</th>
         </tr>
-        
+
         <tr>
             <th> Tarifas</th>
             <th> $ {{ tarifasTotal | number }} </th>
@@ -92,12 +92,12 @@
                 <tbody *ngFor="let productosArray of dataProductos; let i = index">
                     <td>
                         {{ productosArray?.nombre }}
-                    </td> 
+                    </td>
                     <td>
                         {{ productosArray?.valor | number }}
                     </td>
                     <td>
-                        {{ productosArray?.valorImpuesto | number }} 
+                        {{ productosArray?.valorImpuesto | number }}
                     </td>
                     <td>
                         {{ productosArray?.cantidad }}
@@ -127,12 +127,12 @@
                 <tbody *ngFor="let recetasArray of dataReceta; let i = index">
                     <td>
                         {{ recetasArray?.nombre }}
-                    </td> 
+                    </td>
                     <td>
                         {{ recetasArray?.valor | number }}
                     </td>
                     <td>
-                        {{ recetasArray?.valorImpuesto | number }} 
+                        {{ recetasArray?.valorImpuesto | number }}
                     </td>
                     <td>
                         {{ recetasArray?.cantidad }}
@@ -195,33 +195,33 @@
         <tr>
             <th> Sub Total</th>
             <th> $ {{ totalPagarReserva <= 0?0: totalPagarReserva | number}} </th>
-            <td> 
+            <td>
             </td>
         </tr>
         <tr>
             <th> Total</th>
             <th> $ {{ totalPagarReserva - abonosTotal <= 0?0: totalPagarReserva - abonosTotal | number }} </th>
-            <td> 
+            <td>
             </td>
         </tr>
-    </table> 
+    </table>
 </div>
 
 <p-dialog header="Agregar Tarifa" [(visible)]="tarifaVisible" [modal]="true" [style]="{ width: '50vw', height: '40vw' }" [draggable]="true" [resizable]="true">
     <div class="col-12">
         <form [formGroup]="formTarifa" (ngSubmit)="submitTarifa()">
-            <div class="p-fluid p-formgrid grid"> 
+            <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-12">
                     <label>Tarifa</label>
                     <p-multiSelect [options]="allTarifas"  formControlName="tarifa_id"  optionLabel="nombre" placeholder="Buscar Tarifa" optionLabel="nombre" class="multiselect-custom"   emptyMessage="Tarifa no encontrada" display="chip">
                         <ng-template let-tarifa pTemplate="item">
                             <div class="flex align-items-center">
                                 <span class="ml-2">
-                                    {{ tarifa.nombre }}   
-                                    <p-tag icon="{{tarifa.icon}}"  class="padding" value="{{ tarifa.valor }}" ></p-tag>  
-                                    <div *ngIf="tarifa.tipo==2"><h5>Hora</h5></div> 
+                                    {{ tarifa.nombre }}
+                                    <p-tag icon="{{tarifa.icon}}"  class="padding" value="{{ tarifa.valor }}" ></p-tag>
+                                    <div *ngIf="tarifa.tipo==2"><h5>Hora</h5></div>
                                     <div *ngIf="tarifa.tipo==1"><h5>Noche</h5></div>
-                                </span> 
+                                </span>
                             </div>
                         </ng-template>
                     </p-multiSelect>
@@ -237,19 +237,18 @@
 <p-dialog header="Agregar Producto" [(visible)]="productoVisible" [modal]="true" [style]="{ width: '50vw', height: '40vw' }" [draggable]="true" [resizable]="true">
     <div class="col-12">
         <form [formGroup]="formProducto" (ngSubmit)="submitProducto()">
-            <div class="p-fluid p-formgrid grid">  
+            <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-6">
                     <label for="cliente">Producto / Servicio</label>
-                    <p-dropdown [options]="productoData" formControlName="producto_id"   [showClear]="true"></p-dropdown>
-
+                    <p-dropdown [options]="productoData" formControlName="producto_id"   [showClear]="true">
                          <ng-template let-producto pTemplate="item">
                             <div class="flex align-items-center">
                                 <span class="ml-2">{{producto.nombre}}</span>
-                                <p-tag class="padding" value="{{ producto.valor }}" ></p-tag>  
+                                <p-tag class="padding" value="{{ producto.valor }}" ></p-tag>
                             </div>
                         </ng-template>
-                    </p-multiSelect>
-                </div> 
+                    </p-dropdown>
+                </div>
                 <div class="field col-12 md:col-6">
                     <label>Cantidad</label>
                     <input type="number" formControlName="cantidad"  pInputText class="w-full mb-3 border-round-3xl"  >
@@ -265,18 +264,18 @@
 <p-dialog header="Agregar Receta" [(visible)]="recetaVisible" [modal]="true" [style]="{ width: '50vw', height: '40vw' }" [draggable]="true" [resizable]="true">
     <div class="col-12">
         <form [formGroup]="formProducto" (ngSubmit)="submitProducto()">
-            <div class="p-fluid p-formgrid grid">  
+            <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-6">
                     <label for="cliente">Producto / Servicio</label>
                     <p-multiSelect [options]="productoData"  formControlName="producto_id" selectionLimit="1"  limoptionLabel="nombre" placeholder="Buscar Producto/Servicio" optionLabel="nombre" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
                         <ng-template let-producto pTemplate="item">
                             <div class="flex align-items-center">
                                 <span class="ml-2">{{producto.nombre}}</span>
-                                <p-tag class="padding" value="{{ producto.valor }}" ></p-tag>  
+                                <p-tag class="padding" value="{{ producto.valor }}" ></p-tag>
                             </div>
                         </ng-template>
                     </p-multiSelect>
-                </div> 
+                </div>
                 <div class="field col-12 md:col-6">
                     <label>Cantidad</label>
                     <input type="number" formControlName="cantidad"  pInputText class="w-full mb-3 border-round-3xl"  >
@@ -292,7 +291,7 @@
 <p-dialog header="Abonos " [(visible)]="abonoVisible" [modal]="true" [style]="{ width: '50vw', height: '40vw' }" [draggable]="true" [resizable]="true">
     <div class="col-12">
         <form [formGroup]="formMetodoPago" (ngSubmit)="submitAbono()">
-            <div class="p-fluid p-formgrid grid">  
+            <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-6">
                     <label for="cliente">Metodo Pago</label>
                     <p-multiSelect [options]="dataMetodosPago"  formControlName="metodo_pago_id" selectionLimit="1"  limoptionLabel="nombre" placeholder="Metodo pago" optionLabel="nombre" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
@@ -302,7 +301,7 @@
                             </div>
                         </ng-template>
                     </p-multiSelect>
-                </div> 
+                </div>
                 <div class="field col-12 md:col-6">
                     <label>Monto</label>
                     <input type="number" formControlName="valor"  pInputText class="w-full mb-3 border-round-3xl"  >
@@ -317,8 +316,8 @@
 
 <p-dialog header="Facturar " [(visible)]="facturarVisible" [modal]="true" [style]="{ width: '40vw', height: '40vw' }" [draggable]="true" [resizable]="true">
         <button pButton pRipple type="button" (click)="agregarAbonoOcupar()" icon="pi pi-plus" class="p-button-rounded"></button>
-        <br><br>   
- 
+        <br><br>
+
             <div class="grid formgrid" *ngFor="let formGroupOcupar of formFacturacionMediosPago.controls; let i = index" [formGroup]="formGroupOcupar">
                 <div class="col-12 mb-5 lg:col-5 lg:mb-5">
                     <label for="monto">Monto</label>
@@ -331,7 +330,7 @@
                 <div class="col-12 mb-5 lg:col-5 lg:mb-5" style="width: auto;">
                     <label htmlFor="medioPago">Medio Pago</label>
                     <br>
-                    <p-dropdown [options]="dataMetodosPago"   class="expandir" formControlName="medio_pago"  id="medioPago"  optionLabel="nombre" ></p-dropdown>                        
+                    <p-dropdown [options]="dataMetodosPago"   class="expandir" formControlName="medio_pago"  id="medioPago"  optionLabel="nombre" ></p-dropdown>
                 </div>
 
                 <div class="col-12 mb-2 lg:col-2 lg:mb-5"  >
@@ -340,9 +339,9 @@
                     <p-button (click)="eliminarMedioPagoAbono(i)" id="opciones" icon="pi pi-trash" severity="danger"></p-button>
                 </div>
             </div>
-         
-    
-         <p-message severity="info" class="padding" text="El total ingresado no es igual al total a Pagar" *ngIf="totalFactura!=(this.totalPagarReserva-this.abonosTotal)" ></p-message>   
+
+
+         <p-message severity="info" class="padding" text="El total ingresado no es igual al total a Pagar" *ngIf="totalFactura!=(this.totalPagarReserva-this.abonosTotal)" ></p-message>
 
     <div class="field col-12 md:col-12">
         <button pButton pRipple (click)="submitFactura()" [label]="'Pagar '+(this.totalPagarReserva-this.abonosTotal | number)"  [disabled]="this.formFacturacionMediosPago.invalid || totalFactura!=(this.totalPagarReserva-this.abonosTotal)" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>

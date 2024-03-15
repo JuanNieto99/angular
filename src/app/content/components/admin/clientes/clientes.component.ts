@@ -87,7 +87,7 @@ export class ClientesComponent implements OnInit {
         });
 
         // Consultar CIudades
-        this.clientesService.getCities(13).subscribe( response =>{
+        this.clientesService.getCities(1).subscribe( response =>{
             this.cities$ = response;
         }, error => {
             console.log('Error:', error);

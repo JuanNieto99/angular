@@ -7,7 +7,7 @@ import { RecipesComponent } from './recipes/recipes.component';
 
 @NgModule({
     declarations: [
-        RecipesComponent
+
     ],
     imports: [
         CommonModule,
