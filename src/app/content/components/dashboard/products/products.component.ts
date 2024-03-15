@@ -128,10 +128,17 @@ export class ProductsComponent implements OnInit {
     newProduct(){
       this.spinner.show();
       let dataProduct = this.formCreateProduct.value;
+       
       dataProduct.inventario_id = dataProduct.inventario_id['id'];
       dataProduct.visible_venta = dataProduct.visible_venta['id'];
       dataProduct.tipo_producto = dataProduct.tipo_producto['id'];
-      dataProduct.visible_receta = dataProduct.visible_receta['id'];
+
+      if( dataProduct.visible_receta){
+        dataProduct.visible_receta = dataProduct?.visible_receta['id'];
+      } else {
+        dataProduct.visible_receta = 0; 
+      }
+
       dataProduct.estado = 1;
 
       if(dataProduct.tipo_producto != 2){
@@ -168,6 +175,7 @@ export class ProductsComponent implements OnInit {
           this.imagen = null;
           this.visibleModalProducto = false;
           if(response.code == "success"){
+            this.formCreateProduct.reset();
 
             Swal.fire({
               title: "Exito",
@@ -466,7 +474,7 @@ export class ProductsComponent implements OnInit {
       dataProduct.inventario_id = dataProduct.inventario_id['id'];
       dataProduct.visible_venta = dataProduct.visible_venta['id'];
       dataProduct.tipo_producto = dataProduct.tipo_producto['id'];
-      dataProduct.visible_receta = dataProduct.visible_receta['id'];
+      dataProduct.visible_receta = dataProduct?.visible_receta['id'];
       dataProduct.id = this.idEditando;
       dataProduct.estado = 1;
 

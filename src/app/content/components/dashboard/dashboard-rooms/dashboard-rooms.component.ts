@@ -393,7 +393,7 @@ export class DashboardRoomsComponent implements OnInit  {
         }; 
 
         Swal.fire({
-          title: "¿Estas seguro que deseas Anular La limpieza?",
+          title: "¿Estas seguro que deseas Anular La impuestos?",
           text: "",
           icon: "warning",
           showCancelButton: true,

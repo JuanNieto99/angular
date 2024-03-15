@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ex } from '@fullcalendar/core/internal-common';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { TreeNode } from 'primeng/api';
@@ -27,7 +27,8 @@ export class ProductsTributeComponent {
     private FB: FormBuilder, 
     private productsService: ProductsService,
     private spinner: NgxSpinnerService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit() {   
@@ -112,7 +113,9 @@ export class ProductsTributeComponent {
           title: "Exito",
           text: Response.msm ,
           icon: "success"
-        });
+        }); 
+        this.router.navigate(['/dashboard/products']);
+
       } else {
         Swal.fire({
           title: "Error",
