@@ -19,7 +19,8 @@ export class DashboardRoomsOcuparComponent {
   public form: FormGroup;  
   public formTarifa: FormGroup;  
   public formProducto: FormGroup;  
-  public formMetodoPago: FormGroup;  
+  public formMetodoPago: FormGroup; ç
+  public formReceta: FormGroup;   
   public formFacturacionMediosPago: FormArray;  
   public habitacionId: number; 
   public dataRoomDetail: any;
@@ -29,7 +30,8 @@ export class DashboardRoomsOcuparComponent {
   public tarifasTotal: number = 0;
   public abonosTotal: number = 0;
   public items: MenuItem[] = [];
-  public totalPagarReserva: number = 0; 
+  public totalPagarReserva: number = 0;
+  public subtotaltotalPagarReserva: number = 0; 
   public detalleAbonoId: number;
   public totalProductos: number = 0;
   public dataProductos: any[] = [];
@@ -51,7 +53,7 @@ export class DashboardRoomsOcuparComponent {
   public detalleId: number = 0;
   public hotelId: number = 0;
   public clienteId: number = 0;
-  private impuestos_save: any = [];
+ // private impuestos_save: any = [];
   public totalRecetas: number = 0;
   public recetasData: any = [];
 
@@ -71,8 +73,7 @@ export class DashboardRoomsOcuparComponent {
     this.dataRoomDetail = [];
     this.habitacionId = parseFloat(this.route.snapshot.paramMap.get('idHabitacion'));  
     this.buildForm();
-    this.getRoomOcupar();
- 
+    this.getRoomOcupar(); 
   } 
 
   cargarItems(){  
@@ -88,23 +89,26 @@ export class DashboardRoomsOcuparComponent {
       nombreCliente: [this.dataRoomDetail?.detalleHabitacion?.cliente?.nombres+' '+this.dataRoomDetail?.detalleHabitacion?.cliente?.apellidos, []],
       desde: [this.dataRoomDetail?.detalleHabitacion?.checkin, []],
       hasta: [this.dataRoomDetail?.detalleHabitacion?.checkout, []],
-    });
-
+    }); 
 
     this.formTarifa = this.FB.group({ 
       tarifa_id: [this.allTarifasDefault, [Validators.required]]
     });
-
-    this.formProducto  = this.FB.group({
+ 
+    this.formProducto = this.FB.group({
       producto_id: [null, [Validators.required]],
       cantidad: [1, [Validators.required, Validators.min(1)]],
-    });
-
+    }); 
 
     this.formMetodoPago = this.FB.group({
       metodo_pago_id: [null, [Validators.required]],
       valor: [null, [Validators.required, Validators.min(1)]],
     });
+
+    this.formReceta = this.FB.group({
+      receta_id: [null, [Validators.required]],
+      cantidad: [1, [Validators.required, Validators.min(1)]],
+    }); 
 
     let form =  this.FB.group({
       monto: ['', [Validators.required, Validators.min(0)]],
@@ -131,8 +135,8 @@ export class DashboardRoomsOcuparComponent {
         this.dataRoomDetail = reques; 
         this.estadoHabitacion = this.dataRoomDetail.estadoHabitacion;
         this.impuestos =  this.dataRoomDetail.impuesto;
-        this.recetasData = this.dataRoomDetail.recetas;  
-
+        this.recetasData = this.dataRoomDetail.recetas; 
+         
         this.allTarifasDefault = [];
         this.dataRoomDetail.tarifasHabitacion.forEach(element => {   
 
@@ -151,11 +155,10 @@ export class DashboardRoomsOcuparComponent {
 
         this.dataRoomDetail.recetasHabitacion.forEach(element => { 
           let identificador ='receta'+this.generarIdAleatorio()
-          element.recetas.receta_detalle.forEach(receta_detalle_element => { 
-            receta_detalle_element.productos.impuestos.forEach(elementImpuestos => {
-              impuesto = impuesto + parseInt(elementImpuestos?.impuesto?.porcentaje) * ( parseFloat(receta_detalle_element?.productos.precio) * parseInt (receta_detalle_element?.cantidad) ) / 100;
-            });
-          });  
+
+          element.recetas.impuestos.forEach(receta_detalle_element => {  
+              impuesto = impuesto + parseInt(receta_detalle_element?.impuesto?.porcentaje) * ( parseFloat( element?.recetas.precio ) * parseInt (element?.cantidad) ) / 100;
+          });    
 
           this.dataReceta.push({
             nombre: element?.recetas.nombre,
@@ -179,14 +182,14 @@ export class DashboardRoomsOcuparComponent {
             let impuesto = 0;   
             let identificador ='productos'+this.generarIdAleatorio()
       
-            element.productos.impuestos.forEach(impuestoElement => { 
-               impuesto = parseInt(impuestoElement.impuesto.porcentaje) * ( parseFloat(element?.valor) * parseInt (element?.cantidad) ) / 100;
+            element.productos.impuestos.forEach(impuestoElement => {   
+               impuesto = impuesto + parseInt(impuestoElement.impuesto.porcentaje) * ( parseFloat(element?.valor) ) / 100;
             });
-
+          
             this.dataProductos.push({
                 nombre: element?.productos.nombre,
                 valor: element?.valor,
-                valorImpuesto: impuesto + parseFloat(element?.valor),
+                valorImpuesto: impuesto + (parseFloat(element?.valor)  ),
                 cantidad: element?.cantidad,
                 id: element?.item_id,
                 identificador: identificador,
@@ -233,26 +236,31 @@ export class DashboardRoomsOcuparComponent {
 
         }); 
 
-        this.dataRoomDetail.productos.forEach(element => { 
+        this.dataRoomDetail.productos.forEach(element => {  
+
           this.productoData.push(
             {
               id: element.id,
               nombre: element.nombre,
               valor: element.precio,  
-              tipo: element.tipo_producto
+              tipo: element.tipo_producto,
+              impuestos: element.impuestos, 
             })
+ 
         })
 
-        
+          
+
 
         this.detalleId = this.dataRoomDetail?.detalleHabitacion.id;
         this.hotelId = this.dataRoomDetail?.detalleHabitacion.hotel_id;
         this.clienteId = this.dataRoomDetail?.detalleHabitacion.cliente?.id;
     
-        
+       // 
         this.buildForm();
         this.recalcular();
-        this.cargarItems();
+        this.cargarItems(); 
+
       })
   }
 
@@ -263,7 +271,7 @@ export class DashboardRoomsOcuparComponent {
     this.abonosTotal = 0;
     this.totalPagarReserva = 0;
     this.totalImpuestos = 0;
-
+    this.totalRecetas =0;
     this.dataTarifa.forEach(element => {
         this.tarifasTotal = this.tarifasTotal + parseFloat( element.valor ) ; 
     });
@@ -271,26 +279,29 @@ export class DashboardRoomsOcuparComponent {
     let productoTotal = 0;
     
     this.dataProductos.forEach(element => {
-      let valor = 0;
-      if(element?.valorImpuesto==0) {
-        valor = parseFloat(element?.valor)
-      } else {
-        valor = element?.valorImpuesto
-        //this.totalImpuestos = element?.valorImpuesto - element?.valor;
-      } 
+       let valor = 0; 
+     
+        valor = parseFloat(element?.valorImpuesto) 
+        this.totalImpuestos =  this.totalImpuestos + valor - element?.valor; 
 
-      this.totalProductos = this.totalProductos + valor  ;
+        this.totalProductos = this.totalProductos + valor  ;
     }); 
+
+    this.dataReceta.forEach(element => {
+      let valor = parseFloat(element?.valorImpuesto)
+      this.totalRecetas = this.totalRecetas + valor  ;
+      this.totalImpuestos = this.totalImpuestos + valor - element?.valor;  
+    })
 
     this.dataAbonos.forEach(element => {
       this.abonosTotal = this.abonosTotal + parseFloat( element.valor ) ;
     }); 
 
-    this.impuestos_save.forEach(element => {
-      this.totalImpuestos = this.totalImpuestos  + element.valor;
-    });
-    this.totalPagarReserva = (this.tarifasTotal +  this.totalProductos ) ;
- 
+    // this.impuestos_save.forEach(element => {
+    //   this.totalImpuestos = this.totalImpuestos  + element.valor;
+    // });
+    this.totalPagarReserva = (this.tarifasTotal +  this.totalProductos +  this.totalRecetas + this.totalImpuestos) - this.abonosTotal;
+    this.subtotaltotalPagarReserva = (this.tarifasTotal +  this.totalProductos +  this.totalRecetas) ;
     this.validaciones();
   }
 /*
@@ -342,7 +353,7 @@ export class DashboardRoomsOcuparComponent {
 
   confirmDeleteProductos(identificador:string){
     this.dataProductos =  this.dataProductos.filter(element => element.identificador != identificador);
-    this.impuestos_save = this.impuestos_save.filter(element => element.producto_identificador != identificador);
+   // this.impuestos_save = this.impuestos_save.filter(element => element.producto_identificador != identificador);
     this.recalcular();
   }
   confirmDeleteRecetas(identificador:string){
@@ -352,7 +363,7 @@ export class DashboardRoomsOcuparComponent {
 
   addTarifa(){
     this.tarifaVisible = true;
-    this.formTarifa.reset();
+    //this.formTarifa.reset();
   }
 
   addProductos(){
@@ -376,19 +387,51 @@ export class DashboardRoomsOcuparComponent {
     this.recalcular();
   }
 
-  recargarTablaProducto(){
-    let producto = this.formProducto.get('producto_id').value[0];
-    let cantidad = this.formProducto.get('cantidad').value;
- 
+  submitReceta(){
+    this.recetaVisible = false;
+    this.recargarTablaReceta();
+    this.recalcular(); 
+  }
+
+  recargarTablaReceta() {
+    let receta = this.formReceta.get('receta_id')?.value ;
+    let cantidad = this.formReceta.get('cantidad')?.value ;
+    
+    let identificador = 'receta'+this.generarIdAleatorio(); 
+    let impuesto = 0;
+
+    receta.impuestos.forEach(impuestoElement => {   
+      impuesto =  impuesto + parseInt(impuestoElement.impuesto.porcentaje) * ( parseFloat(receta.precio ) * parseInt (cantidad) ) / 100;
+    }); 
+    
+    this.dataReceta.push(
+      {
+        nombre: receta.nombre,
+        valor: receta.precio * cantidad,
+        valorImpuesto: (receta.precio * cantidad) + impuesto,
+        cantidad: cantidad,
+        id: receta.id,
+        identificador: identificador
+      }
+    )
+  }
+
+  recargarTablaProducto(){ 
+    let producto = this.formProducto.get('producto_id')?.value ;
+    let cantidad = this.formProducto.get('cantidad').value; 
+
     let impuesto = 0;
     let tipo_producto = producto.tipo ;
-    let identificador = 'productos'+this.generarIdAleatorio()
+    let identificador = 'productos'+this.generarIdAleatorio(); 
+
+    producto.impuestos.forEach(impuestoElement => {   
+      impuesto =  impuesto + parseInt(impuestoElement.impuesto.porcentaje) * ( parseFloat(producto.valor ) * parseInt (cantidad) ) / 100;
+    });
  
-  
     this.dataProductos.push({
       nombre: producto.nombre,
       valor: producto.valor * cantidad,
-      valorImpuesto: impuesto,
+      valorImpuesto: (producto.valor * cantidad) + impuesto,
       cantidad: cantidad,
       tipoProducto: tipo_producto,
       id: producto.id,
@@ -413,19 +456,17 @@ export class DashboardRoomsOcuparComponent {
           tipo: element.tipo,
           id: element.id,
          // identificador: identificador,
-        });
+        }); 
 
-    
-
-      /*  this.allTarifasDefault.push(
+        this.allTarifasDefault.push(
           {
             valor: element.valor,
             nombre:element.nombre,
             tipo: element.tipo,
-            id:element.id,
-            identificador: identificador,
+            id: element.id,
+           // identificador: identificador,
           }
-        );*/
+        );
     });
 
   }
@@ -460,7 +501,7 @@ export class DashboardRoomsOcuparComponent {
         detalleId: this.detalleId,
         hotelId: this.hotelId,
         clienteId: this.clienteId,
-        impuesto: this.impuestos_save,
+      //  impuesto: this.impuestos_save,
         habitacion_id: this.habitacionId
       }
  
@@ -472,7 +513,7 @@ export class DashboardRoomsOcuparComponent {
     this.spinner.show();
 
     this.dashboardRoomsService.saveDetalleHabitacion(data).subscribe(response => {
-      console.log(response)
+ 
       this.spinner.hide();
 
       let data:any = response;
@@ -530,7 +571,7 @@ export class DashboardRoomsOcuparComponent {
             detalleId: this.detalleId,
             hotelId: this.hotelId,
             clienteId: this.clienteId,
-            impuesto: this.impuestos_save,
+           // impuesto: this.impuestos_save,
             habitacion_id: this.habitacionId
         }
 
@@ -649,7 +690,7 @@ export class DashboardRoomsOcuparComponent {
       detalleId: this.detalleId,
       hotelId: this.hotelId,
       clienteId: this.clienteId,
-      impuesto: this.impuestos_save,
+    //  impuesto: this.impuestos_save,
       habitacion_id: this.habitacionId
     }
  

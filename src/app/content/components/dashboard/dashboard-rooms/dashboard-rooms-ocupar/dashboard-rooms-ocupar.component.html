@@ -84,7 +84,7 @@
             <table>
                 <thead>
                     <th>Nombre</th>
-                    <th>Precio</th>
+                    <th>Precio </th>
                     <th>Precio con Impuesto</th>
                     <th>Cantidad</th>
                     <th *ngIf="estadoHabitacion?.estado_id == 2">Opcion</th>
@@ -176,7 +176,7 @@
             <th> Impuestos </th>
             <th> $ {{ totalImpuestos | number }} </th>
             <th>
-                <table>
+                <!--table>
                     <thead>
                         <th>Monto</th>
                         <th>Porcentaje</th>
@@ -189,18 +189,18 @@
                             {{ impuesto?.porcentaje  }} %
                         </td>
                     </tbody>
-                </table>
+                </table-->
             </th>
         </tr>
         <tr>
             <th> Sub Total</th>
-            <th> $ {{ totalPagarReserva <= 0?0: totalPagarReserva | number}} </th>
+            <th> $ {{ subtotaltotalPagarReserva <= 0?0: subtotaltotalPagarReserva | number}} </th>
             <td>
             </td>
         </tr>
         <tr>
             <th> Total</th>
-            <th> $ {{ totalPagarReserva - abonosTotal <= 0?0: totalPagarReserva - abonosTotal | number }} </th>
+            <th> $ {{ totalPagarReserva <= 0?0: totalPagarReserva | number }} </th>
             <td>
             </td>
         </tr>
@@ -239,15 +239,18 @@
         <form [formGroup]="formProducto" (ngSubmit)="submitProducto()">
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-6">
-                    <label for="cliente">Producto / Servicio</label>
-                    <p-dropdown [options]="productoData" formControlName="producto_id"   [showClear]="true">
-                         <ng-template let-producto pTemplate="item">
+                    <label for="producto_id">Producto / Servicio</label>
+                    <p-dropdown [options]="productoData"  formControlName="producto_id"   limoptionLabel="nombre" placeholder="Buscar Producto/Servicio" optionLabel="nombre" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
+                        <ng-template let-producto pTemplate="item">
                             <div class="flex align-items-center">
                                 <span class="ml-2">{{producto.nombre}}</span>
-                                <p-tag class="padding" value="{{ producto.valor }}" ></p-tag>
+                                <p-tag class="padding" value="{{ producto.valor }}"></p-tag>
                             </div>
                         </ng-template>
                     </p-dropdown>
+                    <div *ngIf="formProducto.get('producto_id').errors && (formProducto.get('producto_id').dirty || formProducto.get('producto_id').touched)">
+                        <small *ngIf="formProducto.get('producto_id').hasError('required')">Producto es requerido.</small>
+                    </div>
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>Cantidad</label>
@@ -263,25 +266,25 @@
 
 <p-dialog header="Agregar Receta" [(visible)]="recetaVisible" [modal]="true" [style]="{ width: '50vw', height: '40vw' }" [draggable]="true" [resizable]="true">
     <div class="col-12">
-        <form [formGroup]="formProducto" (ngSubmit)="submitProducto()">
+        <form [formGroup]="formReceta" (ngSubmit)="submitReceta()">
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-6">
-                    <label for="cliente">Producto / Servicio</label>
-                    <p-multiSelect [options]="productoData"  formControlName="producto_id" selectionLimit="1"  limoptionLabel="nombre" placeholder="Buscar Producto/Servicio" optionLabel="nombre" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
+                    <label for="cliente">Receta</label>
+                    <p-dropdown [options]="recetasData"  formControlName="receta_id"   limoptionLabel="nombre" placeholder="Buscar Producto/Servicio" optionLabel="nombre" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
                         <ng-template let-producto pTemplate="item">
                             <div class="flex align-items-center">
                                 <span class="ml-2">{{producto.nombre}}</span>
-                                <p-tag class="padding" value="{{ producto.valor }}" ></p-tag>
+                                <p-tag class="padding" value="{{ producto.precio }}" ></p-tag>
                             </div>
                         </ng-template>
-                    </p-multiSelect>
+                    </p-dropdown>
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>Cantidad</label>
                     <input type="number" formControlName="cantidad"  pInputText class="w-full mb-3 border-round-3xl"  >
                 </div>
                 <div class="field col-12 md:col-12">
-                    <button pButton pRipple label="Agregar"  [disabled]="this.formProducto.invalid" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+                    <button pButton pRipple label="Agregar"  [disabled]="this.formReceta.invalid" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
                 </div>
             </div>
         </form>
@@ -341,9 +344,9 @@
             </div>
 
 
-         <p-message severity="info" class="padding" text="El total ingresado no es igual al total a Pagar" *ngIf="totalFactura!=(this.totalPagarReserva-this.abonosTotal)" ></p-message>
+         <p-message severity="info" class="padding" text="El total ingresado no es igual al total a Pagar" *ngIf="totalFactura!=(this.totalPagarReserva)" ></p-message>
 
     <div class="field col-12 md:col-12">
-        <button pButton pRipple (click)="submitFactura()" [label]="'Pagar '+(this.totalPagarReserva-this.abonosTotal | number)"  [disabled]="this.formFacturacionMediosPago.invalid || totalFactura!=(this.totalPagarReserva-this.abonosTotal)" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
+        <button pButton pRipple (click)="submitFactura()" [label]="'Pagar '+(this.totalPagarReserva | number)"  [disabled]="this.formFacturacionMediosPago.invalid || totalFactura!=(this.totalPagarReserva)" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
     </div>
 </p-dialog>
