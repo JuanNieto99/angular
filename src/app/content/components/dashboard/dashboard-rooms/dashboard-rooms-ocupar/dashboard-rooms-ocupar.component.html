@@ -270,7 +270,7 @@
             <div class="p-fluid p-formgrid grid">
                 <div class="field col-12 md:col-6">
                     <label for="cliente">Receta</label>
-                    <p-dropdown [options]="recetasData"  formControlName="receta_id"   limoptionLabel="nombre" placeholder="Buscar Producto/Servicio" optionLabel="nombre" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
+                    <p-dropdown [options]="recetasData"  formControlName="receta_id"   limoptionLabel="nombre" placeholder="Buscar Receta" optionLabel="nombre" class="multiselect-custom"   emptyMessage="Producto no encontrado" display="chip">
                         <ng-template let-producto pTemplate="item">
                             <div class="flex align-items-center">
                                 <span class="ml-2">{{producto.nombre}}</span>

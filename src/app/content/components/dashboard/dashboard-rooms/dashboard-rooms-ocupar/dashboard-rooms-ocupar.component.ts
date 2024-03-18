@@ -136,7 +136,7 @@ export class DashboardRoomsOcuparComponent {
         this.estadoHabitacion = this.dataRoomDetail.estadoHabitacion;
         this.impuestos =  this.dataRoomDetail.impuesto;
         this.recetasData = this.dataRoomDetail.recetas; 
-         
+          console.log(this.recetasData)
         this.allTarifasDefault = [];
         this.dataRoomDetail.tarifasHabitacion.forEach(element => {   
 
@@ -157,7 +157,7 @@ export class DashboardRoomsOcuparComponent {
           let identificador ='receta'+this.generarIdAleatorio()
 
           element.recetas.impuestos.forEach(receta_detalle_element => {  
-              impuesto = impuesto + parseInt(receta_detalle_element?.impuesto?.porcentaje) * ( parseFloat( element?.recetas.precio ) * parseInt (element?.cantidad) ) / 100;
+             impuesto = impuesto + parseInt(receta_detalle_element?.impuesto?.porcentaje) * ( parseFloat( element?.recetas.precio ) * parseInt (element?.cantidad) ) / 100;
           });    
 
           this.dataReceta.push({
@@ -167,7 +167,7 @@ export class DashboardRoomsOcuparComponent {
             cantidad: element?.cantidad,
             id: element?.id,
             identificador: identificador, 
-            impuestos: element.recetas.receta_detalle
+            impuestos: element.recetas.impuestos
           });
 
           this.totalRecetas = this.totalRecetas + impuesto + parseFloat( element?.recetas.precio);
@@ -272,6 +272,7 @@ export class DashboardRoomsOcuparComponent {
     this.totalPagarReserva = 0;
     this.totalImpuestos = 0;
     this.totalRecetas =0;
+    
     this.dataTarifa.forEach(element => {
         this.tarifasTotal = this.tarifasTotal + parseFloat( element.valor ) ; 
     });
@@ -280,7 +281,7 @@ export class DashboardRoomsOcuparComponent {
     
     this.dataProductos.forEach(element => {
        let valor = 0; 
-     
+      console.log(element)
         valor = parseFloat(element?.valorImpuesto) 
         this.totalImpuestos =  this.totalImpuestos + valor - element?.valor; 
 
@@ -345,7 +346,6 @@ export class DashboardRoomsOcuparComponent {
   confirmDeleteTarifa(id:string){
     this.dataTarifa =  this.dataTarifa.filter(element => element.id != id);
     
-
     this.allTarifasDefault = this.dataTarifa; 
     this.buildForm();
     this.recalcular();
@@ -356,6 +356,7 @@ export class DashboardRoomsOcuparComponent {
    // this.impuestos_save = this.impuestos_save.filter(element => element.producto_identificador != identificador);
     this.recalcular();
   }
+
   confirmDeleteRecetas(identificador:string){
     this.dataReceta =  this.dataReceta.filter(element => element.identificador != identificador);
     this.recalcular();
@@ -369,6 +370,7 @@ export class DashboardRoomsOcuparComponent {
   addProductos(){
     this.productoVisible = true;
     this.formProducto.reset();
+    this.recalcular();
   }
 
   addAbonos(){
@@ -400,7 +402,7 @@ export class DashboardRoomsOcuparComponent {
     let identificador = 'receta'+this.generarIdAleatorio(); 
     let impuesto = 0;
 
-    receta.impuestos.forEach(impuestoElement => {   
+    receta.impuestos.forEach(impuestoElement => {    
       impuesto =  impuesto + parseInt(impuestoElement.impuesto.porcentaje) * ( parseFloat(receta.precio ) * parseInt (cantidad) ) / 100;
     }); 
     
@@ -411,7 +413,8 @@ export class DashboardRoomsOcuparComponent {
         valorImpuesto: (receta.precio * cantidad) + impuesto,
         cantidad: cantidad,
         id: receta.id,
-        identificador: identificador
+        identificador: identificador,
+        impuestos: receta.impuestos
       }
     )
   }
@@ -500,7 +503,9 @@ export class DashboardRoomsOcuparComponent {
         abonos: this.dataAbonos,
         detalleId: this.detalleId,
         hotelId: this.hotelId,
-        clienteId: this.clienteId,
+        clienteId: this.clienteId, 
+        receta: this.dataReceta,
+
       //  impuesto: this.impuestos_save,
         habitacion_id: this.habitacionId
       }
@@ -571,10 +576,10 @@ export class DashboardRoomsOcuparComponent {
             detalleId: this.detalleId,
             hotelId: this.hotelId,
             clienteId: this.clienteId,
+            receta: this.dataReceta,
            // impuesto: this.impuestos_save,
             habitacion_id: this.habitacionId
         }
-
         this.enviarFacturacion(guardar);
       }
         
