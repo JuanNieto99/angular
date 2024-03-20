@@ -261,7 +261,7 @@ export class ProductsComponent implements OnInit {
     onCreate(){
       this.fileUploadCreate.clear();
       this.imagen = null;
-      this.formCreateProduct.reset();
+      this.formCreateProduct.reset();  
       this.productsService.getProducto(0).subscribe(
       (response: any) => {
         this.medida = response.medida;
@@ -272,6 +272,8 @@ export class ProductsComponent implements OnInit {
         this.tipo = response.tipo;
         this.visibleModalProducto = true;
         this.registrosContar = response.total;
+        this.onChangeTipoProductoCrear();
+
         // this.imagen = 'data:image/png;base64,' + response.imagen;
        // this.cargarImagen(response.imagen);
       },
@@ -341,6 +343,8 @@ export class ProductsComponent implements OnInit {
           })
 
           setTimeout(() => {
+           // this.onChangeTipoProductoEditar();
+            this.onChangeTipoProductoEditarIncio(tipoProducto);
             this.formEditProduct.get('nombre').setValue(this.dataEditarInfoProductos.nombre)
             this.formEditProduct.get('medida_id').setValue(medida)
             this.formEditProduct.get('descripcion').setValue(this.dataEditarInfoProductos.descripcion)
@@ -356,6 +360,7 @@ export class ProductsComponent implements OnInit {
 
             this.visibleModalProductoEditar = true;
             this.cargarImagen(response.imagen);
+
           }, 1);
 
         },
@@ -582,7 +587,7 @@ export class ProductsComponent implements OnInit {
     onChangeTipoProductoCrear (){
       let tipo_producto = this.formCreateProduct.get('tipo_producto').value;
 
-      if(tipo_producto.id == 1){
+      if(tipo_producto?.id == 1){
         //producto
         this.visibleServicio = true;
         this.formCreateProduct.get('medida_id').enable();
@@ -601,7 +606,7 @@ export class ProductsComponent implements OnInit {
 
       }
 
-      if(tipo_producto.id == 2){
+      if(tipo_producto?.id == 2){
         //servicio
         this.visibleServicio = false;
         this.formCreateProduct.get('medida_id').disable();
@@ -622,7 +627,7 @@ export class ProductsComponent implements OnInit {
 
     onChangeTipoProductoEditar(){
       let tipo_producto = this.formEditProduct.get('tipo_producto').value;
-      if(tipo_producto.id == 1){
+      if(tipo_producto?.id == 1){
 
         //producto
         this.visibleServicioEditar = true;
@@ -639,7 +644,7 @@ export class ProductsComponent implements OnInit {
         this.formEditProduct.get('precio_base').setValue(this.editarData.precio_base);
       }
 
-      if(tipo_producto.id == 2){
+      if(tipo_producto?.id == 2){
         this.editarData =  this.formEditProduct.value;
 
         //servicio
@@ -657,4 +662,37 @@ export class ProductsComponent implements OnInit {
       }
     }
 
+
+    onChangeTipoProductoEditarIncio(tipoProducto){
+      console.log(tipoProducto)
+    //  let tipo_producto = this.formEditProduct.get('tipo_producto').value;
+      if(tipoProducto.id == 1){
+
+        //producto
+        this.visibleServicioEditar = true;
+        this.formEditProduct.get('medida_id').enable();
+        this.formEditProduct.get('cantidad').enable();
+        this.formEditProduct.get('limite_cantidad').enable();
+        this.formEditProduct.get('stop_minimo').enable();
+        this.formEditProduct.get('precio_base').enable();
+ 
+      }
+
+      if(tipoProducto.id == 2){
+        this.editarData =  this.formEditProduct.value;
+
+        //servicio
+        this.visibleServicioEditar = false;
+        this.formEditProduct.get('cantidad').disable();
+        this.formEditProduct.get('limite_cantidad').disable();
+        this.formEditProduct.get('stop_minimo').disable();
+        this.formEditProduct.get('precio_base').disable();
+
+        this.formEditProduct.get('cantidad').setValue(0);
+        this.formEditProduct.get('medida_id').setValue(0);
+        this.formEditProduct.get('limite_cantidad').setValue(0);
+        this.formEditProduct.get('stop_minimo').setValue(0);
+        this.formEditProduct.get('precio_base').setValue(0);
+      }
+    }
 }

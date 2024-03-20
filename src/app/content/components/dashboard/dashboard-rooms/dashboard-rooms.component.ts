@@ -1033,8 +1033,8 @@ let yaEstaReservada = false;
     this.dashboardRoomsService.getReserva(data).subscribe(
       (response: any) => {   
         this.spinner.hide();   
-       // this.clienteMultiSelectReservar.checkAll(); 
-       // this.clienteMultiSelectReservar.uncheckAll();
+        this.clienteMultiSelectReservar.checkAll(); 
+        this.clienteMultiSelectReservar.uncheckAll();
         this.clienteMultiSelectTarifa.checkAll(); 
         this.clienteMultiSelectTarifa.uncheckAll();
        // this.clienteMultiSelectProducto.checkAll(); 
