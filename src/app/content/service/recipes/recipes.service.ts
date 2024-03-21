@@ -17,6 +17,7 @@ export class RecipesService {
 
     private endpointProductsGet: string;
     private endpointProductsCreate: string;
+    private endpointAllProductsGet: string;
 
     constructor(private httpClient: HttpClient) {
         this.baseUrl = Config.url;
@@ -26,7 +27,8 @@ export class RecipesService {
         this.endpointRecipesCreate = '/recetaCrear';
         this.endpointDelete = '/recetaEliminar/';
         this.endpointProductsGet = '/getRecetaProductos/';
-        this.endpointProductsCreate = '/agregarProductosReceta'
+        this.endpointProductsCreate = '/agregarProductosReceta';
+        this.endpointAllProductsGet = '/getAllProductosByRecetas/'
     }
 
     getAll(per_page:number, search:string = '', page:number = 1): Observable<Recipes[]> {
@@ -56,8 +58,14 @@ export class RecipesService {
     }
 
     //Recetas-Productos
+
+    //Productos
     getProducts(id:number){
         return this.httpClient.get<any>(`${this.baseUrl+this.endpointProductsGet+id}`)
+    }
+    //Metodo para obtener los productos que pertenecen a la receta
+    getProductsRecetas(id:number){
+        return this.httpClient.get<any>(`${this.baseUrl+this.endpointAllProductsGet+id}`)
     }
 
     createRecipesProducts(data:any){
