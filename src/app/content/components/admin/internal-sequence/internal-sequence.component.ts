@@ -39,6 +39,7 @@ export class InternalSequenceComponent {
     public disablePageRight: boolean = false;
     public first:number = 0;
     public rows:number = 8;
+    public tipo_operacion: any;
 
     constructor(
         private FB: FormBuilder,
@@ -64,6 +65,7 @@ export class InternalSequenceComponent {
                 this.secuenciaDescripcion = response.descripcion_secuencia;
                 this.secuenciaInicial = response.secuencia_incial;
                 this.secuenciaActual = response.secuencia_actual;
+                this.tipo_operacion = response.tipo_operacion;
                 this.visibleModalInternalSequence = true;
             },
             (error) => {
@@ -114,6 +116,7 @@ export class InternalSequenceComponent {
         let dataInternalSequence = this.formCreateInternalSequence.value;
 
         dataInternalSequence.hotel_id = dataInternalSequence.hotel_id['id'];
+        dataInternalSequence.tipo_operacion_id = dataInternalSequence.tipo_operacion_id['id']; 
         dataInternalSequence.estado = 1;
 
         this.InternalSequenceService.createInternalSequence(dataInternalSequence).subscribe(
@@ -129,6 +132,12 @@ export class InternalSequenceComponent {
                     });
 
                     this.getIndex();
+                } else if (response.code == 'warning'){
+                    Swal.fire({
+                        title: 'Advertencia',
+                        text: response.mensaje ,
+                        icon: 'warning',
+                    });
                 } else {
                     Swal.fire({
                         title: 'Error',
@@ -151,19 +160,42 @@ export class InternalSequenceComponent {
             (response: any) => {
                 console.log(response)
                 this.spinner.hide();
+                let hotel:any ;
+                let tipoOperacion:any ;
+
                 this.hotel = response.hotel;
+
+
+                this.tipo_operacion = response.tipo_operacion;
+
                 const secuenciaInterna = response.secuencia_interna;
 
                 if (secuenciaInterna && 'descripcion_secuencia' in secuenciaInterna) {
                     this.secuenciaDescripcion = secuenciaInterna.descripcion_secuencia;
                     this.secuenciaInicial = secuenciaInterna.secuencia_incial;
                     this.secuenciaActual = secuenciaInterna.secuencia_actual;
+                    let tipo_operacion_id = secuenciaInterna.tipo_operacion_id;
+
+                    
+                    response.hotel.forEach(element => {
+                        if(element.id == secuenciaInterna.hotel_id){
+                            hotel = element;
+                        }
+                    });
+
+                                        
+                    response.tipo_operacion.forEach(element => {
+                        if(element.id == secuenciaInterna.tipo_operacion_id){
+                            tipoOperacion = element;
+                        }
+                    });
 
                     this.formEditInternalSequence.setValue({
-                        hotel_id: this.hotel,
+                        hotel_id: hotel,
                         descripcion_secuencia: this.secuenciaDescripcion,
                         secuencia_incial: this.secuenciaInicial,
                         secuencia_actual: this.secuenciaActual,
+                        tipo_operacion_id: tipoOperacion,
                     });
                 }
 
@@ -182,6 +214,7 @@ export class InternalSequenceComponent {
         this.spinner.show();
         let dataInternalSequence = this.formEditInternalSequence.value;
         dataInternalSequence.hotel_id = dataInternalSequence.hotel_id.id;
+        dataInternalSequence.tipo_operacion_id = dataInternalSequence.tipo_operacion_id.id;
         dataInternalSequence.id = this.idEditando;
         dataInternalSequence.estado = 1;
         console.log(dataInternalSequence);
@@ -227,17 +260,19 @@ export class InternalSequenceComponent {
 
         this.formCreateInternalSequence = this.FB.group({
             hotel_id: ['', [Validators.required]],
+            tipo_operacion_id: ['', [Validators.required]],
             descripcion_secuencia: ['', [Validators.required]],
-            secuencia_incial: ['', [Validators.required]],
-            secuencia_actual: ['', [Validators.required]]
+            secuencia_incial: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+            secuencia_actual: ['', [Validators.required, Validators.pattern('^[0-9]*$')]]
 
         });
 
         this.formEditInternalSequence = this.FB.group({
             hotel_id: ['', [Validators.required]],
+            tipo_operacion_id: ['', [Validators.required]],
             descripcion_secuencia: ['', [Validators.required]],
-            secuencia_incial: ['', [Validators.required]],
-            secuencia_actual: ['', [Validators.required]]
+            secuencia_incial: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+            secuencia_actual: ['', [Validators.required, Validators.pattern('^[0-9]*$')]]
         });
     }
 

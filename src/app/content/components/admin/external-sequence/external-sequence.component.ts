@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ExternalSequenceService } from '../../../service/externalSequence/external-sequence.service';
 import Swal from 'sweetalert2';
-import { formatDate } from '@angular/common';
+import { DatePipe, formatDate } from '@angular/common';
 
 interface PageEvent {
     first: number;
@@ -28,6 +28,7 @@ export class ExternalSequenceComponent {
     public formEditExternalSequence: FormGroup;
     public countRegisters: number;
     public imagen: any = null;
+    public tipoOperacion: any = null;
     public hotel: any[];
     public idEditando: number = 0;
     public dataEditarInfoExternalSequence: any;
@@ -47,7 +48,8 @@ export class ExternalSequenceComponent {
     constructor(
         private FB: FormBuilder,
         private spinner: NgxSpinnerService,
-        private ExternalSequenceService: ExternalSequenceService
+        private ExternalSequenceService: ExternalSequenceService,
+        private datePipe: DatePipe, 
     ) {}
 
     ngOnInit(): void {
@@ -66,7 +68,7 @@ export class ExternalSequenceComponent {
             (response: any) => {
                 this.hotel = response.hotel;
                 this.prefijo = response.prefijo;
-
+                this.tipoOperacion = response.tipo_operacion;
                 // Verificar si las fechas son válidas antes de formatearlas
                 if (response.fecha_inicio && response.fecha_final) {
                     this.fechaInicial = new Date(response.fecha_inicio).toISOString().split('T')[0];
@@ -101,36 +103,36 @@ export class ExternalSequenceComponent {
         this.getIndex('', this.pageCount);
     }
 
-submitCreate() {
-    if (this.formCreateExternalSequence.valid) {
-        // Convertir la fecha al formato YYYY-MM-DD aceptado por MySQL
-        const fechaInicioFormatted = this.formatDate(this.formCreateExternalSequence.value.fecha_inicio);
-        const fechaFinalFormatted = this.formatDate(this.formCreateExternalSequence.value.fecha_final);
+    submitCreate() {
+        if (this.formCreateExternalSequence.valid) {
+            // Convertir la fecha al formato YYYY-MM-DD aceptado por MySQL
+            const fechaInicioFormatted = this.formatDate(this.formCreateExternalSequence.value.fecha_inicio);
+            const fechaFinalFormatted = this.formatDate(this.formCreateExternalSequence.value.fecha_final);
 
-        // Asignar las fechas formateadas de nuevo al formulario
-        this.formCreateExternalSequence.patchValue({
-            fecha_inicio: fechaInicioFormatted,
-            fecha_final: fechaFinalFormatted
-        });
+            // Asignar las fechas formateadas de nuevo al formulario
+            this.formCreateExternalSequence.patchValue({
+                fecha_inicio: fechaInicioFormatted,
+                fecha_final: fechaFinalFormatted
+            });
 
-        // Llamar al método para crear la secuencia externa
-        this.newExternalSequence();
-        console.log('Está enviando cambios');
-    } else {
-        console.log('Formulario no válido:', this.formCreateExternalSequence.errors);
-        this.formCreateExternalSequence.markAllAsTouched();
-        console.log('NO está enviando cambios');
+            // Llamar al método para crear la secuencia externa
+            this.newExternalSequence();
+            console.log('Está enviando cambios');
+        } else {
+            console.log('Formulario no válido:', this.formCreateExternalSequence.errors);
+            this.formCreateExternalSequence.markAllAsTouched();
+            console.log('NO está enviando cambios');
+        }
     }
-}
 
-// Función para formatear la fecha al formato YYYY-MM-DD
-formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = ('0' + (date.getMonth() + 1)).slice(-2);
-    const day = ('0' + date.getDate()).slice(-2);
-    return `${year}-${month}-${day}`;
-}
+    // Función para formatear la fecha al formato YYYY-MM-DD
+    formatDate(dateString: string): string {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        const day = ('0' + date.getDate()).slice(-2);
+        return `${year}-${month}-${day}`;
+    }
 
 
 
@@ -140,6 +142,7 @@ formatDate(dateString: string): string {
         let dataExternalSequence = this.formCreateExternalSequence.value;
         console.log('Entré al newExternal');
         dataExternalSequence.hotel_id = dataExternalSequence.hotel_id['id'];
+        dataExternalSequence.tipo_operacion_id = dataExternalSequence.tipo_operacion_id.id;
         dataExternalSequence.estado = 1;
 
         this.ExternalSequenceService.createExternalSequence(
@@ -183,26 +186,42 @@ formatDate(dateString: string): string {
                 this.spinner.hide();
                 this.hotel = response.hotel;
                 const secuenciaExterna = response.secuencia_externa;
+                this.tipoOperacion = response.tipo_operacion;
 
                 if (secuenciaExterna && 'prefijo' in secuenciaExterna) {
                     // Formatear las fechas antes de asignarlas al formulario
                     this.secuenciaInicial = secuenciaExterna.secuencia_incial;
                     this.secuenciaActual = secuenciaExterna.secuencia_actual;
                     this.secuenciaFinal = secuenciaExterna.secuencia_final;
-                    this.fechaInicial = new Date(secuenciaExterna.fecha_inicio)
-                        .toISOString()
-                        .split('T')[0];
-                    this.fechaFinal = new Date(secuenciaExterna.fecha_final)
-                        .toISOString()
-                        .split('T')[0];
+                    this.fechaInicial =  (secuenciaExterna.fecha_inicio)
+               
+                    this.fechaFinal = (secuenciaExterna.fecha_final)
+      
                     this.prefijo = secuenciaExterna.prefijo;
+                    let hotel :any;
+                    let tipoOperacion :any;
+
+                    response.hotel.forEach(element => {
+                        if(element.id == secuenciaExterna.hotel_id){
+                            hotel = element;
+                        }
+                    });
+
+                                        
+                    response.tipo_operacion.forEach(element => {
+                        if(element.id == secuenciaExterna.tipo_operacion_id){
+                            tipoOperacion = element;
+                        }
+                    });
+                 
 
                     // Asignar los valores al formulario de edición
                     this.formEditExternalSequence.patchValue({
-                        hotel_id: this.hotel,
+                        hotel_id: hotel,
+                        tipo_operacion_id: tipoOperacion,
                         prefijo: this.prefijo,
-                        fecha_inicio: this.fechaInicial,
-                        fecha_final: this.fechaFinal,
+                        fecha_inicio: this.datePipe.transform(new Date(this.fechaInicial), 'yyyy/MM/dd'),
+                        fecha_final: this.datePipe.transform(new Date(this.fechaFinal), 'yyyy/MM/dd'),
                         secuencia_incial: this.secuenciaInicial,
                         secuencia_actual: this.secuenciaActual,
                         secuencia_final: this.secuenciaFinal,
@@ -225,6 +244,7 @@ formatDate(dateString: string): string {
         this.spinner.show();
         let dataExternalSequence = this.formEditExternalSequence.value;
         dataExternalSequence.hotel_id = dataExternalSequence.hotel_id.id;
+        dataExternalSequence.tipo_operacion_id = dataExternalSequence.tipo_operacion_id.id;
         dataExternalSequence.id = this.idEditando;
         dataExternalSequence.estado = 1;
 
@@ -318,6 +338,7 @@ formatDate(dateString: string): string {
             secuencia_incial: ['', [Validators.required]],
             secuencia_actual: ['', [Validators.required]],
             secuencia_final: ['', [Validators.required]],
+            tipo_operacion_id: ['', [Validators.required]],
         });
 
         this.formEditExternalSequence = this.FB.group({
@@ -328,6 +349,7 @@ formatDate(dateString: string): string {
             secuencia_incial: ['', [Validators.required]],
             secuencia_actual: ['', [Validators.required]],
             secuencia_final: ['', [Validators.required]],
+            tipo_operacion_id: ['', [Validators.required]],
         });
     }
 

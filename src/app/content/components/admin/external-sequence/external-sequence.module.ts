@@ -23,6 +23,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AdminInterceptor } from 'src/app/content/interceptors/admin.interceptor';
 import { ExternalSequenceService } from '../../../service/externalSequence/external-sequence.service';
 import { ExternalSequenceComponent } from './external-sequence.component';
+import { DatePipe } from '@angular/common';
 
 
 @NgModule({
@@ -55,7 +56,9 @@ import { ExternalSequenceComponent } from './external-sequence.component';
         multi:true
     },
     ExternalSequenceService,
+    DatePipe
   ],
-    declarations: [ExternalSequenceComponent]
+    declarations: [ExternalSequenceComponent],
+    
 })
 export class ExternalSequenceModule { }

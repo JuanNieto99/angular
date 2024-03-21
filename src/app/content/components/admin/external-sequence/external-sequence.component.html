@@ -43,6 +43,7 @@
                         <th>Secuencia Inicial</th>
                         <th>Secuencia Actual</th>
                         <th>Secuencia Final</th>
+                        <th>Tipo Operacion</th>
                         <th>Acciones</th>
                     </tr>
                 </ng-template>
@@ -55,6 +56,7 @@
                         <td>{{ externalSequence.secuencia_incial }}</td>
                         <td>{{ externalSequence.secuencia_actual }}</td>
                         <td>{{ externalSequence.secuencia_final }}</td>
+                        <td>{{ externalSequence.tipo_operacion?.nombre }}</td>                        
                         <td class="flex gap-2">
                             <p-button (click)="editExternalSequence(externalSequence.id)" icon="pi pi-user-edit" severity="info"></p-button>
                             <p-confirmDialog></p-confirmDialog>
@@ -92,6 +94,13 @@
                     </div>
                 </div>
                 <div class="field col-12 md:col-6">
+                    <label>Tipo Operacion</label>
+                    <p-dropdown [options]="tipoOperacion" optionLabel="nombre" formControlName="tipo_operacion_id"></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateExternalSequence.get('tipo_operacion_id').hasError('required') && formCreateExternalSequence.get('tipo_operacion_id').touched">
+                        Campo requerido
+                    </div>
+                </div>
+                <div class="field col-12 md:col-6">
                     <label>Prefijo</label>
                     <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="prefijo">
                     <div style="color: red;" *ngIf="formCreateExternalSequence.get('prefijo').hasError('required')">Campo requerido</div>
@@ -99,12 +108,12 @@
                 <div class="field col-12 md:col-6">
                     <label>Fecha Inicio</label>
                     <p-calendar formControlName="fecha_inicio" class="w-full mb-3 border-round-3xl" [showIcon]="true"></p-calendar>
-                    <div style="color: red;" *ngIf="formEditExternalSequence.get('fecha_inicio').hasError('required')">Campo requerido</div>
+                    <div style="color: red;" *ngIf="formCreateExternalSequence.get('fecha_inicio').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>Fecha Final</label>
                     <p-calendar formControlName="fecha_final" class="w-full mb-3 border-round-3xl" [showIcon]="true"></p-calendar>
-                    <div style="color: red;" *ngIf="formEditExternalSequence.get('fecha_final').hasError('required')">Campo requerido</div>
+                    <div style="color: red;" *ngIf="formCreateExternalSequence.get('fecha_final').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>Secuencia Inicial</label>
@@ -140,18 +149,25 @@
                      <div style="color: red;" *ngIf="formEditExternalSequence.get('hotel_id').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
+                    <label>Tipo Operacion</label>
+                    <p-dropdown [options]="tipoOperacion" optionLabel="nombre" formControlName="tipo_operacion_id"></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateExternalSequence.get('tipo_operacion_id').hasError('required') && formCreateExternalSequence.get('tipo_operacion_id').touched">
+                        Campo requerido
+                    </div>
+                </div>
+                <div class="field col-12 md:col-6">
                     <label>Prefijo</label>
                     <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="prefijo">
                     <div style="color: red;" *ngIf="formEditExternalSequence.get('prefijo').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>Fecha Inicio</label>
-                    <p-calendar formControlName="fecha_inicio" class="w-full mb-3 border-round-3xl" [showIcon]="true"></p-calendar>
+                    <p-calendar formControlName="fecha_inicio" class="w-full mb-3 border-round-3xl"  dateFormat="yy/mm/dd" [showIcon]="true"></p-calendar>
                     <div style="color: red;" *ngIf="formEditExternalSequence.get('fecha_inicio').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>Fecha Final</label>
-                    <input type="date"  pInputText class="w-full mb-3 border-round-3xl" formControlName="fecha_final">
+                    <p-calendar formControlName="fecha_final" class="w-full mb-3 border-round-3xl"  dateFormat="yy/mm/dd" [showIcon]="true"></p-calendar>
                     <div style="color: red;" *ngIf="formEditExternalSequence.get('fecha_final').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">

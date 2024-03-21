@@ -42,6 +42,7 @@
                         <th>Descripción</th>
                         <th>Secuencia Inicial</th>
                         <th>Secuencia Actual</th>
+                        <th>Tipo Operacion</th>
                         <th>Acciones</th>
                     </tr>
                 </ng-template>
@@ -51,6 +52,7 @@
                         <td>{{ internalSequence.descripcion_secuencia }}</td>
                         <td>{{ internalSequence.secuencia_incial }}</td>
                         <td>{{ internalSequence.secuencia_actual }}</td>
+                        <td>{{ internalSequence?.tipo_operacion?.nombre }}</td>
                         <td class="flex gap-2">
                             <p-button (click)="editInternalSequence(internalSequence.id)" icon="pi pi-user-edit" severity="info"></p-button>
                             <p-confirmDialog></p-confirmDialog>
@@ -86,10 +88,11 @@
                     <div style="color: red;" *ngIf="formCreateInternalSequence.get('hotel_id').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
-                    <label>Descripción de Secuencia</label>
-                    <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="descripcion_secuencia">
-                    <div style="color: red;" *ngIf="formCreateInternalSequence.get('descripcion_secuencia').hasError('required')">Campo requerido</div>
+					<label>Tipo Operacion</label>
+					<p-dropdown [options]="tipo_operacion" optionLabel="nombre" formControlName="tipo_operacion_id" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateInternalSequence.get('tipo_operacion_id').hasError('required')">Campo requerido</div>
                 </div>
+
                 <div class="field col-12 md:col-6">
                     <label>Secuencia Inicial</label>
                     <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="secuencia_incial">
@@ -99,6 +102,11 @@
                     <label>Secuencia Actual</label>
                     <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="secuencia_actual">
                     <div style="color: red;" *ngIf="formCreateInternalSequence.get('secuencia_actual').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-12">
+                    <label>Descripción</label>
+                    <textarea type="text" pInputTextarea  required rows="3" cols="20" formControlName="descripcion_secuencia"></textarea>
+                    <div style="color: red;" *ngIf="formCreateInternalSequence.get('descripcion_secuencia').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-12">
                     <button pButton pRipple label="Crear Secuencia Interna" icon="" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
@@ -119,9 +127,9 @@
                      <div style="color: red;" *ngIf="formEditInternalSequence.get('hotel_id').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
-                    <label>Descripción de Secuencia</label>
-                    <input type="text"  pInputText class="w-full mb-3 border-round-3xl" formControlName="descripcion_secuencia">
-                    <div style="color: red;" *ngIf="formEditInternalSequence.get('descripcion_secuencia').hasError('required')">Campo requerido</div>
+					<label>Tipo Operacion</label>
+					<p-dropdown [options]="tipo_operacion" optionLabel="nombre" formControlName="tipo_operacion_id" ></p-dropdown>
+                    <div style="color: red;" *ngIf="formCreateInternalSequence.get('tipo_operacion_id').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-6">
                     <label>Secuencia Inicial</label>
@@ -132,6 +140,11 @@
                     <label>Secuencia Actual</label>
                     <input type="number"  pInputText class="w-full mb-3 border-round-3xl" formControlName="secuencia_actual">
                     <div style="color: red;" *ngIf="formEditInternalSequence.get('secuencia_actual').hasError('required')">Campo requerido</div>
+                </div>
+                <div class="field col-12 md:col-12">
+                    <label>Descripción</label>
+                    <textarea type="text" pInputTextarea  required rows="3" cols="20"  formControlName="descripcion_secuencia"></textarea>
+                    <div style="color: red;" *ngIf="formEditInternalSequence.get('descripcion_secuencia').hasError('required')">Campo requerido</div>
                 </div>
                 <div class="field col-12 md:col-12">
                     <button pButton pRipple label="Editar Secuencia Interna" icon="" class="w-full bg-admin boder-admin mb-5 border-round-3xl" type="submit"></button>
