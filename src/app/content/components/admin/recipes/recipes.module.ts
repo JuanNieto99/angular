@@ -25,7 +25,7 @@ import { PaginatorModule } from 'primeng/paginator';
 import { RecipesService } from 'src/app/content/service/recipes/recipes.service';
 import { RecipesProductsComponent } from './recipes-products/recipes-products.component';
 import { MultiSelectModule } from 'primeng/multiselect';
-
+import { TabViewModule } from 'primeng/tabview';
 
 
 @NgModule({
@@ -50,7 +50,8 @@ import { MultiSelectModule } from 'primeng/multiselect';
     ReactiveFormsModule, // import ReactiveFormsModule
     NgxSpinnerModule,
     PaginatorModule,
-    MultiSelectModule
+    MultiSelectModule,
+    TabViewModule,
   ],
     providers: [
         {

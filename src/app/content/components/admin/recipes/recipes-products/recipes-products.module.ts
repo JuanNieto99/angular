@@ -26,12 +26,11 @@ import { ChipModule } from "primeng/chip";
 import { ChipsModule } from "primeng/chips";
 import { MessageModule } from 'primeng/message';
 import { SplitButtonModule } from 'primeng/splitbutton';
-
 import { RecipesProductsRoutingModule } from './recipes-products-routing.module';
 import { RecipesProductsComponent } from './recipes-products.component';
 import { AdminInterceptor } from 'src/app/content/interceptors/admin.interceptor';
 import { MultiSelectModule } from 'primeng/multiselect';
-
+import { TabViewModule } from 'primeng/tabview';
 
 @NgModule({
   imports: [
@@ -61,7 +60,8 @@ import { MultiSelectModule } from 'primeng/multiselect';
     ChipModule,
     ChipsModule,
     MessageModule,
-    SplitButtonModule
+    SplitButtonModule,
+    TabViewModule,
   ],
     providers: [
         {

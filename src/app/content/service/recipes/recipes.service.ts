@@ -19,6 +19,10 @@ export class RecipesService {
     private endpointProductsCreate: string;
     private endpointAllProductsGet: string;
 
+    private endpointTaxesGet: string;
+    private endpointTaxesByIdGet: string;
+    private endpointTaxesCreate: string;
+
     constructor(private httpClient: HttpClient) {
         this.baseUrl = Config.url;
         this.endpointListar = '/recetaListar';
@@ -28,7 +32,10 @@ export class RecipesService {
         this.endpointDelete = '/recetaEliminar/';
         this.endpointProductsGet = '/getRecetaProductos/';
         this.endpointProductsCreate = '/agregarProductosReceta';
-        this.endpointAllProductsGet = '/getAllProductosByRecetas/'
+        this.endpointAllProductsGet = '/getAllProductosByRecetas/';
+        this.endpointTaxesGet = '/getRecetaCrearImpuesto/'
+        this.endpointTaxesByIdGet = '/getImpuestoReceta/';
+        this.endpointTaxesCreate = '/agregarImpuestoReceta'
     }
 
     getAll(per_page:number, search:string = '', page:number = 1): Observable<Recipes[]> {
@@ -70,5 +77,21 @@ export class RecipesService {
 
     createRecipesProducts(data:any){
         return this.httpClient.post<any>(`${this.baseUrl+this.endpointProductsCreate}`, data);
+    }
+
+    ///Recetas Impuestos ///
+
+    //Impuestos
+    getTaxes(id:number){
+        return this.httpClient.get<any>(`${this.baseUrl+this.endpointTaxesGet+id}`)
+    }
+
+    //Obtiene impuestos que pertenecen a la receta
+    getRecipeTaxes(id:number){
+        return this.httpClient.get<any>(`${this.baseUrl+this.endpointTaxesByIdGet+id}`)
+    }
+
+    createTaxes(data:any){
+        return this.httpClient.post<any>(`${this.baseUrl+this.endpointTaxesCreate}`, data);
     }
 }

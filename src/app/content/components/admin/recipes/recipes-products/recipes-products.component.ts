@@ -24,7 +24,16 @@ export class RecipesProductsComponent {
     public productosGuardados: any[];
     public productosParaMostrar: any[];
     public productosParaEnviar: any[];
-    public displayModal: boolean = false;
+    public displayModalProducts: boolean = false;
+    public displayModalTaxes: boolean = false;
+
+    //Variables impuestos
+    public formImpuesto: FormGroup;
+    public formTaxes: FormGroup;
+    public taxesData: any[] = [];
+    public impuestosParaMostrar: any[];
+    public impuestosGuardados: any[];
+    public impuestosSeleccionados: any[] = [];
 
     // Buscador y Paginador
     public pageCount: number = 10;
@@ -49,9 +58,10 @@ export class RecipesProductsComponent {
         this.dataRecipesDetail = [];
         this.buildForm();
         this.recetaId = parseFloat(this.route.snapshot.paramMap.get('id'));
-        console.log('ID de receta capturado:', this.recetaId);
         this.getProductsAndRecipesList(this.recetaId)
         this.getProductsForRecipe(this.recetaId);
+        this.getTaxesAndRecipesList(this.recetaId);
+        this.getTaxesById(this.recetaId);
     }
 
     buildForm(){
@@ -62,6 +72,13 @@ export class RecipesProductsComponent {
             //hotel: [this.dataRecipesDetail?.detalleRecipes?.hotel, []],
         });
 
+        this.formImpuesto = this.FB.group({
+            impuesto_id: [null, Validators.required], // Control para el ID del impuesto seleccionado
+            nombre: [''], // Control para el nombre del impuesto (puede ser opcional)
+            porcentaje: ['', Validators.required] // Control para el porcentaje del impuesto
+        });
+
+
         // Deshabilita los campos del formulario
         this.form.get('nombreReceta').disable();
         this.form.get('descripcion').disable();
@@ -71,18 +88,22 @@ export class RecipesProductsComponent {
             producto_id: [null, [Validators.required]],
             cantidad: [1, [Validators.required, Validators.min(1)]],
         });
+
+        this.formTaxes = this.FB.group({
+            impuesto_id: [null, [Validators.required]]
+        })
     }
 
 
-    //Modal
+    /// Modal ///
     // Abre el modal
     openModal() {
-        this.displayModal = true;
+        this.displayModalProducts = true;
     }
 
     // Cierra el modal
     closeModal() {
-        this.displayModal = false;
+        this.displayModalProducts = false;
     }
 
     // Loading product
@@ -189,8 +210,8 @@ export class RecipesProductsComponent {
         // Combina los productos consultados y los nuevos productos
         const todosLosProductos = [...this.productosGuardados, ...this.productosSeleccionados];
 
-        // Verifica si hay productos en todosLosProductos
-        if (todosLosProductos.length > 0) {
+        // Verifica si todosLosProductos es un array
+        if (Array.isArray(todosLosProductos)) {
             let datos = {
                 receta_id: this.recetaId, // Cambia 'recetaId' por 'receta_id'
                 producto: todosLosProductos.map(producto => ({
@@ -218,7 +239,7 @@ export class RecipesProductsComponent {
         } else {
             Swal.fire({
                 title: "Error",
-                text: 'Por favor, agrega al menos un producto a la receta antes de guardar.',
+                text: 'Hubo un error al guardar los productos.',
                 icon: "error"
             });
         }
@@ -251,6 +272,166 @@ export class RecipesProductsComponent {
 
         // Actualiza productosParaMostrar con los productos guardados y los productos seleccionados
         this.productosParaMostrar = [...this.productosGuardados, ...this.productosSeleccionados];
+
+        this.cdr.detectChanges();
+    }
+
+    ///<---------IMPUESTOS----------->///
+
+    //Taxes Modal
+    openModalTaxes(){
+        this.displayModalTaxes = true
+    }
+
+    closeModalTaxes(){
+        this.displayModalTaxes= false
+    }
+
+    //Get Taxes
+    getTaxesAndRecipesList(id: number){
+        this.loadingTable = true;
+        this.recipesService.getTaxes(id).subscribe(
+            (response: any) => {
+                this.taxesData = response.impuesto;
+                this.loadingTable = false;
+            },
+            (error) => {
+                console.error(error);
+                this.loadingTable = false;
+            }
+        );
+    }
+
+    //Add Taxes
+
+    agregarImpuestos() {
+        const impuestoIdSeleccionado = this.formImpuesto.get('impuesto_id').value.id;
+
+        const impuestoSeleccionado = this.taxesData.find(impuesto => impuesto.id === impuestoIdSeleccionado);
+
+        if (impuestoSeleccionado) {
+            this.impuestosGuardados = this.impuestosGuardados || [];
+            this.impuestosSeleccionados = this.impuestosSeleccionados || [];
+
+            // Asigna el porcentaje del impuesto seleccionado
+            const porcentaje = impuestoSeleccionado.porcentaje;
+
+            this.impuestosSeleccionados.push({
+                impuesto_id: impuestoSeleccionado.id,
+                nombre: impuestoSeleccionado.nombre,
+                porcentaje: Number(porcentaje)
+            });
+
+            this.impuestosParaMostrar = [...this.impuestosGuardados, ...this.impuestosSeleccionados];
+
+            this.cdr.detectChanges();
+
+            this.formImpuesto.get('impuesto_id').setValue(null);
+            this.closeModalTaxes();
+        } else {
+            console.error('Por favor, selecciona un impuesto antes de agregar.');
+        }
+    }
+
+    //Get Taxes by id
+
+    getTaxesById(recetaId: number) {
+        this.loadingTable = true; // Mostrar spinner de carga
+        this.recipesService.getRecipeTaxes(recetaId).subscribe(
+            (response: any) => {
+                // Verifica si hay datos en la respuesta
+                if (response && response.receta_impuesto && response.receta_impuesto.length > 0) {
+                    // Mapea los datos recibidos para adaptarlos a la estructura de la tabla
+                    this.impuestosGuardados = response.receta_impuesto.map(item => ({
+                        id: item.impuesto.id,
+                        nombre: item.impuesto.nombre,
+                        porcentaje: item.impuesto.porcentaje
+                    }));
+                } else {
+                    console.log('No se encontraron impuestos asociados a esta receta.');
+                    this.impuestosGuardados = []; // Vacía la tabla
+                }
+                // Combina impuestosGuardados e impuestosSeleccionados
+                this.impuestosParaMostrar = [...this.impuestosGuardados, ...this.impuestosSeleccionados];
+                this.loadingTable = false; // Ocultar spinner de carga
+            },
+            (error) => {
+                console.error(error);
+                this.loadingTable = false; // Ocultar spinner de carga en caso de error
+            }
+        );
+    }
+
+    //Save Taxes
+
+    sendTaxes() {
+        console.log('this.impuestosSeleccionados:', this.impuestosSeleccionados);
+        console.log('this.impuestosSeleccionados.length:', this.impuestosSeleccionados ? this.impuestosSeleccionados.length : 'undefined');
+
+        // Verifica si hay impuestos seleccionados
+        if (Array.isArray(this.impuestosSeleccionados)) {
+            let datos = {
+                receta_id: this.recetaId,
+                impuestos: Array.isArray(this.impuestosSeleccionados) ? this.impuestosSeleccionados.map(impuesto => ({
+                    impuesto_id: impuesto.impuesto_id
+                })) : []
+            };
+            console.log('datos:', datos);
+
+            this.recipesService.createTaxes(datos).subscribe(
+                (response) => {
+                    console.log('response:', response);
+                    if (response.val) {
+                        // Actualiza la lista de impuestos
+                        this.getTaxesById(this.recetaId)
+                    }
+                },
+                (error) => {
+                    console.error(error);
+                    Swal.fire({
+                        title: "Error",
+                        text: "Hubo un error al guardar los impuestos.",
+                        icon: "error"
+                    });
+                }
+            );
+        } else {
+            Swal.fire({
+                title: "Error",
+                text: 'Por favor, agrega al menos un impuesto a la receta antes de guardar.',
+                icon: "error"
+            });
+        }
+
+        // Muestra el mensaje de éxito
+        Swal.fire({
+            title: "Exito",
+            text: "Los impuestos se han guardado correctamente.",
+            icon: "success"
+        });
+    }
+
+    //Eliminar tarifas
+
+    quitarTaxes(impuestoAEliminar) {
+        // Encuentra el índice del impuesto en el arreglo impuestosSeleccionados
+        let indice = this.impuestosSeleccionados.findIndex(impuesto => impuesto === impuestoAEliminar);
+
+        // Verifica si el impuesto está en el arreglo impuestosSeleccionados
+        if (indice !== -1) {
+            // Si el impuesto está en el arreglo, lo elimina
+            this.impuestosSeleccionados.splice(indice, 1);
+        } else {
+            // Si el impuesto no está en impuestosSeleccionados, busca en impuestosGuardados
+            indice = this.impuestosGuardados.findIndex(impuesto => impuesto === impuestoAEliminar);
+            if (indice !== -1) {
+                // Si el impuesto está en impuestosGuardados, lo elimina
+                this.impuestosGuardados.splice(indice, 1);
+            }
+        }
+
+        // Actualiza impuestosParaMostrar con los impuestos guardados y los impuestos seleccionados
+        this.impuestosParaMostrar = [...this.impuestosGuardados, ...this.impuestosSeleccionados];
 
         this.cdr.detectChanges();
     }
