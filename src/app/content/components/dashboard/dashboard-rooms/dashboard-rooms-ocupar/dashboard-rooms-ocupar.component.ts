@@ -151,21 +151,21 @@ export class DashboardRoomsOcuparComponent {
 
         }); 
 
-        let impuesto = 0;
 
         this.dataRoomDetail.recetasHabitacion.forEach(element => { 
-          let identificador ='receta'+this.generarIdAleatorio()
+          let identificador ='receta'+this.generarIdAleatorio() ;
+          let impuesto = 0;
 
           element?.recetas?.impuestos.forEach(receta_detalle_element => {  
               let totalImpuesto = parseInt(receta_detalle_element?.impuesto?.porcentaje) * ( parseFloat( element?.recetas.precio ) * parseInt (element?.cantidad) ) / 100; 
-              impuesto = impuesto  +totalImpuesto;
+              impuesto = impuesto  + totalImpuesto;
             
              this.impuestos_save.push({
                 'valor' :  totalImpuesto,
                 'porcentaje' : receta_detalle_element?.impuesto?.porcentaje,
                 'cantidad': element?.cantidad,
                 'id': receta_detalle_element?.impuesto.id,
-                'item_id':  element?.id,
+                'item_id':  element?.item_id,
                 'tipo': '4',
                 'identificador': identificador,
              });
@@ -177,7 +177,7 @@ export class DashboardRoomsOcuparComponent {
             valor: element?.recetas?.precio,
             valorImpuesto: impuesto + parseFloat( element?.recetas?.precio),
             cantidad: element?.cantidad,
-            id: element?.id,
+            id: element?.item_id,
             identificador: identificador, 
             impuestos: element.recetas?.impuestos
           });
@@ -322,8 +322,8 @@ export class DashboardRoomsOcuparComponent {
     // this.impuestos_save.forEach(element => {
     //   this.totalImpuestos = this.totalImpuestos  + element.valor;
     // });
-    this.totalPagarReserva = (this.tarifasTotal +  this.totalProductos +  this.totalRecetas + this.totalImpuestos) - this.abonosTotal;
-    this.subtotaltotalPagarReserva = (this.tarifasTotal +  this.totalProductos +  this.totalRecetas) ;
+    this.totalPagarReserva = (this.tarifasTotal +  this.totalProductos +  this.totalRecetas) - this.abonosTotal;
+    this.subtotaltotalPagarReserva = (this.tarifasTotal +  this.totalProductos +  this.totalRecetas) - this.totalImpuestos;
     this.validaciones();
   }
 /*
@@ -608,6 +608,7 @@ export class DashboardRoomsOcuparComponent {
           icon: "warning"
         });
       } else {
+
         let guardar = {
             detalle_id: this.detalleId,
             metodos_pagos: this.formFacturacionMediosPago.value,
@@ -615,8 +616,8 @@ export class DashboardRoomsOcuparComponent {
             hotel_id: this.hotelId,
             cliente_id: this.clienteId,
             porcentaje_descuento: 0,
-            subtotal: this.totalPagarReserva,
-            total: this.totalPagarReserva - this.abonosTotal, 
+            subtotal: this.subtotaltotalPagarReserva, 
+            total: this.totalPagarReserva + this.abonosTotal, 
             impuesto_total: this.totalImpuestos, 
             detalleId: this.detalleId,
             hotelId: this.hotelId,
@@ -625,6 +626,7 @@ export class DashboardRoomsOcuparComponent {
             impuesto: this.impuestos_save, 
             habitacion_id: this.habitacionId
         }
+       // console.log(guardar);
         this.enviarFacturacion(guardar);
       }
         
@@ -724,10 +726,7 @@ export class DashboardRoomsOcuparComponent {
 
     this.formFacturacionMediosPago.value.forEach(element => {
       this.totalFactura = this.totalFactura + parseFloat(element.monto)
-    })  
-
-    console.log(this.totalFactura)
-    console.log(this.totalPagarReserva-this.abonosTotal)
+    })   
 
   }
 
