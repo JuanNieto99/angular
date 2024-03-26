@@ -15,10 +15,11 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthService } from './content/service/auth.service';
 import { UsersService } from './content/service/admin/users.service';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { SaleComponent } from './components/dashboard/sale/sale.component';
 
 @NgModule({
     declarations: [
-        AppComponent, NotfoundComponent
+        AppComponent, NotfoundComponent, SaleComponent
     ],
     imports: [
         AppRoutingModule,

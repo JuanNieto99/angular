@@ -35,6 +35,7 @@ import { LoginBlockGuard } from './content/guards/loginblock.guard';
                     { path: 'admin/recipes', loadChildren: () => import('./content/components/admin/recipes/recipes.module').then(m => m.RecipesModule) },
                     { path: 'admin/tarifas', loadChildren: () => import('./content/components/admin/tarifa/tarifa.module').then(m => m.TarifaModule) },
                     { path: 'admin/clientes', loadChildren: () => import('./content/components/admin/clientes/clientes.module').then(m => m.ClientesModule) },
+                    { path: 'dashboardSell', loadChildren: () => import('./content/components/dashboard/sale/sale.module').then(m => m.SaleModule) },
                 ],
                 canActivate: [LoginGuard]
             },

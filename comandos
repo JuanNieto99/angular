@@ -1,0 +1,8 @@
+generar componente
+
+ng g c content/components/dashboard/sale
+ng g c content/components/admin/sale
+
+generar module
+
+ ng g m content/components/dashboard/sale

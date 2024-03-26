@@ -42,9 +42,9 @@
                 <ng-template pTemplate="body" let-cajaControl>
                     <tr>
                         <td>{{ cajaControl.caja.nombre }}</td>
-                        <td>$ {{ cajaControl.abrir_saldo }}</td>
-                        <td>$ {{ cajaControl.cierre_saldo?cajaControl.cierre_saldo:0  }}</td>
-                        <td>$ {{ cajaControl.diferencia?cajaControl.diferencia:0 }}</td>
+                        <td>$ {{ cajaControl.abrir_saldo | number }}</td>
+                        <td>$ {{ cajaControl.cierre_saldo?(cajaControl.cierre_saldo  | number ):(0  | number )   }}</td>
+                        <td>$ {{ cajaControl.diferencia?(cajaControl.diferencia  | number ):(0  | number )  }}</td>
                         <td> {{ cajaControl.caja.tipo_cajas.nombre }}</td>
                         <td *ngIf=" cajaControl.estado=='1'">{{'Abierta'}}</td>
                         <td *ngIf=" cajaControl.estado=='2'">{{'Cerrada'}}</td>
